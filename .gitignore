@@ -1,0 +1,111 @@
+# Visual Studio / Visual Studio Code
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.ide
+*.sln.iml
+
+# Build outputs
+/bin/
+/obj/
+/[Bb]in/
+/[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+*.ilk
+*.meta
+*.pdb
+*.exe
+*.dll
+*.app
+*.apk
+
+# Publish
+publish/
+*.Publish.xml
+*.azurePubxml
+
+# Rider / JetBrains
+.idea/
+*.DotSettings.user
+
+# NuGet
+packages/
+*.nupkg
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
+# VS Code settings / workspace
+*.code-workspace
+
+# User secrets and sensitive files
+secrets.json
+*.UserSecrets.json
+appsettings.*.Local.json
+local.settings.json
+
+# Logs, databases, caches
+*.log
+logs/
+*.sqlite
+*.db
+*.mdf
+*.ldf
+*.sqlproj.user
+TestResults/
+
+# OS generated
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Node / frontend (if any)
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Coverage & analysis
+coverage/
+*.coverage
+*.coveragexml
+.vscoverage
+*.ncrunch*
+*.VisualState.xml
+
+# Tooling & temp
+.vs-test/
+.reSharper*/
+_ReSharper*/
+*.DotCover
+*.dotCover
+*.userprefs
+*.tmp
+*.temp
+
+# Docker
+docker-compose.override.yml
+.env
+.env.local
+
+# Misc
+*.orig
+*.bak
+/inventory-system-api.Application/bin/Debug/net8.0
+/inventory-system-api.Application/obj/Debug/net8.0
+*.json
+/inventory-system-api.Application/obj/inventory-system-api.Application.csproj.nuget.g.props
+/inventory-system-api.Application/obj/inventory-system-api.Application.csproj.nuget.g.targets
+/inventory-system-api.Infrastructure/obj/Debug/net8.0
+/inventory-system-api.Infrastructure/obj
+/inventory-system-api.Shared/obj
+/inventory-system-api.unitTests/bin/Debug/net10.0
+/inventory-system-api.unitTests/obj/Debug/net10.0
+/inventory-system-api.unitTests/obj
+/inventory-system-api.Application/obj

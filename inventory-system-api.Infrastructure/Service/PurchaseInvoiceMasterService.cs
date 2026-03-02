@@ -1,0 +1,72 @@
+﻿using inventory_system_api.Application.IService;
+using inventory_system_api.IRepository;
+using inventory_system_api.IRepository.Invenetory;
+using inventory_system_api.Models.Inventory;
+using inventory_system_api.Models.System;
+
+namespace inventory_system_api.Service
+{
+    public class PurchaseInvoiceMasterService : IPurchaseInvoiceMasterService
+    {
+        private readonly IUnitRepository _unitRepo;
+        private readonly IPurchaseInvoiceRepository _salesInvoiceRepo;
+
+        public PurchaseInvoiceMasterService(IPurchaseInvoiceRepository salesInvoiceRepo, IUnitRepository unitRepo)
+        {
+            _unitRepo = unitRepo;
+            _salesInvoiceRepo = salesInvoiceRepo;
+        }
+
+        public Task<int> AddEdit(PurchaseInvoiceMaster entity)
+        {
+            return _salesInvoiceRepo.AddEdit(entity);
+        }
+
+        public Task<int> Delete(int id)
+        {
+            return _salesInvoiceRepo.Delete(id);
+        }
+
+        public Task<List<PurchaseInvoiceMaster>> Get()
+        {
+            return _salesInvoiceRepo.Get();
+        }
+
+        public async Task<PurchaseInvoiceMaster> Get(int id)
+        {
+            PurchaseInvoiceMaster entity = await _salesInvoiceRepo.Get(id);
+
+
+            List<int> units = entity.Details.Select(r => r.DefaultUnitID).Distinct().ToList();
+
+            List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(string.Join(",", units));
+
+
+            var unitDetailsLookup = details
+                .GroupBy(d => d.DefaultUnitID)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            List<InvoiceDetail> productDetails = entity.Details
+                .Select(product =>
+                {
+
+                    // Find units by UnitID. If the key doesn't exist, GetValueOrDefault provides null.
+                    unitDetailsLookup.TryGetValue(product.DefaultUnitID, out List<UnitDetails> relatedUnits);
+
+                    // Create the final object, assigning the found units or an empty list.
+                    product.UnitDetails = relatedUnits;
+                    return product;
+                })
+                .ToList();
+
+
+            entity.Details = productDetails;
+            return entity;
+        }
+
+        public Task<Navigate> Navigate(int pageNo, int rowPerPage)
+        {
+            return _salesInvoiceRepo.Navigate(pageNo, rowPerPage);
+        }
+    }
+}
