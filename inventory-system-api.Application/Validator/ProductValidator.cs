@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using inventory_system_api.Models.Inventory;
 
-namespace accswift_api.Validator
+namespace inventory_system_api.Application.Validator
 {
     public class ProductValidator: AbstractValidator<Product>
     {

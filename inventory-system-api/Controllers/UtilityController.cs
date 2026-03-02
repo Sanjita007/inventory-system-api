@@ -1,5 +1,6 @@
 ﻿using inventory_system_api;
 using inventory_system_api.Controllers;
+using inventory_system_api.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

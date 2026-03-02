@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace inventory_system_api.Repository
+namespace inventory_system_api.Infrastructure.Repository
 {
     public abstract class BaseRepository<T>
     {

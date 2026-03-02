@@ -1,7 +1,8 @@
-﻿using inventory_system_api.Models.Inventory;
+﻿using inventory_system_api.Application.Models.Inventory;
+using inventory_system_api.Models.Inventory;
 using System.Data;
 
-namespace inventory_system_api.IRepository.Invenetory
+namespace inventory_system_api.Application.IRepository.Invenetory
 {
     public interface IDepotRepository 
     {

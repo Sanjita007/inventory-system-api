@@ -1,11 +1,11 @@
-﻿using inventory_system_api.IRepository.Invenetory;
-using inventory_system_api.Models.Inventory;
-using inventory_system_api.Models.System;
+﻿using inventory_system_api.Application.IRepository.Invenetory;
+using inventory_system_api.Application.Models.Inventory;
+using inventory_system_api.Application.Models.System;
+using inventory_system_api.Shared;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Reflection.PortableExecutable;
 
-namespace inventory_system_api.Repository.Inventory
+namespace inventory_system_api.Infrastructure.Repository.Inventory
 {
     public class PurchaseInvoiceRepository : BaseRepository<PurchaseInvoiceMaster>, IPurchaseInvoiceRepository
     {

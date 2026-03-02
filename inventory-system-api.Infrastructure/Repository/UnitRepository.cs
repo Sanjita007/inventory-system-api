@@ -1,10 +1,10 @@
-﻿using inventory_system_api.IRepository;
-using inventory_system_api.Models.Inventory;
+﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.Models.Inventory;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
 
-namespace inventory_system_api.Repository
+namespace inventory_system_api.Infrastructure.Repository
 {
     public class UnitRepository : IUnitRepository
     {

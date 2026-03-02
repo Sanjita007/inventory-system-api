@@ -1,7 +1,5 @@
-﻿using inventory_system_api.IRepository;
-using inventory_system_api.IRepository.Invenetory;
-using inventory_system_api.Models.Inventory;
-using inventory_system_api.Models.System;
+﻿using inventory_system_api.Application.Models.Inventory;
+using inventory_system_api.Application.Models.System;
 
 namespace inventory_system_api.Application.IService
 {

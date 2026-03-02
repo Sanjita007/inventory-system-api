@@ -1,8 +1,8 @@
-﻿namespace inventory_system_api.Middleware
+﻿namespace inventory_system_api.Application.Models
 {
-    internal class ErrorResponse
+    public class ErrorResponse
     {
-        internal Dictionary<string, string[]> Errors;
+        public Dictionary<string, string[]> Errors;
 
         public int StatusCode { get; set; }
         public string Message { get; set; }

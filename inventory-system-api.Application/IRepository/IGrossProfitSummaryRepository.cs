@@ -1,6 +1,6 @@
-﻿using inventory_system_api.Models.Reports;
+﻿using inventory_system_api.Application.Models.Reports;
 
-namespace inventory_system_api.IRepository
+namespace inventory_system_api.Application.IRepository
 {
     public interface IReportRepository
     {

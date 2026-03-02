@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\inventory-system-api.Application\inventory-system-api.Application.csproj" />
+    <ProjectReference Include="..\inventory-system-api.Shared\inventory-system-api.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace inventory_system_api.Models
+﻿namespace inventory_system_api.Application.Models
 {
     public class ErrorLog
     {

@@ -1,10 +1,12 @@
-﻿using inventory_system_api.Application.IService;
-using inventory_system_api.IRepository;
-using inventory_system_api.IRepository.Invenetory;
+﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.IRepository.Invenetory;
+using inventory_system_api.Application.IService;
+using inventory_system_api.Application.Models;
+using inventory_system_api.Application.Models.Inventory;
 using inventory_system_api.Models;
 using inventory_system_api.Models.Inventory;
 
-namespace inventory_system_api.Service
+namespace inventory_system_api.Infrastructure.Service
 {
 
     public class ProductService : IProductService

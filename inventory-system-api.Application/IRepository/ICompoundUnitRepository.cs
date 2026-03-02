@@ -1,8 +1,7 @@
-﻿using inventory_system_api.Models.Inventory;
-using inventory_system_api.Models.System;
-using System.Data;
+﻿using inventory_system_api.Application.Models.Inventory;
+using inventory_system_api.Application.Models.System;
 
-namespace inventory_system_api.IRepository
+namespace inventory_system_api.Application.IRepository
 {
     public interface ICompoundUnitRepository
     {

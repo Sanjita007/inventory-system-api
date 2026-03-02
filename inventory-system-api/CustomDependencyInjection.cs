@@ -1,10 +1,10 @@
-﻿using inventory_system_api.Application.IService;
-using inventory_system_api.IRepository;
-using inventory_system_api.IRepository.Invenetory;
-using inventory_system_api.Repository;
-using inventory_system_api.Repository.Inventory;
-using inventory_system_api.Repository.Reports;
-using inventory_system_api.Service;
+﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.IRepository.Invenetory;
+using inventory_system_api.Application.IService;
+using inventory_system_api.Infrastructure.Repository;
+using inventory_system_api.Infrastructure.Repository.Inventory;
+using inventory_system_api.Infrastructure.Repository.Reports;
+using inventory_system_api.Infrastructure.Service;
 
 namespace inventory_system_api
 {

@@ -13,7 +13,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Data;
 using System.Text;
-using accswift_api.Validator;
+using inventory_system_api.Application.Validator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +31,7 @@ builder.Services.AddControllers()
                     kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray()
                 );
 
-            var errorResponse = new ErrorResponse
+            var errorResponse = new inventory_system_api.Application.Models.ErrorResponse
             {
                 StatusCode = StatusCodes.Status400BadRequest,
                 Message = "Validation failed.",

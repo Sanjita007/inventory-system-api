@@ -1,9 +1,9 @@
-﻿using inventory_system_api.IRepository;
-using inventory_system_api.Models.Reports;
+﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.Models.Reports;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace inventory_system_api.Repository.Reports
+namespace inventory_system_api.Infrastructure.Repository.Reports
 {
     public class ReportRepository : IReportRepository
     {

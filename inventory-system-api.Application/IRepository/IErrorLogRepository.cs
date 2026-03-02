@@ -1,6 +1,7 @@
-﻿using inventory_system_api.Models;
+﻿using inventory_system_api.Application.Models;
+using inventory_system_api.Models;
 
-namespace inventory_system_api.IRepository
+namespace inventory_system_api.Application.IRepository
 {
     public interface IErrorLogRepository
     {

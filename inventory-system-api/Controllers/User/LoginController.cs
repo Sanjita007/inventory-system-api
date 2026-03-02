@@ -1,4 +1,5 @@
-﻿using inventory_system_api.Models;
+﻿using inventory_system_api.Application.Models;
+using inventory_system_api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

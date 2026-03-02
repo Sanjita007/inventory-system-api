@@ -1,4 +1,4 @@
-﻿using inventory_system_api.Models.Inventory;
+﻿using inventory_system_api.Application.Models.Inventory;
 
 namespace inventory_system_api.Models.Inventory
 {

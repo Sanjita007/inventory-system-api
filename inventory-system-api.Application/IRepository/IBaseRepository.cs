@@ -1,4 +1,4 @@
-﻿namespace inventory_system_api.IRepository
+﻿namespace inventory_system_api.Application.IRepository
 {
     public interface IBaseRepository<T>
     {

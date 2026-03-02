@@ -1,12 +1,10 @@
-﻿using inventory_system_api.IRepository.Invenetory;
-using inventory_system_api.Models;
-using inventory_system_api.Models.Inventory;
+﻿using inventory_system_api.Application.IRepository.Invenetory;
+using inventory_system_api.Application.Models;
+using inventory_system_api.Application.Models.Inventory;
 using Microsoft.Data.SqlClient;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
 
-namespace inventory_system_api.Repository.Inventory
+namespace inventory_system_api.Infrastructure.Repository.Inventory
 {
     public class ProductGroupRepository : IProductGroupRepository
     {

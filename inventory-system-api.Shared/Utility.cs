@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Linq;
 
-namespace inventory_system_api
+namespace inventory_system_api.Shared
 {
     public static class Utility
     {

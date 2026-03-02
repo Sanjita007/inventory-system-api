@@ -1,4 +1,4 @@
-﻿namespace inventory_system_api.Models.System
+﻿namespace inventory_system_api.Application.Models.System
 {
     public class CompoundUnit
     {

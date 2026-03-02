@@ -3,10 +3,11 @@ using System.Text;
 using System.IO;
 using System.Linq;
 using inventory_system_api.Models;
-using inventory_system_api.IRepository;
+using inventory_system_api.Application.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using inventory_system_api.Application.Models;
 
 namespace inventory_system_api.Middleware
 {
@@ -40,7 +41,7 @@ namespace inventory_system_api.Middleware
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var status = StatusCodes.Status500InternalServerError;
-            var response = new ErrorResponse
+            var response = new inventory_system_api.Application.Models.ErrorResponse
             {
                 StatusCode = status,
                 Message = "An unexpected error occurred.",

@@ -1,4 +1,4 @@
-﻿using inventory_system_api.IRepository;
+﻿using inventory_system_api.Application.IRepository;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler(
                 bodyStr = await reader.ReadToEndAsync();
             }
 
-            await errorLog.AddErrorLog(new inventory_system_api.Models.ErrorLog()
+            await errorLog.AddErrorLog(new inventory_system_api.Application.Models.ErrorLog()
             {
                 ErrorMessage = exception.StackTrace??exception.Message,
                 RequestBody = bodyStr,

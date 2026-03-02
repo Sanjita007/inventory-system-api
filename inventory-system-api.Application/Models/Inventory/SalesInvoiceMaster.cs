@@ -1,6 +1,6 @@
 ﻿
 
-namespace inventory_system_api.Models.Inventory
+namespace inventory_system_api.Application.Models.Inventory
 {
     public class InvoiceMaster: Base
     {

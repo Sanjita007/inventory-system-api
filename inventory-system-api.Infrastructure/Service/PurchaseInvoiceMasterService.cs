@@ -1,10 +1,10 @@
-﻿using inventory_system_api.Application.IService;
-using inventory_system_api.IRepository;
-using inventory_system_api.IRepository.Invenetory;
-using inventory_system_api.Models.Inventory;
-using inventory_system_api.Models.System;
+﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.IRepository.Invenetory;
+using inventory_system_api.Application.IService;
+using inventory_system_api.Application.Models.Inventory;
+using inventory_system_api.Application.Models.System;
 
-namespace inventory_system_api.Service
+namespace inventory_system_api.Infrastructure.Service
 {
     public class PurchaseInvoiceMasterService : IPurchaseInvoiceMasterService
     {

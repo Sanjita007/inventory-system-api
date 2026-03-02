@@ -1,8 +1,7 @@
-﻿using inventory_system_api.Models;
-using inventory_system_api.Models.Inventory;
-using System.Data;
+﻿using inventory_system_api.Application.Models;
+using inventory_system_api.Application.Models.Inventory;
 
-namespace inventory_system_api.IRepository.Invenetory
+namespace inventory_system_api.Application.IRepository.Invenetory
 {
     public interface IProductGroupRepository
     {

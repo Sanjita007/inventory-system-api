@@ -1,4 +1,4 @@
-﻿namespace inventory_system_api.Models.Reports
+﻿namespace inventory_system_api.Application.Models.Reports
 {
     public class InventoryDetail
     {

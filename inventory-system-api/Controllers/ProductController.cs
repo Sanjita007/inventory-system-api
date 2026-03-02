@@ -1,7 +1,5 @@
 ﻿using inventory_system_api.Application.IService;
-using inventory_system_api.IRepository.Invenetory;
 using inventory_system_api.Models.Inventory;
-using inventory_system_api.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace inventory_system_api.Controllers

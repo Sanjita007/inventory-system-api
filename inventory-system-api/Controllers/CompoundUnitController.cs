@@ -1,8 +1,7 @@
-﻿using inventory_system_api.Controllers;
-using inventory_system_api.IRepository;
-using inventory_system_api.Models.System;
+﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.Models.System;
+using inventory_system_api.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace accswift_api.Controllers
 {
