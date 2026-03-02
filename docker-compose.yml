@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: inventory-rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  inventory-api:
+    build:
+      context: .
+      dockerfile: inventory-system-api/Dockerfile
+    container_name: inventory-api
+    ports:
+      - "5000:8080"
+    depends_on:
+      - rabbitmq
+
+  inventory-worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: inventory-worker
+    depends_on:
+      - rabbitmqversion: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: inventory-rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  inventory-api:
+    build:
+      context: .
+      dockerfile: inventory-system-api/Dockerfile
+    container_name: inventory-api
+    ports:
+      - "5000:8080"
+    depends_on:
+      - rabbitmq
+
+  inventory-worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: inventory-worker
+    depends_on:
+      - rabbitmq

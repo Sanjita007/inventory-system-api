@@ -109,3 +109,4 @@ docker-compose.override.yml
 /inventory-system-api.unitTests/obj/Debug/net10.0
 /inventory-system-api.unitTests/obj
 /inventory-system-api.Application/obj
+/worker/obj

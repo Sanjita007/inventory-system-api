@@ -1,7 +1,9 @@
-﻿using inventory_system_api;
-using inventory_system_api.Middleware;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using inventory_system_api;
+using inventory_system_api.Application.Models.Queue;
+using inventory_system_api.Application.Validator;
+using inventory_system_api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -10,10 +12,10 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RabbitMQ.Client;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Data;
 using System.Text;
-using inventory_system_api.Application.Validator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +68,22 @@ builder.Services.AddCors(options =>
 
 // add repositories
 builder.Services.AddRepositories();
+
+#region Rabbit MQ
+builder.Services.AddSingleton<IConnectionFactory>(sp =>
+{
+    var config = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQOptions>();
+    return new ConnectionFactory()
+    {
+        HostName = config.HostName,
+        Port = config.Port,
+        UserName = config.UserName,
+        Password = config.Password,
+
+    };
+});
+
+#endregion
 
 #region API versioning
 builder.Services.AddApiVersioning(options =>
@@ -142,11 +160,37 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton<IDbConnection>(sp =>
+builder.Services.AddTransient<IDbConnection>(sp =>
 {
     var connectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnectionString");
     return new SqlConnection(connectionString);
 });
+
+// Conditional registration for messaging: real RabbitMQ publisher when enabled, otherwise a NoOp implementation
+var rabbitEnabled = builder.Configuration.GetValue<bool>("RabbitMQ:Enabled");
+if (rabbitEnabled)
+{
+    builder.Services.AddSingleton<IConnectionFactory>(sp =>
+    {
+        var config = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQOptions>();
+        return new ConnectionFactory()
+        {
+            HostName = config.HostName,
+            Port = config.Port,
+            UserName = config.UserName,
+            Password = config.Password,
+
+        };
+    });
+
+    // register the concrete RabbitMQ message service from Infrastructure
+    builder.Services.AddSingleton<inventory_system_api.Application.IQueue.IMessageService, inventory_system_api.Infrastructure.QueueService.MessageService>();
+}
+else
+{
+    // messaging disabled - register a no-op implementation so callers don't need to branch
+    builder.Services.AddSingleton<inventory_system_api.Application.IQueue.IMessageService, inventory_system_api.Infrastructure.QueueService.NoOpMessageService>();
+}
 
 // FluentValidation registrations MUST be done before builder.Build()
 builder.Services.AddFluentValidationAutoValidation();
