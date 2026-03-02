@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace accswift_api.Controllers
 {
-    public class DahboardController : BaseController
+    public class DashboardController : BaseController
     {
         IDashboardSummaryRepository _repo;
             
-        public DahboardController(IDashboardSummaryRepository repo)
+        public DashboardController(IDashboardSummaryRepository repo)
         {
             _repo = repo;
         }

@@ -1,4 +1,5 @@
-﻿using inventory_system_api.Controllers.User;
+﻿using inventory_system_api.Application.Models;
+using inventory_system_api.Controllers.User;
 using inventory_system_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
