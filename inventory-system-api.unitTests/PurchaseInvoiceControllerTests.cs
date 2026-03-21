@@ -1,0 +1,110 @@
+using accswift_api.Controllers;
+using inventory_system_api.Application.IService;
+using inventory_system_api.Application.Models.Inventory;
+using inventory_system_api.Application.Models.System;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Assert = Xunit.Assert;
+
+namespace inventory_system_api.unitTests
+{
+    public class PurchaseInvoiceControllerTests
+    {
+        private readonly Mock<IPurchaseInvoiceMasterService> _mockRepo;
+        private readonly PurchaseInvoiceController _controller;
+
+        public PurchaseInvoiceControllerTests()
+        {
+            _mockRepo = new Mock<IPurchaseInvoiceMasterService>();
+            _controller = new PurchaseInvoiceController(_mockRepo.Object);
+        }
+
+        [Fact]
+        public async Task Get_ReturnsOk_WhenPurchaseExist()
+        {
+            var list = new List<PurchaseInvoiceMaster> { new() { ID = 1, EntityName = "Supplier A", NetAmount = 200m } };
+            _mockRepo.Setup(r => r.Get()).ReturnsAsync(list);
+
+            var result = await _controller.Get();
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var resp = Assert.IsType<Models.Response>(ok.Value);
+            var data = Assert.IsType<List<PurchaseInvoiceMaster>>(resp.Data);
+
+            Assert.Equal(200, ok.StatusCode);
+            Assert.Equal(200, resp.StatusCode);
+            Assert.Equal("Success", resp.Message);
+            Assert.Single(data);
+            Assert.Equal("Supplier A", data[0].EntityName);
+
+            _mockRepo.Verify(r => r.Get(), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetById_ReturnsOk_WhenExists()
+        {
+            var id = 7;
+            var item = new PurchaseInvoiceMaster { ID = id, EntityName = "Supplier X" };
+            _mockRepo.Setup(r => r.Get(id)).ReturnsAsync(item);
+
+            var result = await _controller.Get(id);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var resp = Assert.IsType<Models.Response>(ok.Value);
+            var data = Assert.IsType<PurchaseInvoiceMaster>(resp.Data);
+
+            Assert.Equal(200, resp.StatusCode);
+            Assert.Equal("Supplier X", data.EntityName);
+            _mockRepo.Verify(r => r.Get(id), Times.Once);
+        }
+
+        [Fact]
+        public async Task Post_ReturnsOk_OnSuccess()
+        {
+            var model = new PurchaseInvoiceMaster { ID = 0, EntityName = "NewSupplier" };
+            _mockRepo.Setup(r => r.AddEdit(It.IsAny<PurchaseInvoiceMaster>())).ReturnsAsync(1);
+
+            var result = await _controller.Post(model);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var resp = Assert.IsType<Models.Response>(ok.Value);
+
+            Assert.Equal(200, ok.StatusCode);
+            Assert.Equal(200, resp.StatusCode);
+            Assert.Equal("Success", resp.Message);
+            _mockRepo.Verify(r => r.AddEdit(It.IsAny<PurchaseInvoiceMaster>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task Navigate_ReturnsOk_WithNavigateObject()
+        {
+            var nav = new Navigate { PageNo = 2, RowPerPage = 5, PageCount = 4, Entity = null };
+            _mockRepo.Setup(r => r.Navigate(2, 5)).ReturnsAsync(nav);
+
+            var result = await _controller.Navigate(2, 5);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var resp = Assert.IsType<Models.Response>(ok.Value);
+            var data = Assert.IsType<Navigate>(resp.Data);
+
+            Assert.Equal(200, resp.StatusCode);
+            Assert.Equal(2, data.PageNo);
+            _mockRepo.Verify(r => r.Navigate(2, 5), Times.Once);
+        }
+
+        [Fact]
+        public async Task Delete_ReturnsOk_WhenDeleted()
+        {
+            _mockRepo.Setup(r => r.Delete(4)).ReturnsAsync(1);
+
+            var result = await _controller.Delete(4);
+
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var resp = Assert.IsType<Models.Response>(ok.Value);
+
+            Assert.Equal(200, resp.StatusCode);
+            Assert.Equal("Success", resp.Message);
+            _mockRepo.Verify(r => r.Delete(4), Times.Once);
+        }
+    }
+}
