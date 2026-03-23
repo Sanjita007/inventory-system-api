@@ -1,4 +1,5 @@
-﻿using inventory_system_api.Application.IRepository;
+﻿using inventory_system_api.Application.IQueue;
+using inventory_system_api.Application.IRepository;
 using inventory_system_api.Application.Models.System;
 using inventory_system_api.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +11,15 @@ namespace inventory_system_api.unitTests
     public class TaxControllerTests
     {
         private readonly Mock<ITaxRepository> _mockRepo;
+        private readonly Mock<IMessageService> _mockMsgService;
+
         private readonly TaxController _controller;
 
         public TaxControllerTests()
         {
             _mockRepo = new Mock<ITaxRepository>();
-            _controller = new TaxController(_mockRepo.Object);
+            _mockMsgService = new Mock<IMessageService>();
+            _controller = new TaxController(_mockRepo.Object, _mockMsgService.Object);
         }
 
         [Fact]

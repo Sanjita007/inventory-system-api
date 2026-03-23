@@ -1,5 +1,8 @@
-﻿using inventory_system_api.Application.IService;
+﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.IService;
+using inventory_system_api.Application.Models.System;
 using inventory_system_api.Models.Inventory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -12,11 +15,14 @@ public class WorkerService : BackgroundService
     private IConnection? _connection;
     private IChannel? _channel;
     private IConnectionFactory _factory;
-    private IProductService _productService;
-    public WorkerService(IConnectionFactory factory, IProductService _service)
+    private ITaxRepository _service;
+    private readonly IServiceScopeFactory _scopeFactory; // Inject this
+
+    public WorkerService(IConnectionFactory factory, ITaxRepository service, IServiceScopeFactory scopeFactory)
     {
         _factory = factory;
-        _productService = _service;
+        _service = service;
+        _scopeFactory=scopeFactory;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -60,13 +66,27 @@ public class WorkerService : BackgroundService
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
-                    Console.WriteLine($" [x] WORKER RECEIVED: {message}");
+                    Tax tax = JsonSerializer.Deserialize<Tax>(message);
 
-                    await _productService.AddEdit(JsonSerializer.Deserialize<Product>(message));
+                    using (IServiceScope scope = _scopeFactory.CreateScope())
+                    {
+                        // 1. Resolve the repository from the NEW scope
+                        var scopedService = scope.ServiceProvider.GetRequiredService<ITaxRepository>();
+                        try
+                        {
+                            // 2. USE THE SCOPED SERVICE (not _service)
+                            await scopedService.AddEdit(tax);
+                            Console.WriteLine($" [x] WORKER PROCESSED: {tax?.Name}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error processing message: {ex.Message}");
+                        }
+                    }
                 };
 
-                await _channel.BasicConsumeAsync(queue: "hello", autoAck: true, consumer: consumer, cancellationToken: stoppingToken);
-                Console.WriteLine(" [*] RabbitMQ Consumer is now listening on 'hello' queue.");
+                await _channel.BasicConsumeAsync(queue: "inventory", autoAck: true, consumer: consumer, cancellationToken: stoppingToken);
+                Console.WriteLine(" [*] RabbitMQ Consumer is now listening on 'inventory' queue.");
 
                 return;
             }

@@ -35,18 +35,18 @@ namespace inventory_system_api.Infrastructure.QueueService
             }
         }
 
-        public async Task<bool> Enqueue(object messageString)
+        public async Task<bool> Enqueue(string messageString)
         {
             try
             {
                 await EnsureConnected();
 
-                var body = Encoding.UTF8.GetBytes("server processed " + messageString);
+                var body = Encoding.UTF8.GetBytes(messageString);
 
                 // In v7+, you don't need to specify <BasicProperties> if you aren't using them
                 await _channel.BasicPublishAsync(
                     exchange: "",
-                    routingKey: "hello",
+                    routingKey: "inventory",
                     mandatory: true,
                     body: body);
 

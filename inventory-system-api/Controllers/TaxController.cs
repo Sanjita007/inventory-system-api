@@ -1,18 +1,22 @@
-﻿using inventory_system_api.Application.IRepository;
+﻿using inventory_system_api.Application.IQueue;
+using inventory_system_api.Application.IRepository;
 using inventory_system_api.Application.Models.System;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace inventory_system_api.Controllers
 {
     public class TaxController: BaseController
     {
         ITaxRepository _repo;
-            
-        public TaxController(ITaxRepository repo)
+        IMessageService _queue;
+
+        public TaxController(ITaxRepository repo, IMessageService queue)
         {
             _repo = repo;
+            _queue = queue;
         }
-
+      
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -30,10 +34,11 @@ namespace inventory_system_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(Tax entity)
         {
-            if (entity.ID > 0) ErrorResponse("Cannot update data with id, please add new record");
+            //if (entity.ID > 0) ErrorResponse("Cannot update data with id, please add new record");
 
-            var res = await _repo.AddEdit(entity);
-            return OkResponse(res);
+            //var res = await _repo.AddEdit(entity);
+            _queue.Enqueue(JsonSerializer.Serialize(entity));
+            return OkResponse();
         }
 
         [HttpPut]

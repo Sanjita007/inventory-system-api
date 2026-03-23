@@ -7,6 +7,13 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    environment:
+     # Raise the alarm threshold to 70% of available RAM
+     - RABBITMQ_VM_MEMORY_HIGH_WATERMARK=0.7
+    deploy:
+     resources:
+       limits:
+         memory: 1G # Give it at least 1GB of RAM
 
   inventory-api:
     build:

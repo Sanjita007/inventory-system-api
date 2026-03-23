@@ -15,6 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<int> AddEdit(Tax entity)
         {
+
             int res = 0;
             using (_dbConnection as SqlConnection)
             {

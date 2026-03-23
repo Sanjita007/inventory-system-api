@@ -4,7 +4,7 @@ WORKDIR /src
 # 1. Copy the project files from their subfolders
 # Format: COPY ["SourcePathFromRoot", "DestinationPathInDocker/"]
 COPY ["inventory-system-api/inventory-system-api.csproj", "inventory-system-api/"]
-COPY ["worker/worker.csproj", "worker/"]
+COPY ["worker/inventory-system-api.worker.csproj", "worker/"]
 
 # 2. Run restore on the API specifically
 RUN dotnet restore "inventory-system-api/inventory-system-api.csproj"

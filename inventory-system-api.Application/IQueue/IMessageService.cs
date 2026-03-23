@@ -8,7 +8,7 @@ namespace inventory_system_api.Application.IQueue
 {
     public interface IMessageService
     {
-        Task<bool> Enqueue(object message);
+        Task<bool> Enqueue(string message);
     }
 
 }

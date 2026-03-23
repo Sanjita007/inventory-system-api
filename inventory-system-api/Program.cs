@@ -70,7 +70,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddRepositories();
 
 #region Rabbit MQ
-builder.Services.AddSingleton<IConnectionFactory>(sp =>
+builder.Services.AddTransient<IConnectionFactory>(sp =>
 {
     var config = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQOptions>();
     return new ConnectionFactory()
@@ -235,7 +235,7 @@ app.Use((context, next) =>
 // Remove the built-in exception handler middleware call if you prefer the custom middleware
 // app.UseExceptionHandler();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

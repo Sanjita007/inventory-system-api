@@ -12,7 +12,7 @@ namespace inventory_system_api.Infrastructure.QueueService
             _logger = logger;
         }
 
-        public Task<bool> Enqueue(object message)
+        public Task<bool> Enqueue(string message)
         {
             _logger.LogDebug("Messaging disabled - NoOpMessageService skipped publish. Message: {Message}", message);
             return Task.FromResult(true);
