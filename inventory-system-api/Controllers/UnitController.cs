@@ -17,17 +17,10 @@ namespace accswift_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Get(Unit entity)
-        {
-            int res = await _repo.AddEdit(entity);
-            return OkResponse();
-        }
-
-        [HttpPost]
         public async Task<IActionResult> Post(Unit entity)
         {
             int res = await _repo.AddEdit(entity);
-            return OkResponse();
+            return OkResponse(new { ID = res });
         }
 
         [HttpPut]

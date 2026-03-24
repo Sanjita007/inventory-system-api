@@ -1,6 +1,7 @@
 ﻿using inventory_system_api.Application.IRepository;
 using inventory_system_api.Application.Models.System;
 using inventory_system_api.Controllers;
+using inventory_system_api.Models.Inventory;
 using Microsoft.AspNetCore.Mvc;
 
 namespace accswift_api.Controllers
@@ -15,11 +16,18 @@ namespace accswift_api.Controllers
             _repo = repo;
         }
 
+        [HttpPut]
+        public async Task<IActionResult> Put(CompoundUnit entity)
+        {
+            var res = await _repo.AddEdit(entity);
+            return OkResponse();
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Get(CompoundUnit entity)
+        public async Task<IActionResult> Post(CompoundUnit entity)
         {
             int res = await _repo.AddEdit(entity);
-            return OkResponse();
+            return OkResponse(new { ID = res });
         }
 
         [HttpGet]
@@ -28,6 +36,7 @@ namespace accswift_api.Controllers
             var list = await _repo.Get();
             return OkResponse(list);
         }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
