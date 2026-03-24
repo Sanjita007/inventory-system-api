@@ -33,7 +33,7 @@ namespace inventory_system_api.Controllers
             if (entity.ID > 0) ErrorResponse("Cannot update data with id, please add new record");
 
             var res = await _repo.AddEdit(entity);
-            return OkResponse(res);
+            return OkResponse(new { ID = res });
         }
 
         [HttpPut]

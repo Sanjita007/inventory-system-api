@@ -17,7 +17,7 @@ namespace inventory_system_api.Controllers
         public async Task<IActionResult> Post(Product entity)
         {
             int res = await _repo.AddEdit(entity);
-            return OkResponse();
+            return OkResponse(new { ID = res });
         }
 
         [HttpPut]

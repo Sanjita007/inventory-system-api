@@ -22,7 +22,7 @@ namespace accswift_api.Controllers
                 return ErrorResponse("Cannot have value of ID for post request");
             }
             int res = await _repo.AddEdit(entity);
-            return OkResponse();
+            return OkResponse(new { ID = res });
         }
 
         [HttpPut]
