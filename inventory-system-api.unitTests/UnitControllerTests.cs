@@ -40,7 +40,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, okResult.StatusCode);
             Assert.Equal(200, respo.StatusCode);
             Assert.Equal("Success", respo.Message);
-            Assert.Equal("VAT", returnedTax.Name);
+            Assert.Equal("Ton", returnedTax.Name);
         }
 
         [Fact]
