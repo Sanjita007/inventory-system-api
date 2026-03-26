@@ -1,12 +1,6 @@
 using System.Text.Json;
 using System.Text;
-using System.IO;
-using System.Linq;
-using inventory_system_api.Models;
 using inventory_system_api.Application.IRepository;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using inventory_system_api.Application.Models;
 
 namespace inventory_system_api.Middleware
@@ -41,10 +35,10 @@ namespace inventory_system_api.Middleware
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var status = StatusCodes.Status500InternalServerError;
-            var response = new inventory_system_api.Application.Models.ErrorResponse
+            var response = new ErrorResponse
             {
                 StatusCode = status,
-                Message = "An unexpected error occurred.",
+                Message = "An unexpected error occurred."+ exception.Message +" "+ exception.StackTrace,
                 TraceId = context.TraceIdentifier
             };
             // Try to read the request body safely (buffering must be enabled by upstream middleware)
