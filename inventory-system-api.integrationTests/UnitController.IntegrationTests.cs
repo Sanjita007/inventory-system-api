@@ -1,6 +1,4 @@
-using inventory_system_api.Application.Models.Inventory;
 using inventory_system_api.integrationTests.TestHost;
-using System.Data.Common;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -70,20 +68,29 @@ public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplication
         // Arrange
         var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
+        
+        string guid = Guid.NewGuid().ToString().Substring(0, 5);
 
-        var newUnit = new { Name = "Kilogram", Code = "KG" };
+        var newUnit = new { Name = "Kilogram" + guid, Code = "KG" + guid };
         var content = new StringContent(JsonSerializer.Serialize(newUnit), Encoding.UTF8, "application/json");
 
         // Act
         var response = await client.PostAsync("/api/v1/Unit", content);
 
+        var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+        int newId = payload.GetProperty("data").GetProperty("id").GetInt32();
+
         // Assert
         Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
 
-        // Verify it actually exists in the DB
-        //var savedUnit = await _connection.QueryFirstOrDefaultAsync<Unit>(
-        //    "SELECT * FROM Units WHERE Code = 'KG'");
-        //Assert.IsNotNull(savedUnit);
+        // Verify the unit was saved by fetching it back (assuming ID is returned in response)
+        var getResponse = await client.GetAsync($"/api/v1/Unit/{newId}");
+
+        var payloadReturn = await response.Content.ReadFromJsonAsync<Models.Response>();
+
+        Assert.AreEqual(HttpStatusCode.OK, getResponse.StatusCode);
+        Assert.IsNotNull(payloadReturn?.Data);
     }
 }
   

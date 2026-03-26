@@ -147,7 +147,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, okResult.StatusCode); // this is the HTTP response
             Assert.Equal(200, returned.StatusCode); // this is our custom response code
             Assert.Equal("Success", returned.Message);
-            Assert.Null(returned.Data);
+            Assert.NotNull(returned.Data);
             _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<Product>()), Times.Once);
         }
 
