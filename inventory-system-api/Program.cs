@@ -34,7 +34,7 @@ builder.Services.AddControllers()
             var errorResponse = new inventory_system_api.Application.Models.ErrorResponse
             {
                 StatusCode = StatusCodes.Status400BadRequest,
-                Message = "Validation failed.",
+                Message = "Validation failed.", 
                 Errors = errors,
                 TraceId = context.HttpContext.TraceIdentifier
             };
@@ -142,7 +142,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-builder.Services.AddSingleton<IDbConnection>(sp =>
+builder.Services.AddTransient<IDbConnection>(sp =>
 {
     var connectionString = sp.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnectionString");
     return new SqlConnection(connectionString);
