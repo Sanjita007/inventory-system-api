@@ -17,36 +17,27 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<int> AddEdit(Unit entity)
         {
-            //int res = 0;
+            int res = 0;
 
-            //using SqlConnection conn = new SqlConnection(_connectionString);
-            //using SqlCommand cmd = conn.CreateCommand();
-            //cmd.CommandText = "[Inv].[spProductAddEdit]";
-            //cmd.CommandType = CommandType.StoredProcedure;
+            using (_dbConnection as SqlConnection)
+            {
+                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                cmd.CommandText = "[SYSTEM].[SP_UNIT_ADD_EDIT]";
+                cmd.CommandType = CommandType.StoredProcedure;
 
-            //cmd.Parameters.AddWithValue("@id", entity.ID);
-            //cmd.Parameters.AddWithValue("@EngName", entity.EngName);
-            //cmd.Parameters.AddWithValue("@NepName", entity.NepName);
-            //cmd.Parameters.AddWithValue("@GroupID", entity.GroupID);
-            //cmd.Parameters.AddWithValue("@Code", entity.Code);
-            //cmd.Parameters.AddWithValue("@Color", entity.BackColor);
-            //cmd.Parameters.AddWithValue("@DepotID", entity.DepotID);
-            //cmd.Parameters.AddWithValue("@UnitID", entity.UnitID);
-            //cmd.Parameters.AddWithValue("@IsVatApplicable", entity.IsVatApplicable);
-            //cmd.Parameters.AddWithValue("@IsActive", entity.IsActive);
-            //cmd.Parameters.AddWithValue("@CompanyID", entity.CompanyID);
-            //cmd.Parameters.AddWithValue("@Size", entity.Size);
-            //cmd.Parameters.AddWithValue("@OpenPurchaseQty", entity.PurchaseQuantity);
-            //cmd.Parameters.AddWithValue("@PurchaseRate", entity.PurchaseRate);
-            //cmd.Parameters.AddWithValue("@TaxID", entity.TaxID);
-            //cmd.Parameters.AddWithValue("@UserID", "root");
+                cmd.Parameters.AddWithValue("@id", entity.ID);
+                cmd.Parameters.AddWithValue("@Name", entity.Name);
+                cmd.Parameters.AddWithValue("@Symbol", entity.Symbol);
+                cmd.Parameters.AddWithValue("@Remarks", entity.Remarks);
+                
+                cmd.Parameters.AddWithValue("@UserID", "root");
 
-            //await conn.OpenAsync();
-            //res = await cmd.ExecuteNonQueryAsync();
+                _dbConnection.Open();
+                res = await cmd.ExecuteNonQueryAsync();
 
-            //return res;
+            }
+            return res;
 
-            return -1;
         }
 
         public async Task<decimal?> ConvertUnit(int defaultUnitID, int currentUnitID, decimal valueToConvert)

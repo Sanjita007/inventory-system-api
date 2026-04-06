@@ -5,8 +5,6 @@ VisualStudioVersion = 18.3.11520.95
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "inventory-system-api", "inventory-system-api.csproj", "{FA49B941-8783-7D52-D732-D15652FF7954}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "inventory-system-api.unitTests", "..\inventory-system-api.unitTests\inventory-system-api.unitTests.csproj", "{8E4FCA7F-DB9E-4D93-9FF6-1842ADC300F8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "inventory-system-api.Infrastructure", "..\inventory-system-api.Infrastructure\inventory-system-api.Infrastructure.csproj", "{9E351F58-712B-4A29-A85E-233535E5450C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "inventory-system-api.Shared", "..\inventory-system-api.Shared\inventory-system-api.Shared.csproj", "{2AF2EA89-9CD7-4ED9-AE16-F36725C0B30F}"
@@ -25,10 +23,6 @@ Global
 		{FA49B941-8783-7D52-D732-D15652FF7954}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA49B941-8783-7D52-D732-D15652FF7954}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA49B941-8783-7D52-D732-D15652FF7954}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E4FCA7F-DB9E-4D93-9FF6-1842ADC300F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E4FCA7F-DB9E-4D93-9FF6-1842ADC300F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E4FCA7F-DB9E-4D93-9FF6-1842ADC300F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E4FCA7F-DB9E-4D93-9FF6-1842ADC300F8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9E351F58-712B-4A29-A85E-233535E5450C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9E351F58-712B-4A29-A85E-233535E5450C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E351F58-712B-4A29-A85E-233535E5450C}.Release|Any CPU.ActiveCfg = Release|Any CPU

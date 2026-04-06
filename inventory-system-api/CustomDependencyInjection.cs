@@ -25,6 +25,7 @@ namespace inventory_system_api
             services.AddTransient<IDashboardSummaryRepository, DashboardSummaryRepository>();
             services.AddScoped<IDepotRepository, DepotRepository>();
             services.AddScoped<ITaxRepository, TaxRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddSingleton<IErrorLogRepository, ErrorLogRepositoy>();
             return services;
         }
