@@ -8,7 +8,7 @@ namespace inventory_system_api.Shared
 {
     public static class Utility
     {
-        public static string ToJson(this object obj) 
+        public static string ToJson(this object obj)
         {
 
             //// Convert object → JSON
@@ -36,7 +36,7 @@ namespace inventory_system_api.Shared
             if (imageStr == null) return "";
 
             string imgStr = Convert.ToBase64String(imageStr);
-           return string.Join(',', "data:image/jpeg;base64", imgStr);
+            return string.Join(',', "data:image/jpeg;base64", imgStr);
 
         }
 
@@ -50,7 +50,7 @@ namespace inventory_system_api.Shared
 
         public enum Status
         {
-            DRAFT=1,
+            DRAFT = 1,
             UNPAID,
             PAID
         }
@@ -75,67 +75,18 @@ namespace inventory_system_api.Shared
             return $"{declaration}{Environment.NewLine}{doc}";
         }
 
-        public class EncryptionHelper
+   
+
+        public static string HashPassword(string password)
         {
-            private static readonly string Key = "mN4kQ8rTzV2xY6pLwS9bE1dUoF3bH7xX"; // 32 chars for AES-256
-            private static readonly string IV = "s1b2c3d9e5f6g7h8"; // 16 chars for AES block size
+            // "WorkFactor" 12 is a good balance between speed and security
+            return BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
+        }
 
-            public static string Encrypt(string plainText)
-            {
-                byte[] keyBytes = Encoding.UTF8.GetBytes(Key);
-                byte[] ivBytes = Encoding.UTF8.GetBytes(IV);
-                byte[] plainBytes = Encoding.UTF8.GetBytes(plainText);
-
-                using (Aes aesAlg = Aes.Create())
-                {
-                    aesAlg.Key = keyBytes;
-                    aesAlg.IV = ivBytes;
-                    aesAlg.Mode = CipherMode.CBC;
-                    aesAlg.Padding = PaddingMode.PKCS7;
-
-                    using (var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV))
-                    {
-                        using (var msEncrypt = new MemoryStream())
-                        {
-                            using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                            {
-                                csEncrypt.Write(plainBytes, 0, plainBytes.Length);
-                                csEncrypt.FlushFinalBlock();
-                                return Convert.ToBase64String(msEncrypt.ToArray());
-                            }
-                        }
-                    }
-                }
-            }
-
-            public static string Decrypt(string cipherText)
-            {
-                byte[] keyBytes = Encoding.UTF8.GetBytes(Key);
-                byte[] ivBytes = Encoding.UTF8.GetBytes(IV);
-                byte[] cipherBytes = Convert.FromBase64String(cipherText);
-
-                using (Aes aesAlg = Aes.Create())
-                {
-                    aesAlg.Key = keyBytes;
-                    aesAlg.IV = ivBytes;
-                    aesAlg.Mode = CipherMode.CBC;
-                    aesAlg.Padding = PaddingMode.PKCS7;
-
-                    using (var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV))
-                    {
-                        using (var msDecrypt = new MemoryStream(cipherBytes))
-                        {
-                            using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                            {
-                                using (var srDecrypt = new StreamReader(csDecrypt))
-                                {
-                                    return srDecrypt.ReadToEnd();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        // 2. Verify the password (for Login)
+        public static bool VerifyPassword(string password, string hashedPassword)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
     }
 }

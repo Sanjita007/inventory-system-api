@@ -1,0 +1,217 @@
+﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.Models.System;
+using inventory_system_api.Shared;
+using Microsoft.Data.SqlClient;
+using System.Data;
+
+namespace inventory_system_api.Infrastructure.Repository
+{
+    public class UserRepository : IUserRepository
+    {
+        IDbConnection _dbConnection;
+        public UserRepository(IDbConnection dbConnection)
+        {
+            _dbConnection = dbConnection;
+        }
+
+        public async Task<int> AddEdit(User entity)
+        {
+            int res = 0;
+
+            using (_dbConnection as SqlConnection)
+            {
+                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                cmd.CommandText = "[SYSTEM].[SP_USER_ADD_EDIT]";
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@id", entity.ID);
+                cmd.Parameters.AddWithValue("@UserName", entity.UserName);
+                //cmd.Parameters.AddWithValue("@Password", Utility.HashPassword(entity.Password));
+                cmd.Parameters.AddWithValue("@Name", entity.Name);
+                cmd.Parameters.AddWithValue("@Address", entity.Address);
+                cmd.Parameters.AddWithValue("@Contact", entity.PhoneNo);
+                cmd.Parameters.AddWithValue("@Email", entity.Email);
+
+                cmd.Parameters.AddWithValue("@UserID", "root");
+
+                _dbConnection.Open();
+                res = await cmd.ExecuteNonQueryAsync();
+
+            }
+            return res;
+        }
+
+        public async Task<int> Delete(int id)
+        {
+            using (_dbConnection as SqlConnection)
+            {
+                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+
+                cmd.CommandText = "[Inv].[spUserDelete]";
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+
+                _dbConnection.Open();
+                return await cmd.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task<List<User>> Get()
+        {
+            List<User> listEntity = new List<User>();
+
+            using (_dbConnection as SqlConnection)
+            {
+                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+
+                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email,Department, Role from System.tblUser where CompanyID = 1";
+                cmd.CommandType = CommandType.Text;
+
+                _dbConnection.Open();
+
+                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                while (rdr.Read())
+                {
+                    listEntity.Add(new User
+                    {
+                        ID = Convert.ToInt32(rdr["UserID"]),
+                        Name = rdr["Name"].ToString(),
+                        UserName = rdr["UserName"].ToString(),
+                        Address = rdr["Address"].ToString(),
+                        PhoneNo = rdr["Contact"].ToString(),
+                        Email = rdr["Email"].ToString(),
+                        Role = rdr["Role"].ToString(),
+
+                    });
+                }
+            }
+            return listEntity;
+        }
+
+        public async Task<User> Get(int id)
+        {
+            User entity = null;
+
+            using (_dbConnection as SqlConnection)
+            {
+                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+
+                cmd.CommandText = "select UserID, UserType, UserName, Name, Address, Contact, Email, Department, Role from System.tblUser where CompanyID = 1 and UserID = @id";
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@id", id);
+
+                _dbConnection.Open();
+
+                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                while (rdr.Read())
+                {
+                    entity = new User
+                    {
+                        ID = Convert.ToInt32(rdr["UserID"]),
+                        Name = rdr["Name"].ToString(),
+                        UserName = rdr["UserName"].ToString(),
+                        Address = rdr["Address"].ToString(),
+                        PhoneNo = rdr["Contact"].ToString(),
+                        Email = rdr["Email"].ToString(),
+                        Role = rdr["Role"].ToString(),
+                    };
+                }
+            }
+            return entity;
+        }
+
+
+        public async Task<User> VerifyAndGetUserDetails(string userName, string password)
+        {
+            string pass = "";
+            User user = null;
+
+            using (_dbConnection as SqlConnection)
+            {
+                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+
+                cmd.CommandText = "select * from System.tblUser where CompanyID = 1 and UserName = @userName";
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@userName", userName);
+
+                _dbConnection.Open();
+
+                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                while (rdr.Read())
+                {
+                    user = new User
+                    {
+                        ID = Convert.ToInt32(rdr["UserID"]),
+                        Name = rdr["Name"].ToString(),
+                        UserName = rdr["UserName"].ToString(),
+                        Address = rdr["Address"].ToString(),
+                        PhoneNo = rdr["Contact"].ToString(),
+                        Email = rdr["Email"].ToString(),
+                        Role = rdr["Role"].ToString(),
+                    };
+
+                    pass = rdr["Password"].ToString();
+                }
+            }
+
+            if (BCrypt.Net.BCrypt.Verify(password, pass))
+            {
+                return user;
+
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> ValidatePassword(int userID, string password)
+        {
+            string pass = "";
+
+            using (_dbConnection as SqlConnection)
+            {
+                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+
+                cmd.CommandText = "select Password from System.tblUser where CompanyID = 1 and UserID = @id";
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@id", userID);
+
+                _dbConnection.Open();
+
+                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                while (rdr.Read())
+                {
+
+                    pass = rdr["Password"].ToString();
+                }
+            }
+
+            return BCrypt.Net.BCrypt.Verify(password, pass);
+
+        }
+
+        public async Task<int> UpdatePassword(UpdatePasswordModel entity)
+        {
+            int res = 0;
+
+            using (_dbConnection as SqlConnection)
+            {
+                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                cmd.CommandText = "[SYSTEM].[SP_PASSWORD_UPDATE]";
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@id", entity.ID);
+                //cmd.Parameters.AddWithValue("@OldPassword", Utility.HashPassword(entity.OldPassword));
+                cmd.Parameters.AddWithValue("@NewPassword", Utility.HashPassword(entity.NewPassword));
+
+                //cmd.Parameters.AddWithValue("@UserID", "root");
+
+                _dbConnection.Open();
+                res = await cmd.ExecuteNonQueryAsync();
+
+            }
+            return res;
+        }
+    }
+}
