@@ -21,7 +21,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[SYSTEM].[SP_UNIT_ADD_EDIT]";
                 cmd.CommandType = CommandType.StoredProcedure;
 
@@ -44,7 +44,7 @@ namespace inventory_system_api.Infrastructure.Repository
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "SELECT [System].[fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
                 cmd.CommandType = CommandType.Text;
@@ -63,7 +63,7 @@ namespace inventory_system_api.Infrastructure.Repository
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "[Inv].[spUnitDelete]";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -80,7 +80,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "SELECT * FROM System.tblUnitMaintenance WHERE CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
@@ -93,9 +93,9 @@ namespace inventory_system_api.Infrastructure.Repository
                     listEntity.Add(new Unit
                     {
                         ID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                        Name = rdr["UnitName"].ToString(),
-                        Symbol = rdr["Symbol"].ToString(),
-                        Remarks = rdr["Remarks"].ToString(),
+                        Name = rdr["UnitName"].ToString() ?? "",
+                        Symbol = rdr["Symbol"].ToString() ?? "",
+                        Remarks = rdr["Remarks"].ToString() ?? "",
                     });
                 }
             }
@@ -104,11 +104,11 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<Unit> Get(int id)
         {
-            Unit entity= null;
+            Unit entity= new();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "SELECT * FROM System.tblUnitMaintenance WHERE UnitMaintenanceID = @id and CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
@@ -122,9 +122,9 @@ namespace inventory_system_api.Infrastructure.Repository
                     entity = new Unit
                     {
                         ID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                        Name = rdr["UnitName"].ToString(),
-                        Symbol = rdr["Symbol"].ToString(),
-                        Remarks = rdr["Remarks"].ToString(),
+                        Name = rdr["UnitName"].ToString()??"",
+                        Symbol = rdr["Symbol"].ToString() ?? "",
+                        Remarks = rdr["Remarks"].ToString() ?? "",
                     };
                 }
             }
@@ -137,7 +137,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "System.spGetUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -151,7 +151,7 @@ namespace inventory_system_api.Infrastructure.Repository
                     entity.Add(new UnitDetails
                     {
                         ID = Convert.ToInt32(rdr["UnitID"]),
-                        Name = rdr["UnitName"].ToString(),
+                        Name = rdr["UnitName"].ToString()??"",
                         DefaultUnitID =  rdr["DefaultUnitID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["DefaultUnitID"]),
                         ConversionRate = rdr["ConversionRate"] == DBNull.Value
                             ? 0
@@ -168,7 +168,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "System.spGetMultipleUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -183,7 +183,7 @@ namespace inventory_system_api.Infrastructure.Repository
                     {
                         ID = Convert.ToInt32(rdr["UnitID"]),
                         DefaultUnitID = Convert.ToInt32(rdr["DefaultUnitID"]),
-                        Name = rdr["UnitName"].ToString(),
+                        Name = rdr["UnitName"].ToString() ?? "",
                         ConversionRate = rdr["ConversionRate"] == DBNull.Value
                             ? 0
                             : Convert.ToDecimal(rdr["ConversionRate"])

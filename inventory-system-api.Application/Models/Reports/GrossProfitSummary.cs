@@ -3,8 +3,8 @@
     public class GrossProfit
     {
         public int ProductId { get; set; }
-        public string ProductCode { get; set; }
-        public string ProductName { get; set; }
+        public string ProductCode { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
         public decimal QuantitySold { get; set; }
         public decimal TotalRevenue { get; set; }
         public decimal TotalCost { get; set; }
@@ -15,7 +15,7 @@
 
     public class GrossProfitSummary
     {
-        public List<GrossProfit> GrossProfitList { get; set; }
+        public List<GrossProfit> GrossProfitList { get; set; } = [];
 
         public decimal TotalRevenue { get; set; }
         public decimal TotalCost { get; set; }

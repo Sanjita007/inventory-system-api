@@ -5,9 +5,9 @@
         public int ID { get; set; }
         public int UnitID { get; set; }
         public int ParentUnitID { get; set; }
-        public string UnitName { get; set; }
-        public string ParentUnitName { get; set; }
-        public string Remarks { get; set; }
+        public string UnitName { get; set; } = string.Empty;
+        public string ParentUnitName { get; set; } = string.Empty;
+        public string Remarks { get; set; } = string.Empty;
         public decimal RelationValue { get; set; }
     }
 }

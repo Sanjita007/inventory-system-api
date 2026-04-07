@@ -46,18 +46,17 @@ namespace inventory_system_api.Infrastructure.Service
                 .GroupBy(d => d.DefaultUnitID)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            List<InvoiceDetail> productDetails = entity.Details
+            List<InvoiceDetail> productDetails = [.. entity.Details
                 .Select(product =>
                 {
 
                     // Find units by UnitID. If the key doesn't exist, GetValueOrDefault provides null.
-                    unitDetailsLookup.TryGetValue(product.DefaultUnitID, out List<UnitDetails> relatedUnits);
+                    unitDetailsLookup.TryGetValue(product.DefaultUnitID, out var relatedUnits);
 
                     // Create the final object, assigning the found units or an empty list.
                     product.UnitDetails = relatedUnits;
                     return product;
-                })
-                .ToList();
+                })];
 
 
             entity.Details = productDetails;

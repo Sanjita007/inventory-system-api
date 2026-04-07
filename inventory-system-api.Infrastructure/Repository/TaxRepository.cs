@@ -21,7 +21,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
                 result.Direction = ParameterDirection.Output;
 
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[System].[spTaxAddEdit]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@Name", entity.Name);
@@ -44,7 +44,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[Inv].[spUnitDelete]";
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -60,7 +60,7 @@ namespace inventory_system_api.Infrastructure.Repository
             List<Tax> listEntity = [];
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "select * from System.tblTax where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
@@ -70,9 +70,9 @@ namespace inventory_system_api.Infrastructure.Repository
                 {
                     Tax entity = new Tax();
                     entity.ID = Convert.ToInt32(rdr["TaxID"]);
-                    entity.Name = rdr["TaxName"].ToString();
-                    entity.Remarks = rdr["Remarks"].ToString();
-                    entity.Code = rdr["TaxCode"].ToString();
+                    entity.Name = rdr["TaxName"].ToString() ?? "";
+                    entity.Remarks = rdr["Remarks"].ToString() ?? "";
+                    entity.Code = rdr["TaxCode"].ToString() ?? "";
                     entity.Rate = Convert.ToDecimal(rdr["Rate1"]);
 
                     listEntity.Add(entity);
@@ -88,7 +88,7 @@ namespace inventory_system_api.Infrastructure.Repository
             Tax entity = new Tax();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "select * from System.tblTax where CompanyID = 1 and TaxID = @Id";
                 cmd.Parameters.AddWithValue("@id", id);
 
@@ -99,9 +99,9 @@ namespace inventory_system_api.Infrastructure.Repository
                 while (rdr.Read())
                 {
                     entity.ID = Convert.ToInt32(rdr["TaxID"]);
-                    entity.Name = rdr["TaxName"].ToString();
-                    entity.Remarks = rdr["Remarks"].ToString();
-                    entity.Code = rdr["TaxCode"].ToString();
+                    entity.Name = rdr["TaxName"].ToString()??"";
+                    entity.Remarks = rdr["Remarks"].ToString() ?? "";
+                    entity.Code = rdr["TaxCode"].ToString() ?? "";
                     entity.Rate = rdr["Rate1"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Rate1"]);
 
                 }

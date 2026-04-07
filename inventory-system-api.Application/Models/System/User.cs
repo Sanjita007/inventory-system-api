@@ -9,19 +9,19 @@ namespace inventory_system_api.Application.Models.System
     public class User
     {
         public int ID { get; set; }
-        public string UserName { get; set; }
-        public string Name { get; set; }
-        public string Address { get; set; }
-        public string PhoneNo { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string Role { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public string PhoneNo { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
     }
 
     public class UpdatePasswordModel
     {
         public int ID { get; set; }
-        public string OldPassword { get; set; }
-        public string NewPassword { get; set; }
+        public string OldPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
     }
 }

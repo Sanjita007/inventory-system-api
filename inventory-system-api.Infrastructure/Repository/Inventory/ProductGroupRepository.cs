@@ -22,7 +22,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
                 result.Direction = ParameterDirection.Output;
 
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[Inv].[SP_PRODUCT_GROUP_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@EngName", entity.EngName);
@@ -46,7 +46,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[Inv].[spProductGroupDelete]";
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -62,7 +62,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             List<ProductGroup> listEntity = [];
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = $"select g.GroupID, g.Parent_GrpID ParentGroupID, g.EngName EngName, g.NepName, pg.EngName ParentGroupName, g.Level,g.Remarks " +
                     $"from INv.tblProductGroup g left join Inv.tblProductGroup pg on pg.GroupID = g.Parent_GrpID  where g.CompanyID =1";
                 cmd.CommandType = CommandType.Text;
@@ -71,14 +71,16 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 while (rdr.Read())
                 {
-                    ProductGroup entity = new ProductGroup();
-                    entity.ID = Convert.ToInt32(rdr["GroupID"]);
-                    entity.ParentGroupID = rdr["ParentGroupID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["ParentGroupID"]);
-                    entity.EngName = rdr["EngName"].ToString();
-                    entity.NepName = rdr["NepName"].ToString();
-                    entity.Level =  rdr["Level"] == DBNull.Value ? 0: Convert.ToInt32(rdr["Level"]);
-                    entity.ParentGroupName = rdr["ParentGroupName"].ToString();
-                    entity.Remarks = rdr["Remarks"].ToString();
+                    ProductGroup entity = new()
+                    {
+                        ID = Convert.ToInt32(rdr["GroupID"]),
+                        ParentGroupID = rdr["ParentGroupID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["ParentGroupID"]),
+                        EngName = rdr["EngName"].ToString() ?? "",
+                        NepName = rdr["NepName"].ToString() ?? "",
+                        Level = rdr["Level"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["Level"]),
+                        ParentGroupName = rdr["ParentGroupName"].ToString() ?? "",
+                        Remarks = rdr["Remarks"].ToString() ?? ""
+                    };
 
                     listEntity.Add(entity);
                 }
@@ -90,10 +92,10 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<ProductGroup> Get(int id)
         {
 
-            ProductGroup entity = null;
+            ProductGroup entity = new();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = $"select g.GroupID, g.Parent_GrpID ParentGroupID, g.EngName EngName, g.NepName, pg.EngName ParentGroupName, g.Level, g.Remarks " +
                     $"from INv.tblProductGroup g left join Inv.tblProductGroup pg on pg.GroupID = g.Parent_GrpID  where g.GroupID = @id and g.CompanyID =1";
                 cmd.Parameters.AddWithValue("@id", id);
@@ -108,11 +110,11 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                     {
                         ID = Convert.ToInt32(rdr["GroupID"]),
                         ParentGroupID = rdr["ParentGroupID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["ParentGroupID"]),
-                        EngName = rdr["EngName"].ToString(),
-                        NepName = rdr["NepName"].ToString(),
+                        EngName = rdr["EngName"].ToString() ?? "",
+                        NepName = rdr["NepName"].ToString() ?? "",
                         Level = rdr["Level"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["Level"]),
-                        ParentGroupName = rdr["ParentGroupName"].ToString(),
-                        Remarks = rdr["Remarks"].ToString()
+                        ParentGroupName = rdr["ParentGroupName"].ToString() ?? "",
+                        Remarks = rdr["Remarks"].ToString() ?? ""
 
                     };
 
@@ -138,7 +140,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             if(id == 0 && level == 0)
             {
                 // there is just 1 root and others are its children, so select only 1
-                ProductGroup gs = group.Where(r => r.Level == 0).FirstOrDefault();
+                ProductGroup gs = group.FirstOrDefault(r => r.Level == 0);
                 
                 children.Add(new Tree() { Id = gs.ID, Level = 0, Name = gs.EngName, ParentID = 0 });
 

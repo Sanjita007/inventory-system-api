@@ -51,7 +51,7 @@ namespace inventory_system_api.Infrastructure.Service
                 {
 
                     // Find units by UnitID. If the key doesn't exist, GetValueOrDefault provides null.
-                    unitDetailsLookup.TryGetValue(product.DefaultUnitID, out List<UnitDetails> relatedUnits);
+                    unitDetailsLookup.TryGetValue(product.DefaultUnitID, out var relatedUnits);
 
                     // Create the final object, assigning the found units or an empty list.
                     product.UnitDetails = relatedUnits;

@@ -53,7 +53,7 @@ namespace inventory_system_api.Infrastructure.Repository
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "SELECT [System].[fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
                 cmd.CommandType = CommandType.Text;
@@ -72,7 +72,7 @@ namespace inventory_system_api.Infrastructure.Repository
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "[Inv].[spUnitDelete]";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -89,7 +89,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = $"select CompoundUnitID, UnitID, cu.ParentUnitID, u.UnitName, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from System.tblCompoundUnit cu " +
                     $"inner join System.tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join System.tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID";
@@ -104,11 +104,11 @@ namespace inventory_system_api.Infrastructure.Repository
                     {
                         ID = Convert.ToInt32(rdr["CompoundUnitID"]),
                         UnitID = Convert.ToInt32(rdr["UnitID"]),
-                        UnitName = rdr["UnitName"].ToString(),
+                        UnitName = rdr["UnitName"].ToString()?? "",
                         ParentUnitID = Convert.ToInt32(rdr["ParentUnitID"]),
                         RelationValue = Convert.ToDecimal(rdr["RelationValue"]),
-                        ParentUnitName = rdr["ParentUnitName"].ToString(),
-                        Remarks = rdr["Remarks"].ToString(),
+                        ParentUnitName = rdr["ParentUnitName"].ToString() ?? "",
+                        Remarks = rdr["Remarks"].ToString() ?? "",
                     });
                 }
             }
@@ -117,11 +117,11 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<CompoundUnit> Get(int id)
         {
-            CompoundUnit entity = null;
+            CompoundUnit entity = new();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = $"select CompoundUnitID, UnitID, u.UnitName, cu.ParentUnitID, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from System.tblCompoundUnit cu " +
                     $"inner join System.tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join System.tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID where CompoundUnitID = @id";
@@ -138,11 +138,11 @@ namespace inventory_system_api.Infrastructure.Repository
                     {
                         ID = Convert.ToInt32(rdr["CompoundUnitID"]),
                         UnitID = Convert.ToInt32(rdr["UnitID"]),
-                        UnitName = rdr["UnitName"].ToString(),
+                        UnitName = rdr["UnitName"].ToString()??"",
                         ParentUnitID = Convert.ToInt32(rdr["ParentUnitID"]),
                         RelationValue = Convert.ToDecimal(rdr["RelationValue"]),
-                        ParentUnitName = rdr["ParentUnitName"].ToString(),
-                        Remarks = rdr["Remarks"].ToString(),
+                        ParentUnitName = rdr["ParentUnitName"].ToString()?? "",
+                        Remarks = rdr["Remarks"].ToString() ?? "",
                     };
                 }
             }
@@ -155,7 +155,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "System.spGetUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -169,7 +169,7 @@ namespace inventory_system_api.Infrastructure.Repository
                     entity.Add(new UnitDetails
                     {
                         ID = Convert.ToInt32(rdr["UnitID"]),
-                        Name = rdr["UnitName"].ToString(),
+                        Name = rdr["UnitName"].ToString()??"",
                         DefaultUnitID =  rdr["DefaultUnitID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["DefaultUnitID"]),
                         ConversionRate = rdr["ConversionRate"] == DBNull.Value
                             ? 0
@@ -186,7 +186,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "System.spGetMultipleUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -201,7 +201,7 @@ namespace inventory_system_api.Infrastructure.Repository
                     {
                         ID = Convert.ToInt32(rdr["UnitID"]),
                         DefaultUnitID = Convert.ToInt32(rdr["DefaultUnitID"]),
-                        Name = rdr["UnitName"].ToString(),
+                        Name = rdr["UnitName"].ToString() ?? "",
                         ConversionRate = rdr["ConversionRate"] == DBNull.Value
                             ? 0
                             : Convert.ToDecimal(rdr["ConversionRate"])

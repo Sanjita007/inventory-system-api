@@ -10,22 +10,22 @@
 
     public class ProductSummary
     {
-        public string ProductName { get; set; }
+        public string? ProductName { get; set; }
         public decimal SalesPrice { get; set; }
-        public string Image { get; set; }
+        public string? Image { get; set; }
 
     }
 
     public class RecentTransactionSummary
     {
-        public string Date { get; set; }
-        public string Details { get; set; }
+        public string? Date { get; set; }
+        public string? Details { get; set; }
     }
 
     public class DashboardSummary
     {
-        public SalesPurchSummary SalesPurch { get; set; }
-        public List<ProductSummary> Product { get; set; }
+        public SalesPurchSummary? SalesPurch { get; set; }
+        public List<ProductSummary>? Product { get; set; }
     }
 
 }

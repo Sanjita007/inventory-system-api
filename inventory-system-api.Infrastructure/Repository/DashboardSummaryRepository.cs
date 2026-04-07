@@ -21,7 +21,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "DASHBOARD_SALES_PURCH_SUMMARY";
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -32,7 +32,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 while (rdr.Read())
                 {
-                    dashboardSummary.SalesPurch.Months.Add(rdr["DATE"].ToString());
+                    dashboardSummary.SalesPurch.Months.Add(rdr["DATE"].ToString()??"");
                     dashboardSummary.SalesPurch.PurchAmounts.Add(rdr["PURCHASE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PURCHASE"]));
                     dashboardSummary.SalesPurch.SalesAmounts.Add(rdr["SALES"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SALES"]));
 
@@ -44,7 +44,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
                         dashboardSummary.Product.Add(new ProductSummary()
                         {
                             Image = rdr["IMAGE"] == DBNull.Value ? null : ((byte[])rdr["IMAGE"]).ToBase64(),
-                            ProductName = rdr["ENGNAME"].ToString(),
+                            ProductName = rdr["ENGNAME"].ToString() ?? "",
                             SalesPrice = rdr["SALESRATE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SALESRATE"]),
 
                         });
@@ -64,7 +64,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             List<ProductSummary> products = new List<ProductSummary>();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "SELECT TOP 4 ENGNAME, IMAGE, SALESRATE  FROM INV.TBLPRODUCT WHERE IMAGE IS NOT NULL";
 
                 cmd.CommandType = CommandType.Text;
@@ -77,7 +77,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
                         products.Add(new ProductSummary()
                         {
                             Image = rdr["IMAGE"] == DBNull.Value ? null : ((byte[])rdr["IMAGE"]).ToBase64(),
-                            ProductName = rdr["ENGNAME"].ToString(),
+                            ProductName = rdr["ENGNAME"].ToString() ?? "",
                             SalesPrice = rdr["SALESRATE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SALESRATE"]),
 
                         });
@@ -98,7 +98,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "DASHBOARD_SALES_PURCH_SUMMARY";
 
                 cmd.CommandType = CommandType.Text;
@@ -107,7 +107,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 while (rdr.Read())
                 {
-                   SalesPurch.Months.Add(rdr["DATE"].ToString());
+                   SalesPurch.Months.Add(rdr["DATE"].ToString()?? "");
                    SalesPurch.PurchAmounts.Add(rdr["PURCHASE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PURCHASE"]));
                    SalesPurch.SalesAmounts.Add(rdr["SALES"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SALES"]));
 
@@ -126,7 +126,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             List<RecentTransactionSummary> products = new List<RecentTransactionSummary>();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "SELECT TOP 5 CONVERT(DATE, SALESINVOICE_DATE, 111) SALES_DATE, CONCAT('SOLD $', M.NET_AMOUNT , ' WORTH OF PRODUCTS TO ', CUSTOMERNAME, ' - ', PRODUCTS ) DETAIL " +
                     "FROM INV.TBLSALESINVOICEMASTER M INNER JOIN (SELECT  SALESINVOICEID, STRING_AGG(ENGNAME, ', ') PRODUCTS" +
                     "   FROM INV.TBLSALESINVOICEDETAILS T INNER JOIN INV.TBLPRODUCT P ON T.PRODUCTID = P.PRODUCTID GROUP BY SALESINVOICEID) DET ON M.SALESINVOICEID = DET.SALESINVOICEID " +
@@ -141,8 +141,8 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                     products.Add(new RecentTransactionSummary()
                     {
-                        Date = rdr["SALES_DATE"].ToString(),
-                        Details = rdr["DETAIL"].ToString(),
+                        Date = rdr["SALES_DATE"].ToString() ?? "",
+                        Details = rdr["DETAIL"].ToString() ?? "",
 
                     });
 
