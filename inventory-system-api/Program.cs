@@ -56,7 +56,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "http://localhost:3000",   // React CRA
                 "http://localhost:5174",    // Vite dev server
-                "http://localhost:5173"    // Vite dev server
+                "http://localhost:5173",  // Vite dev server
+                "https://inventory-app-san.netlify.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()

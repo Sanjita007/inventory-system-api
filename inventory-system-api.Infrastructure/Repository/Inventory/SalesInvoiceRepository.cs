@@ -82,7 +82,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 ChangeAmount = rdr["ChangeAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ChangeAmt"]),
                 AdjustmentAmount = rdr["AdjustmentAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AdjustmentAmt"]),
                 CreatedBy = Convert.ToInt32(rdr["Created_By"]),
-                SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
+                //SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
                 CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
             };
 
@@ -106,7 +106,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 ChangeAmount = rdr["ChangeAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ChangeAmt"]),
                 AdjustmentAmount = rdr["AdjustmentAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AdjustmentAmt"]),
                 CreatedBy = Convert.ToInt32(rdr["Created_By"]),
-                SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
+                //SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
                 CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
             };
 
@@ -179,7 +179,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                         ChangeAmount = rdr["ChangeAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ChangeAmt"]),
                         AdjustmentAmount = rdr["AdjustmentAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AdjustmentAmt"]),
                         CreatedBy = Convert.ToInt32(rdr["Created_By"]),
-                        SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
+                        //SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
                         CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
                     };
 
