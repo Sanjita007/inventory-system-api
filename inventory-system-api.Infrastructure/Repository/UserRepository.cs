@@ -21,12 +21,16 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SYSTEM].[SP_USER_ADD_EDIT]";
+                cmd.CommandText = "[SP_USER_ADD_EDIT]";
                 cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
+                result.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(result);
 
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@UserName", entity.UserName);
-                //cmd.Parameters.AddWithValue("@Password", Utility.HashPassword(entity.Password));
+                if(entity.ID <= 0)
+                    cmd.Parameters.AddWithValue("@Password", Utility.HashPassword(entity.Password));
                 cmd.Parameters.AddWithValue("@Name", entity.Name);
                 cmd.Parameters.AddWithValue("@Address", entity.Address);
                 cmd.Parameters.AddWithValue("@Contact", entity.PhoneNo);
@@ -64,7 +68,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email,Department, Role from System.tblUser where CompanyID = 1";
+                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email,Department, Role from tblUser where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -96,7 +100,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select UserID, UserType, UserName, Name, Address, Contact, Email, Department, Role from System.tblUser where CompanyID = 1 and UserID = @id";
+                cmd.CommandText = "select UserID, UserType, UserName, Name, Address, Contact, Email, Department, Role from tblUser where CompanyID = 1 and UserID = @id";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", id);
 
@@ -130,7 +134,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select * from System.tblUser where CompanyID = 1 and UserName = @userName";
+                cmd.CommandText = "select * from tblUser where CompanyID = 1 and UserName = @userName";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@userName", userName);
 
@@ -173,7 +177,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select Password from System.tblUser where CompanyID = 1 and UserID = @id";
+                cmd.CommandText = "select Password from tblUser where CompanyID = 1 and UserID = @id";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", userID);
 
@@ -198,7 +202,7 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SYSTEM].[SP_PASSWORD_UPDATE]";
+                cmd.CommandText = "[SP_PASSWORD_UPDATE]";
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@id", entity.ID);

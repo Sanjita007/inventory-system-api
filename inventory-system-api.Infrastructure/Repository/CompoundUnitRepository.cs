@@ -20,7 +20,7 @@ namespace inventory_system_api.Infrastructure.Repository
             int res = 0;
 
             using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-            cmd.CommandText = "[SYSTEM].[SP_COMPOUND_UNIT_ADD_EDIT]";
+            cmd.CommandText = "[SP_COMPOUND_UNIT_ADD_EDIT]";
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.AddWithValue("@id", entity.ID);
@@ -44,7 +44,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT [System].[fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
+                cmd.CommandText = "SELECT [fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.AddWithValue("@defUnitID", defaultUnitID);
@@ -80,8 +80,8 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = $"select CompoundUnitID, UnitID, cu.ParentUnitID, u.UnitName, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from System.tblCompoundUnit cu " +
-                    $"inner join System.tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join System.tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID";
+                cmd.CommandText = $"select CompoundUnitID, UnitID, cu.ParentUnitID, u.UnitName, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from tblCompoundUnit cu " +
+                    $"inner join tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -112,8 +112,8 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = $"select CompoundUnitID, UnitID, u.UnitName, cu.ParentUnitID, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from System.tblCompoundUnit cu " +
-                    $"inner join System.tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join System.tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID where CompoundUnitID = @id";
+                cmd.CommandText = $"select CompoundUnitID, UnitID, u.UnitName, cu.ParentUnitID, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from tblCompoundUnit cu " +
+                    $"inner join tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID where CompoundUnitID = @id";
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.AddWithValue("@id", id);
@@ -146,7 +146,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "System.spGetUnitConversionRates";
+                cmd.CommandText = "spGetUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@BaseUnitID", BaseUnitID);
 
@@ -177,7 +177,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "System.spGetMultipleUnitConversionRates";
+                cmd.CommandText = "spGetMultipleUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@unitsCSV", baseUnits);
 

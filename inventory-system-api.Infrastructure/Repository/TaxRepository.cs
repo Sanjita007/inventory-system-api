@@ -22,7 +22,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 result.Direction = ParameterDirection.Output;
 
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[System].[spTaxAddEdit]";
+                cmd.CommandText = "[spTaxAddEdit]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@Name", entity.Name);
                 cmd.Parameters.AddWithValue("@Code", entity.Code);
@@ -61,7 +61,7 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from System.tblTax where CompanyID = 1";
+                cmd.CommandText = "select * from tblTax where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -89,7 +89,7 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from System.tblTax where CompanyID = 1 and TaxID = @Id";
+                cmd.CommandText = "select * from tblTax where CompanyID = 1 and TaxID = @Id";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.CommandType = CommandType.Text;

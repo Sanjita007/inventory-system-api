@@ -65,7 +65,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "SELECT TOP 4 ENGNAME, IMAGE, SALESRATE  FROM INV.TBLPRODUCT WHERE IMAGE IS NOT NULL";
+                cmd.CommandText = "SELECT TOP 4 ENGNAME, IMAGE, SALESRATE  FROM TBLPRODUCT WHERE IMAGE IS NOT NULL";
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
@@ -128,8 +128,8 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "SELECT TOP 5 CONVERT(DATE, SALESINVOICE_DATE, 111) SALES_DATE, CONCAT('SOLD $', M.NET_AMOUNT , ' WORTH OF PRODUCTS TO ', CUSTOMERNAME, ' - ', PRODUCTS ) DETAIL " +
-                    "FROM INV.TBLSALESINVOICEMASTER M INNER JOIN (SELECT  SALESINVOICEID, STRING_AGG(ENGNAME, ', ') PRODUCTS" +
-                    "   FROM INV.TBLSALESINVOICEDETAILS T INNER JOIN INV.TBLPRODUCT P ON T.PRODUCTID = P.PRODUCTID GROUP BY SALESINVOICEID) DET ON M.SALESINVOICEID = DET.SALESINVOICEID " +
+                    "FROM TBLSALESINVOICEMASTER M INNER JOIN (SELECT  SALESINVOICEID, STRING_AGG(ENGNAME, ', ') PRODUCTS" +
+                    "   FROM TBLSALESINVOICEDETAILS T INNER JOIN TBLPRODUCT P ON T.PRODUCTID = P.PRODUCTID GROUP BY SALESINVOICEID) DET ON M.SALESINVOICEID = DET.SALESINVOICEID " +
                     "ORDER BY SALESINVOICE_DATE DESC";
 
                 cmd.CommandType = CommandType.Text;

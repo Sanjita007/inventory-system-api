@@ -21,7 +21,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "Inv.GROSS_PROFITABILITY_REPORT";
+                cmd.CommandText = "GROSS_PROFITABILITY_REPORT";
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
@@ -66,7 +66,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "Inv.INVENTORY_VALUATION_REPORT";
+                cmd.CommandText = "INVENTORY_VALUATION_REPORT";
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();

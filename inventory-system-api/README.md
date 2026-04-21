@@ -5,7 +5,6 @@ A lightweight RESTful API for inventory management built with .NET 8 (C# 12). Th
 ## Key features
 
 - Product and product group management
-- Depot (warehouse) management
 - Unit and compound unit support
 - Tax configuration
 - Sales and Purchase invoices with detailed line items

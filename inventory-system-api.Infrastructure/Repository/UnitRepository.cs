@@ -22,7 +22,7 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SYSTEM].[SP_UNIT_ADD_EDIT]";
+                cmd.CommandText = "[SP_UNIT_ADD_EDIT]";
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@id", entity.ID);
@@ -46,7 +46,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT [System].[fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
+                cmd.CommandText = "SELECT [fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.AddWithValue("@defUnitID", defaultUnitID);
@@ -82,7 +82,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT * FROM System.tblUnitMaintenance WHERE CompanyID = 1";
+                cmd.CommandText = "SELECT * FROM tblUnitMaintenance WHERE CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -110,7 +110,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT * FROM System.tblUnitMaintenance WHERE UnitMaintenanceID = @id and CompanyID = 1";
+                cmd.CommandText = "SELECT * FROM tblUnitMaintenance WHERE UnitMaintenanceID = @id and CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", id);
 
@@ -139,7 +139,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "System.spGetUnitConversionRates";
+                cmd.CommandText = "spGetUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@BaseUnitID", BaseUnitID);
 
@@ -170,7 +170,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "System.spGetMultipleUnitConversionRates";
+                cmd.CommandText = "spGetMultipleUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@unitsCSV", baseUnits);
 

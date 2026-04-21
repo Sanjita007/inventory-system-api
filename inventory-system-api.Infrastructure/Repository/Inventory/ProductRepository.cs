@@ -75,7 +75,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From inv.tblProduct p inner join System.tblUnitMaintenance u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
+                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From tblProduct p inner join tblUnitMaintenance u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -120,7 +120,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from Inv.tblProduct where ProductID = @Id and CompanyID =1";
+                cmd.CommandText = "select * from tblProduct where ProductID = @Id and CompanyID =1";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.CommandType = CommandType.Text;
@@ -163,7 +163,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand? cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from Inv.tblProduct where ProductCode = @code and CompanyID =1";
+                cmd.CommandText = "select * from tblProduct where ProductCode = @code and CompanyID =1";
                 cmd.Parameters.AddWithValue("@code", code);
 
                 cmd.CommandType = CommandType.Text;

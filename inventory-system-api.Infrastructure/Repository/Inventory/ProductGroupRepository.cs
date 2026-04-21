@@ -64,7 +64,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = $"select g.GroupID, g.Parent_GrpID ParentGroupID, g.EngName EngName, g.NepName, pg.EngName ParentGroupName, g.Level,g.Remarks " +
-                    $"from INv.tblProductGroup g left join Inv.tblProductGroup pg on pg.GroupID = g.Parent_GrpID  where g.CompanyID =1";
+                    $"from tblProductGroup g left join tblProductGroup pg on pg.GroupID = g.Parent_GrpID  where g.CompanyID =1";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -97,7 +97,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = $"select g.GroupID, g.Parent_GrpID ParentGroupID, g.EngName EngName, g.NepName, pg.EngName ParentGroupName, g.Level, g.Remarks " +
-                    $"from INv.tblProductGroup g left join Inv.tblProductGroup pg on pg.GroupID = g.Parent_GrpID  where g.GroupID = @id and g.CompanyID =1";
+                    $"from tblProductGroup g left join tblProductGroup pg on pg.GroupID = g.Parent_GrpID  where g.GroupID = @id and g.CompanyID =1";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.CommandType = CommandType.Text;

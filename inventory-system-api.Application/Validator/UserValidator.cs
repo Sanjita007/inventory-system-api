@@ -13,7 +13,7 @@ namespace inventory_system_api.Application.Validator
                 .MinimumLength(8).WithMessage("Username must have at least 8 characters");
 
             RuleFor(r => r.Email)
-                .Null()
+                .NotNull()
                 .EmailAddress().WithMessage("Please enter a valid email address.");
             RuleFor(r => r.PhoneNo)
                 .NotEmpty()
@@ -25,7 +25,9 @@ namespace inventory_system_api.Application.Validator
 
             RuleFor(r => r.Role)
                 .Must(r => r.Equals("USER", StringComparison.CurrentCultureIgnoreCase) 
-                || r.Equals("ADMIN", StringComparison.CurrentCultureIgnoreCase));
+                || r.Equals("ADMIN", StringComparison.CurrentCultureIgnoreCase)
+                || r.Equals("GUEST", StringComparison.CurrentCultureIgnoreCase)
+                );
 
             RuleFor(r => r.Password)
                 .Must(p => p.Length >= 8

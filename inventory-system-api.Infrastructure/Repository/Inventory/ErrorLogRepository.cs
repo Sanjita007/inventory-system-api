@@ -22,7 +22,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 result.Direction = ParameterDirection.Output;
 
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SYSTEM].[SP_API_ERROR_LOG_ADD_EDIT]";
+                cmd.CommandText = "[SP_API_ERROR_LOG_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@REQUESTMETHOD", entity.RequestMethod);
                 cmd.Parameters.AddWithValue("@REQUESTURI", entity.RequestPath);
@@ -51,7 +51,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from System.TBLAPIERRORLOG";
+                cmd.CommandText = "select * from tblAPIERRORLOG";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();

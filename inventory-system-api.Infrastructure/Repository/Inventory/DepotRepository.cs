@@ -72,7 +72,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select top 10 * from Inv.tblDepot where CompanyID = 1";
+                cmd.CommandText = "select top 10 * from tblDepot where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -99,7 +99,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from Inv.tblDepot where DepotID = @Id and CompanyID =1";
+                cmd.CommandText = "select * from tblDepot where DepotID = @Id and CompanyID =1";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.CommandType = CommandType.Text;

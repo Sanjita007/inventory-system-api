@@ -61,7 +61,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<List<SalesInvoiceMaster>> Get()
         {
-            return await ExecuteQueryAsync("select * from Inv.tblSalesInvoiceMaster where CompanyID =1", MapEntity, []);
+            return await ExecuteQueryAsync("select * from tblSalesInvoiceMaster where CompanyID =1", MapEntity, []);
 
         }
 
@@ -155,8 +155,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.Parameters.AddWithValue("@pageNo", pageNo);
                 cmd.Parameters.AddWithValue("@rowsPerPage", rowPerPage);
-                cmd.CommandText = "select * from Inv.tblSalesInvoiceMaster where CompanyID =1 order by SalesInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
-                    "select count('x') from INv.tblSalesInvoiceMaster";
+                cmd.CommandText = "select * from tblSalesInvoiceMaster where CompanyID =1 order by SalesInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
+                    "select count('x') from tblSalesInvoiceMaster";
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
@@ -203,9 +203,9 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<SalesInvoiceMaster> Get(int id)
         {
             
-                 string query = "select * from Inv.tblSalesInvoiceMaster where SalesInvoiceID = @Id and CompanyID =1;" +
+                 string query = "select * from tblSalesInvoiceMaster where SalesInvoiceID = @Id and CompanyID =1;" +
 
-                    "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from Inv.tblSalesInvoiceDetails sd inner join Inv.tblProduct p on sd.ProductID = p.ProductID inner join System.tblUnitMaintenance u on sd.QtyUnitID = u.UnitMaintenanceID  where SalesInvoiceID = @id";
+                    "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from tblSalesInvoiceDetails sd inner join tblProduct p on sd.ProductID = p.ProductID inner join tblUnitMaintenance u on sd.QtyUnitID = u.UnitMaintenanceID  where SalesInvoiceID = @id";
             SqlParameter[] param = [
                 new SqlParameter("@id", id) ];
 

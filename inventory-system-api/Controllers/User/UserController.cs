@@ -68,6 +68,7 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Post(User entity)
         {
             int res = await _repo.AddEdit(entity);
@@ -83,7 +84,7 @@ namespace inventory_system_api.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("Role", user.Role),
+                new Claim("Roles", user.Role),
                 new Claim("Date", DateTime.Now.ToString())
             };
 
