@@ -19,7 +19,7 @@ public class TaxControllerIntegrationTests : IClassFixture<CustomWebApplicationF
     }
 
     [Fact]
-    public async Task Get_ReturnsOk_WithUnitsList()
+    public async Task Get_ReturnsOk_WithTaxList()
     {
         var client = _factory.CreateClient();
 

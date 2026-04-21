@@ -2,9 +2,10 @@ using inventory_system_api.integrationTests.TestHost;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Xunit;
 using System.Text;
 using System.Text.Json;
-using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using Assert = Xunit.Assert;
 
 namespace inventory_system_api.integrationTests;
 

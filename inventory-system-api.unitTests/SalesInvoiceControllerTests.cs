@@ -22,7 +22,58 @@ namespace inventory_system_api.unitTests
         [Fact]
         public async Task Get_ReturnsOk_WhenSalesExist()
         {
-            var list = new List<SalesInvoiceMaster> { new() { ID = 1, EntityName = "Customer A", NetAmount = 100m } };
+            var list = new List<SalesInvoiceMaster>
+            {
+                new SalesInvoiceMaster
+                {
+                    ID = 1,
+                    VoucherNo = "V001",
+                    EntityName = "Customer A",
+                    Date = DateTime.UtcNow,
+                    ProjectID = 1,
+                    TotalQty = 2m,
+                    GrossAmount = 120m,
+                    SpecialDiscount = 0m,
+                    NetAmount = 100m,
+                    SalesDueDate = DateTime.UtcNow.AddDays(30),
+                    TotalTCAmount = 0m,
+                    TenderAmount = 100m,
+                    ChangeAmount = 0m,
+                    AdjustmentAmount = 0m,
+                    Status = "PAID",
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = 1,
+                    CompanyID = 1,
+                    Remarks = "unit test",
+                    Details = new List<InvoiceDetail>
+                    {
+                        new InvoiceDetail
+                        {
+                            ID = 1,
+                            MasterID = 1,
+                            ProductCode = "P001",
+                            ProductName = "Test Product",
+                            ProductID = 1,
+                            Quantity = 2m,
+                            Price = 50m,
+                            Amount = 100m,
+                            DiscPercent = 0m,
+                            Discount = 0m,
+                            NetAmount = 100m,
+                            QtyUnitID = 1,
+                            DefaultUnitID = 1,
+                            DefaultUnitName = "Piece",
+                            DefaultUnitSymbol = "pc",
+                            TaxID = null,
+                            TaxAmount = 0m,
+                            GeneralName = null,
+                            Remarks = null,
+                            VATAmount = 0m
+                        }
+                    }
+                }
+            };
+
             _mockRepo.Setup(r => r.Get()).ReturnsAsync(list);
 
             var result = await _controller.Get();
@@ -44,7 +95,29 @@ namespace inventory_system_api.unitTests
         public async Task GetById_ReturnsOk_WhenExists()
         {
             var id = 5;
-            var item = new SalesInvoiceMaster { ID = id, EntityName = "Customer X" };
+            var item = new SalesInvoiceMaster
+            {
+                ID = id,
+                VoucherNo = "V010",
+                EntityName = "Customer X",
+                Date = DateTime.UtcNow,
+                ProjectID = 1,
+                TotalQty = 1m,
+                GrossAmount = 50m,
+                SpecialDiscount = 0m,
+                NetAmount = 50m,
+                SalesDueDate = DateTime.UtcNow.AddDays(15),
+                TotalTCAmount = 0m,
+                TenderAmount = 50m,
+                ChangeAmount = 0m,
+                AdjustmentAmount = 0m,
+                Status = "PAID",
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = 1,
+                CompanyID = 1,
+                Remarks = "unit test",
+                Details = new List<InvoiceDetail>()
+            };
             _mockRepo.Setup(r => r.Get(id)).ReturnsAsync(item);
 
             var result = await _controller.Get(id);
@@ -61,7 +134,30 @@ namespace inventory_system_api.unitTests
         [Fact]
         public async Task Post_ReturnsOk_OnSuccess()
         {
-            var model = new SalesInvoiceMaster { ID = 0, EntityName = "New" };
+            var model = new SalesInvoiceMaster
+            {
+                ID = 0,
+                VoucherNo = "VNEW",
+                EntityName = "New",
+                Date = DateTime.UtcNow,
+                ProjectID = 1,
+                TotalQty = 0m,
+                GrossAmount = 0m,
+                SpecialDiscount = 0m,
+                NetAmount = 0m,
+                TotalTCAmount = 0m,
+                TenderAmount = 0m,
+                ChangeAmount = 0m,
+                AdjustmentAmount = 0m,
+                Status = "PAID",
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = 1,
+                CompanyID = 1,
+                Remarks = "unit test",
+                Details = [
+                new InvoiceDetail { ProductID = 1, ProductName = "P1", Quantity = 1, Price = 123.45m, NetAmount = 123.45m }
+            ]
+            };
             _mockRepo.Setup(r => r.AddEdit(It.IsAny<SalesInvoiceMaster>())).ReturnsAsync(1);
 
             var result = await _controller.Post(model);
