@@ -23,7 +23,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 result.Direction = ParameterDirection.Output;
 
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[Inv].[SP_PRODUCT_ADD_EDIT]";
+                cmd.CommandText = "[SP_PRODUCT_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@EngName", entity.EngName);
                 cmd.Parameters.AddWithValue("@NepName", entity.NepName);
@@ -59,7 +59,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[Inv].[spProductDelete]";
+                cmd.CommandText = "[spProductDelete]";
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
@@ -75,7 +75,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From tblProduct p inner join tblUnitMaintenance u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
+                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From Product p inner join tblUnitMaintenance u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -163,7 +163,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand? cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from tblProduct where ProductCode = @code and CompanyID =1";
+                cmd.CommandText = "select * from Product where ProductCode = @code and CompanyID =1";
                 cmd.Parameters.AddWithValue("@code", code);
 
                 cmd.CommandType = CommandType.Text;

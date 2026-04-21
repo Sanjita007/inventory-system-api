@@ -23,7 +23,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 result.Direction = ParameterDirection.Output;
 
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[Inv].[SP_PRODUCT_GROUP_ADD_EDIT]";
+                cmd.CommandText = "[SP_PRODUCT_GROUP_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@EngName", entity.EngName);
                 cmd.Parameters.AddWithValue("@NepName", entity.NepName);
@@ -47,7 +47,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[Inv].[spProductGroupDelete]";
+                cmd.CommandText = "[spProductGroupDelete]";
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
