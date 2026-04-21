@@ -20,8 +20,8 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             decimal TotalRev = 0, TotalCost = 0, TotalProfit = 0;
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "Inv.GROSS_PROFITABILITY_REPORT";
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "GROSS_PROFITABILITY_REPORT";
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
@@ -40,8 +40,8 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
                     entity.Add(new GrossProfit
                     {
                         ProductId = Convert.ToInt32(rdr["ProductID"]),
-                        ProductCode = rdr["ProductCode"].ToString(),
-                        ProductName = rdr["ProductName"].ToString(),
+                        ProductCode = rdr["ProductCode"].ToString()??"",
+                        ProductName = rdr["ProductName"].ToString() ?? "",
 
                         QuantitySold = rdr["QuantitySold"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["QuantitySold"]),
                         TotalRevenue = Revenue,
@@ -65,8 +65,8 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             decimal TotalqtyIn = 0, TotalqtyOut = 0, TotalqtyOnHand = 0, TotalInValue=0;
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "Inv.INVENTORY_VALUATION_REPORT";
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "INVENTORY_VALUATION_REPORT";
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
@@ -87,8 +87,8 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
                     entity.Add(new InventoryDetail
                     {
                         ProductId = Convert.ToInt32(rdr["ProductID"]),
-                        ProductCode = rdr["ProductCode"].ToString(),
-                        ProductName = rdr["ProductName"].ToString(),
+                        ProductCode = rdr["ProductCode"].ToString()??"",
+                        ProductName = rdr["ProductName"].ToString() ?? "",
 
                         QuantityIn = qtyIn,
                         QuantityOut = qtyOut,

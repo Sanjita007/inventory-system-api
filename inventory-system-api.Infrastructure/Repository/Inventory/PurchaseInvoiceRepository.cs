@@ -23,7 +23,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
                 result.Direction = ParameterDirection.Output;
 
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[Inv].[SP_PURCHASE_INVOICE_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@ID", entity.ID);
                 cmd.Parameters.AddWithValue("@VOUCHERNO", entity.VoucherNo);
@@ -60,7 +60,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<List<PurchaseInvoiceMaster>> Get()
         {
-            return await ExecuteQueryAsync("select * from Inv.tblPurchaseInvoiceMaster where CompanyID =1", MapEntity, null);
+            return await ExecuteQueryAsync("select * from tblPurchaseInvoiceMaster where CompanyID =1", MapEntity, []);
 
         }
 
@@ -114,13 +114,13 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                             ID = Convert.ToInt32(rdr["PurchaseINvoice_DetailID"]),
                             MasterID = Convert.ToInt32(rdr["PurchaseInvoiceID"]),
                             ProductID = Convert.ToInt32(rdr["ProductID"]),
-                            ProductName = rdr["ProductName"].ToString(),
+                            ProductName = rdr["ProductName"].ToString()??"",
                             QtyUnitID = Convert.ToInt32(rdr["QtyUnitID"]),
                             DefaultUnitID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                            DefaultUnitName = rdr["DefaultUnitName"].ToString(),
-                            DefaultUnitSymbol = rdr["DefaultUnitSymbol"].ToString(),
+                            DefaultUnitName = rdr["DefaultUnitName"].ToString()??"",
+                            DefaultUnitSymbol = rdr["DefaultUnitSymbol"].ToString() ?? "",
                             TaxID = rdr["TaxID"] == DBNull.Value ? null : Convert.ToInt32(rdr["TaxID"]),
-                            ProductCode = rdr["Code"].ToString(),
+                            ProductCode = rdr["Code"].ToString() ?? "",
                             Quantity = Convert.ToInt32(rdr["Quantity"]),
                             Price = Convert.ToDecimal(rdr["PurchaseRate"]),
                             Amount = Convert.ToDecimal(rdr["Amount"]),
@@ -143,12 +143,12 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             int TotalRecords = 0;
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.Parameters.AddWithValue("@pageNo", pageNo);
                 cmd.Parameters.AddWithValue("@rowsPerPage", rowPerPage);
-                cmd.CommandText = "select * from Inv.tblPurchaseInvoiceMaster where CompanyID =1 order by PurchaseInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
-                    "select count('x') from INv.tblPurchaseInvoiceMaster";
+                cmd.CommandText = "select * from tblPurchaseInvoiceMaster where CompanyID =1 order by PurchaseInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
+                    "select count('x') from tblPurchaseInvoiceMaster";
                 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
@@ -156,7 +156,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 while (rdr.Read())
                 {
-                    PurchaseInvoiceMaster entity = new PurchaseInvoiceMaster
+                    PurchaseInvoiceMaster entity = new()
                     {
                         ID = Convert.ToInt32(rdr["PurchaseInvoiceID"]),
                         VoucherNo = rdr["Voucher_No"].ToString(),
@@ -192,16 +192,17 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<PurchaseInvoiceMaster> Get(int id)
         {
             
-                 string query = "select * from Inv.tblPurchaseInvoiceMaster where PurchaseInvoiceID = @Id and CompanyID =1;" +
+                 string query = "select * from tblPurchaseInvoiceMaster where PurchaseInvoiceID = @Id and CompanyID =1;" +
 
-                    "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from Inv.tblPurchaseInvoiceDetails sd inner join Inv.tblProduct p on sd.ProductID = p.ProductID inner join System.tblUnitMaintenance u on sd.QtyUnitID = u.UnitMaintenanceID  where PurchaseInvoiceID = @id";
+                    "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from tblPurchaseInvoiceDetails sd inner join tblProduct p on sd.ProductID = p.ProductID inner join tblUnitMaintenance u on sd.QtyUnitID = u.UnitMaintenanceID  where PurchaseInvoiceID = @id";
             SqlParameter[] param = [
                 new SqlParameter("@id", id) ];
 
                
             List<PurchaseInvoiceMaster> list = await ExecuteQueryAsync(query, MapEntityDetails, param);
 
-            return list.FirstOrDefault();
+            return list.FirstOrDefault()
+            ;
         }
 
     }

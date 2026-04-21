@@ -25,12 +25,12 @@ public class ProductGroupControllerIntegrationTests : IClassFixture<CustomWebApp
 
         var response = await client.GetAsync("/api/v1/ProductGroup");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<Models.Response>();
-        Assert.IsNotNull(payload);
-        Assert.AreEqual(200, payload.StatusCode);
-        Assert.AreEqual("Success", payload.Message);
+        Assert.NotNull(payload);
+        Assert.Equal(200, payload.StatusCode);
+        Assert.Equal("Success", payload.Message);
     }
 
     [Fact]
@@ -44,11 +44,11 @@ public class ProductGroupControllerIntegrationTests : IClassFixture<CustomWebApp
 
         var response = await client.PostAsync("/api/v1/ProductGroup", content);
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.IsTrue(payload.TryGetProperty("data", out var data));
-        Assert.IsTrue(data.TryGetProperty("id", out var idProp));
-        Assert.IsTrue(idProp.GetInt32() > 0);
+        Assert.True(payload.TryGetProperty("data", out var data));
+        Assert.True(data.TryGetProperty("id", out var idProp));
+        Assert.True(idProp.GetInt32() > 0);
     }
 }

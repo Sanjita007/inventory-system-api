@@ -55,7 +55,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[Inv].[spDepotDelete]";
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -71,18 +71,20 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             List<Depot> listEntity = [];
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "select top 10 * from Inv.tblDepot where CompanyID = 1";
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "select top 10 * from tblDepot where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
 
                 while (rdr.Read())
                 {
-                    Depot entity = new Depot();
-                    entity.ID = Convert.ToInt32(rdr["DepotID"]);
-                    entity.Name = rdr["DepotName"].ToString();
-                   
+                    Depot entity = new()
+                    {
+                        ID = Convert.ToInt32(rdr["DepotID"]),
+                        Name = rdr["DepotName"].ToString() ?? ""
+                    };
+
                     listEntity.Add(entity);
                 }
                 _dbConnection.Close();
@@ -93,11 +95,11 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<Depot> Get(int id)
         {
 
-            Depot entity = null;
+            Depot entity = new();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "select * from Inv.tblDepot where DepotID = @Id and CompanyID =1";
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "select * from tblDepot where DepotID = @Id and CompanyID =1";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.CommandType = CommandType.Text;
@@ -106,9 +108,10 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 while (rdr.Read())
                 {
-                    entity.ID = Convert.ToInt32(rdr["DepotID"]);
-                    entity.Name = rdr["DepotName"].ToString();
-
+                    entity = new() {
+                        ID = Convert.ToInt32(rdr["DepotID"]),
+                        Name = rdr["DepotName"].ToString() ?? "",
+                    };
                 }
                 _dbConnection.Close();
             }

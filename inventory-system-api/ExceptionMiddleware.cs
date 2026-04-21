@@ -38,7 +38,7 @@ namespace inventory_system_api.Middleware
             var response = new ErrorResponse
             {
                 StatusCode = status,
-                Message = "An unexpected error occurred."+ exception.Message +" "+ exception.StackTrace,
+                Message = "An unexpected error occurred."+ exception.Message,
                 TraceId = context.TraceIdentifier
             };
             // Try to read the request body safely (buffering must be enabled by upstream middleware)

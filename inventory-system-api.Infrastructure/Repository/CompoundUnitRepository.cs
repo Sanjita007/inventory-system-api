@@ -17,45 +17,34 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<int> AddEdit(CompoundUnit entity)
         {
-            //int res = 0;
+            int res = 0;
 
-            //using SqlConnection conn = new SqlConnection(_connectionString);
-            //using SqlCommand cmd = conn.CreateCommand();
-            //cmd.CommandText = "[Inv].[spProductAddEdit]";
-            //cmd.CommandType = CommandType.StoredProcedure;
+            using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+            cmd.CommandText = "[SP_COMPOUND_UNIT_ADD_EDIT]";
+            cmd.CommandType = CommandType.StoredProcedure;
 
-            //cmd.Parameters.AddWithValue("@id", entity.ID);
-            //cmd.Parameters.AddWithValue("@EngName", entity.EngName);
-            //cmd.Parameters.AddWithValue("@NepName", entity.NepName);
-            //cmd.Parameters.AddWithValue("@GroupID", entity.GroupID);
-            //cmd.Parameters.AddWithValue("@Code", entity.Code);
-            //cmd.Parameters.AddWithValue("@Color", entity.BackColor);
-            //cmd.Parameters.AddWithValue("@DepotID", entity.DepotID);
-            //cmd.Parameters.AddWithValue("@UnitID", entity.UnitID);
-            //cmd.Parameters.AddWithValue("@IsVatApplicable", entity.IsVatApplicable);
-            //cmd.Parameters.AddWithValue("@IsActive", entity.IsActive);
-            //cmd.Parameters.AddWithValue("@CompanyID", entity.CompanyID);
-            //cmd.Parameters.AddWithValue("@Size", entity.Size);
-            //cmd.Parameters.AddWithValue("@OpenPurchaseQty", entity.PurchaseQuantity);
-            //cmd.Parameters.AddWithValue("@PurchaseRate", entity.PurchaseRate);
-            //cmd.Parameters.AddWithValue("@TaxID", entity.TaxID);
-            //cmd.Parameters.AddWithValue("@UserID", "root");
+            cmd.Parameters.AddWithValue("@id", entity.ID);
+            cmd.Parameters.AddWithValue("@UnitID", entity.UnitID);
+            cmd.Parameters.AddWithValue("@ParentUnitID", entity.ParentUnitID);
+            cmd.Parameters.AddWithValue("@RelationValue", entity.RelationValue);
+            cmd.Parameters.AddWithValue("@Remarks", entity.Remarks);
+           
+            cmd.Parameters.AddWithValue("@User", "root");
 
-            //await conn.OpenAsync();
-            //res = await cmd.ExecuteNonQueryAsync();
+            _dbConnection.Open();
+            res = await cmd.ExecuteNonQueryAsync();
 
-            //return res;
+            return res;
 
-            return -1;
         }
 
         public async Task<decimal?> ConvertUnit(int defaultUnitID, int currentUnitID, decimal valueToConvert)
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT [System].[fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
+                cmd.CommandText = "SELECT [fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.AddWithValue("@defUnitID", defaultUnitID);
@@ -72,7 +61,7 @@ namespace inventory_system_api.Infrastructure.Repository
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "[Inv].[spUnitDelete]";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -89,10 +78,10 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = $"select CompoundUnitID, UnitID, cu.ParentUnitID, u.UnitName, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from System.tblCompoundUnit cu " +
-                    $"inner join System.tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join System.tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID";
+                cmd.CommandText = $"select CompoundUnitID, UnitID, cu.ParentUnitID, u.UnitName, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from tblCompoundUnit cu " +
+                    $"inner join tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -104,11 +93,11 @@ namespace inventory_system_api.Infrastructure.Repository
                     {
                         ID = Convert.ToInt32(rdr["CompoundUnitID"]),
                         UnitID = Convert.ToInt32(rdr["UnitID"]),
-                        UnitName = rdr["UnitName"].ToString(),
+                        UnitName = rdr["UnitName"].ToString()?? "",
                         ParentUnitID = Convert.ToInt32(rdr["ParentUnitID"]),
                         RelationValue = Convert.ToDecimal(rdr["RelationValue"]),
-                        ParentUnitName = rdr["ParentUnitName"].ToString(),
-                        Remarks = rdr["Remarks"].ToString(),
+                        ParentUnitName = rdr["ParentUnitName"].ToString() ?? "",
+                        Remarks = rdr["Remarks"].ToString() ?? "",
                     });
                 }
             }
@@ -117,14 +106,14 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<CompoundUnit> Get(int id)
         {
-            CompoundUnit entity = null;
+            CompoundUnit entity = new();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = $"select CompoundUnitID, UnitID, u.UnitName, cu.ParentUnitID, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from System.tblCompoundUnit cu " +
-                    $"inner join System.tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join System.tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID where CompoundUnitID = @id";
+                cmd.CommandText = $"select CompoundUnitID, UnitID, u.UnitName, cu.ParentUnitID, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from tblCompoundUnit cu " +
+                    $"inner join tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID where CompoundUnitID = @id";
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.AddWithValue("@id", id);
@@ -138,11 +127,11 @@ namespace inventory_system_api.Infrastructure.Repository
                     {
                         ID = Convert.ToInt32(rdr["CompoundUnitID"]),
                         UnitID = Convert.ToInt32(rdr["UnitID"]),
-                        UnitName = rdr["UnitName"].ToString(),
+                        UnitName = rdr["UnitName"].ToString()??"",
                         ParentUnitID = Convert.ToInt32(rdr["ParentUnitID"]),
                         RelationValue = Convert.ToDecimal(rdr["RelationValue"]),
-                        ParentUnitName = rdr["ParentUnitName"].ToString(),
-                        Remarks = rdr["Remarks"].ToString(),
+                        ParentUnitName = rdr["ParentUnitName"].ToString()?? "",
+                        Remarks = rdr["Remarks"].ToString() ?? "",
                     };
                 }
             }
@@ -155,9 +144,9 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "System.spGetUnitConversionRates";
+                cmd.CommandText = "spGetUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@BaseUnitID", BaseUnitID);
 
@@ -169,7 +158,7 @@ namespace inventory_system_api.Infrastructure.Repository
                     entity.Add(new UnitDetails
                     {
                         ID = Convert.ToInt32(rdr["UnitID"]),
-                        Name = rdr["UnitName"].ToString(),
+                        Name = rdr["UnitName"].ToString()??"",
                         DefaultUnitID =  rdr["DefaultUnitID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["DefaultUnitID"]),
                         ConversionRate = rdr["ConversionRate"] == DBNull.Value
                             ? 0
@@ -186,9 +175,9 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "System.spGetMultipleUnitConversionRates";
+                cmd.CommandText = "spGetMultipleUnitConversionRates";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@unitsCSV", baseUnits);
 
@@ -201,7 +190,7 @@ namespace inventory_system_api.Infrastructure.Repository
                     {
                         ID = Convert.ToInt32(rdr["UnitID"]),
                         DefaultUnitID = Convert.ToInt32(rdr["DefaultUnitID"]),
-                        Name = rdr["UnitName"].ToString(),
+                        Name = rdr["UnitName"].ToString() ?? "",
                         ConversionRate = rdr["ConversionRate"] == DBNull.Value
                             ? 0
                             : Convert.ToDecimal(rdr["ConversionRate"])

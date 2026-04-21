@@ -20,13 +20,17 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "[SYSTEM].[SP_USER_ADD_EDIT]";
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "[SP_USER_ADD_EDIT]";
                 cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
+                result.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(result);
 
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@UserName", entity.UserName);
-                //cmd.Parameters.AddWithValue("@Password", Utility.HashPassword(entity.Password));
+                if(entity.ID <= 0)
+                    cmd.Parameters.AddWithValue("@Password", Utility.HashPassword(entity.Password));
                 cmd.Parameters.AddWithValue("@Name", entity.Name);
                 cmd.Parameters.AddWithValue("@Address", entity.Address);
                 cmd.Parameters.AddWithValue("@Contact", entity.PhoneNo);
@@ -45,7 +49,7 @@ namespace inventory_system_api.Infrastructure.Repository
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.CommandText = "[Inv].[spUserDelete]";
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -62,9 +66,9 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email,Department, Role from System.tblUser where CompanyID = 1";
+                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email,Department, Role from tblUser where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -75,12 +79,12 @@ namespace inventory_system_api.Infrastructure.Repository
                     listEntity.Add(new User
                     {
                         ID = Convert.ToInt32(rdr["UserID"]),
-                        Name = rdr["Name"].ToString(),
-                        UserName = rdr["UserName"].ToString(),
-                        Address = rdr["Address"].ToString(),
-                        PhoneNo = rdr["Contact"].ToString(),
-                        Email = rdr["Email"].ToString(),
-                        Role = rdr["Role"].ToString(),
+                        Name = rdr["Name"].ToString()??"",
+                        UserName = rdr["UserName"].ToString() ?? "",
+                        Address = rdr["Address"].ToString() ?? "",
+                        PhoneNo = rdr["Contact"].ToString() ?? "",
+                        Email = rdr["Email"].ToString() ?? "",
+                        Role = rdr["Role"].ToString() ?? "",
 
                     });
                 }
@@ -90,13 +94,13 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<User> Get(int id)
         {
-            User entity = null;
+            User entity = new();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select UserID, UserType, UserName, Name, Address, Contact, Email, Department, Role from System.tblUser where CompanyID = 1 and UserID = @id";
+                cmd.CommandText = "select UserID, UserType, UserName, Name, Address, Contact, Email, Department, Role from tblUser where CompanyID = 1 and UserID = @id";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", id);
 
@@ -108,12 +112,12 @@ namespace inventory_system_api.Infrastructure.Repository
                     entity = new User
                     {
                         ID = Convert.ToInt32(rdr["UserID"]),
-                        Name = rdr["Name"].ToString(),
-                        UserName = rdr["UserName"].ToString(),
-                        Address = rdr["Address"].ToString(),
-                        PhoneNo = rdr["Contact"].ToString(),
-                        Email = rdr["Email"].ToString(),
-                        Role = rdr["Role"].ToString(),
+                        Name = rdr["Name"].ToString()??"",
+                        UserName = rdr["UserName"].ToString() ?? "",
+                        Address = rdr["Address"].ToString() ?? "",
+                        PhoneNo = rdr["Contact"].ToString() ?? "",
+                        Email = rdr["Email"].ToString() ?? "",
+                        Role = rdr["Role"].ToString() ?? "",
                     };
                 }
             }
@@ -124,13 +128,13 @@ namespace inventory_system_api.Infrastructure.Repository
         public async Task<User> VerifyAndGetUserDetails(string userName, string password)
         {
             string pass = "";
-            User user = null;
+            User user = new();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select * from System.tblUser where CompanyID = 1 and UserName = @userName";
+                cmd.CommandText = "select * from tblUser where CompanyID = 1 and UserName = @userName";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@userName", userName);
 
@@ -142,15 +146,15 @@ namespace inventory_system_api.Infrastructure.Repository
                     user = new User
                     {
                         ID = Convert.ToInt32(rdr["UserID"]),
-                        Name = rdr["Name"].ToString(),
-                        UserName = rdr["UserName"].ToString(),
-                        Address = rdr["Address"].ToString(),
-                        PhoneNo = rdr["Contact"].ToString(),
-                        Email = rdr["Email"].ToString(),
-                        Role = rdr["Role"].ToString(),
+                        Name = rdr["Name"].ToString() ?? "",
+                        UserName = rdr["UserName"].ToString() ?? "",
+                        Address = rdr["Address"].ToString() ?? "",
+                        PhoneNo = rdr["Contact"].ToString() ?? "",
+                        Email = rdr["Email"].ToString() ?? "",
+                        Role = rdr["Role"].ToString() ?? "",
                     };
 
-                    pass = rdr["Password"].ToString();
+                    pass = rdr["Password"].ToString()??"";
                 }
             }
 
@@ -171,9 +175,9 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select Password from System.tblUser where CompanyID = 1 and UserID = @id";
+                cmd.CommandText = "select Password from tblUser where CompanyID = 1 and UserID = @id";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", userID);
 
@@ -183,7 +187,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 while (rdr.Read())
                 {
 
-                    pass = rdr["Password"].ToString();
+                    pass = rdr["Password"].ToString()??"";
                 }
             }
 
@@ -197,8 +201,8 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "[SYSTEM].[SP_PASSWORD_UPDATE]";
+                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "[SP_PASSWORD_UPDATE]";
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@id", entity.ID);

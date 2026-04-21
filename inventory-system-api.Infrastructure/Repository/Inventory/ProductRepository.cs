@@ -22,7 +22,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
                 result.Direction = ParameterDirection.Output;
 
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[Inv].[SP_PRODUCT_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@EngName", entity.EngName);
@@ -58,7 +58,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         {
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[Inv].[spProductDelete]";
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -74,8 +74,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             List<Product> listEntity = [];
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From inv.tblProduct p inner join System.tblUnitMaintenance u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From tblProduct p inner join tblUnitMaintenance u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -85,9 +85,9 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                     Product product = new Product
                     {
                         ID = Convert.ToInt32(rdr["ProductID"]),
-                        Code = rdr["ProductCode"].ToString(),
-                        EngName = rdr["EngName"].ToString(),
-                        NepName = rdr["NepName"].ToString(),
+                        Code = rdr["ProductCode"].ToString() ?? "",
+                        EngName = rdr["EngName"].ToString() ?? "",
+                        NepName = rdr["NepName"].ToString() ?? "",
                         GroupID = rdr["GroupID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["GroupID"]),
                         SalesRate = rdr["SalesRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SalesRate"]),
                         PurchaseRate = rdr["PurchaseRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PurchaseRate"]),
@@ -116,11 +116,11 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<Product> Get(int id)
         {
 
-            Product entity = null;
+            Product entity = new();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "select * from Inv.tblProduct where ProductID = @Id and CompanyID =1";
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "select * from tblProduct where ProductID = @Id and CompanyID =1";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.CommandType = CommandType.Text;
@@ -132,20 +132,20 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                     entity = new Product
                     {
                         ID = Convert.ToInt32(rdr["ProductID"]),
-                        Code = rdr["ProductID"].ToString(),
-                        EngName = rdr["EngName"].ToString(),
-                        NepName = rdr["NepName"].ToString(),
+                        Code = rdr["ProductCode"].ToString()?? "",
+                        EngName = rdr["EngName"].ToString()??"",
+                        NepName = rdr["NepName"].ToString()??"",
                         GroupID = Convert.ToInt32(rdr["GroupID"]),
                         SalesRate = rdr["SalesRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SalesRate"]),
                         PurchaseRate = rdr["PurchaseRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PurchaseRate"]),
                         TaxID = rdr["TaxID"] == DBNull.Value ? null : Convert.ToInt32(rdr["TaxID"]),
-                        IsActive = rdr["IsActive"] != DBNull.Value & rdr["IsActive"] != "0",
+                        IsActive = rdr["IsActive"] != DBNull.Value & rdr["IsActive"].ToString() != "0",
                         IsInventoryApplicable = rdr["IsINventoryApplicable"] != DBNull.Value & rdr["IsINventoryApplicable"].ToString() != "0",
                         IsDecimalApplicable = rdr["IsDecimalApplicable"] != DBNull.Value & rdr["IsDecimalApplicable"].ToString() != "0",
                         IsVatApplicable = rdr["IsVatApplicable"] != DBNull.Value & rdr["IsVatApplicable"].ToString() != "0",
                         IsBuiltIn = rdr["BuiltIn"] != DBNull.Value & rdr["BuiltIn"].ToString() != "0",
                         UnitID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                        CreatedBy = rdr["Created_By"].ToString(),
+                        CreatedBy = rdr["Created_By"].ToString()??"",
                         CreatedDate = Convert.ToDateTime(rdr["Created_Date"]),
                         Image = rdr["Image"] == DBNull.Value ? null : ((byte[])rdr["Image"]).ToBase64()
 
@@ -159,11 +159,11 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<Product> Search(string code)
         {
-            Product entity = null;
+            Product entity = new();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "select * from Inv.tblProduct where ProductCode = @code and CompanyID =1";
+                SqlCommand? cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "select * from tblProduct where ProductCode = @code and CompanyID =1";
                 cmd.Parameters.AddWithValue("@code", code);
 
                 cmd.CommandType = CommandType.Text;
@@ -175,21 +175,21 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                     entity = new Product
                     {
                         ID = Convert.ToInt32(rdr["ProductID"]),
-                        Code = rdr["ProductID"].ToString(),
-                        EngName = rdr["EngName"].ToString(),
-                        NepName = rdr["NepName"].ToString(),
+                        Code = rdr["ProductID"].ToString() ?? "",
+                        EngName = rdr["EngName"].ToString() ?? "",
+                        NepName = rdr["NepName"].ToString() ?? "",
                         Email = rdr["Email"].ToString(),
                         SalesRate = rdr["SalesRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SalesRate"]),
                         PurchaseRate = rdr["PurchaseRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PurchaseRate"]),
                         DepotID = Convert.ToInt32(rdr["DepotID"]),
                         TaxID = rdr["TaxID"] == DBNull.Value ? null : Convert.ToInt32(rdr["TaxID"]),
-                        IsActive = rdr["IsActive"] != DBNull.Value & rdr["IsActive"] != "0",
+                        IsActive = rdr["IsActive"] != DBNull.Value & rdr["IsActive"].ToString() != "0",
                         IsInventoryApplicable = rdr["IsINventoryApplicable"] != DBNull.Value & rdr["IsINventoryApplicable"].ToString() != "0",
                         IsDecimalApplicable = rdr["IsDecimalApplicable"] != DBNull.Value & rdr["IsDecimalApplicable"].ToString() != "0",
                         IsVatApplicable = rdr["IsVatApplicable"] != DBNull.Value & rdr["IsVatApplicable"].ToString() != "0",
                         IsBuiltIn = rdr["BuiltIn"] != DBNull.Value & rdr["BuiltIn"].ToString() != "0",
                         UnitID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                        CreatedBy = rdr["Created_By"].ToString(),
+                        CreatedBy = rdr["Created_By"].ToString()?? "",
                         CreatedDate = Convert.ToDateTime(rdr["Created_Date"]),
                         Image = rdr["Image"] == DBNull.Value ? null : ((byte[])rdr["Image"]).ToBase64()
 

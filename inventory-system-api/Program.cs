@@ -56,7 +56,8 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(
                 "http://localhost:3000",   // React CRA
                 "http://localhost:5174",    // Vite dev server
-                "http://localhost:5173"    // Vite dev server
+                "http://localhost:5173",  // Vite dev server
+                "https://inventory-app-san.netlify.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -134,7 +135,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            RoleClaimType = "Roles"
         };
     });
 #endregion

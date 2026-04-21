@@ -21,8 +21,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 SqlParameter result = new("@return", dbType: SqlDbType.VarChar, 200);
                 result.Direction = ParameterDirection.Output;
 
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "[SYSTEM].[SP_API_ERROR_LOG_ADD_EDIT]";
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "[SP_API_ERROR_LOG_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@REQUESTMETHOD", entity.RequestMethod);
                 cmd.Parameters.AddWithValue("@REQUESTURI", entity.RequestPath);
@@ -50,20 +50,22 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             List<ErrorLog> listEntity = [];
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
-                cmd.CommandText = "select * from System.TBLAPIERRORLOG";
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "select * from tblAPIERRORLOG";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
 
                 while (rdr.Read())
                 {
-                    ErrorLog entity = new ErrorLog();
-                    entity.RequestMethod = rdr["REQUESTMETHOD"].ToString();
-                    entity.RequestPath = rdr["REQUESTURI"].ToString();
-                    entity.RequestHeader = rdr["REQUESTHEADER"].ToString();
-                    entity.ErrorMessage = rdr["MESSAGE"].ToString();
-                    entity.DateTimeUtc = rdr["TIMEUTC"] != DBNull.Value ? null : Convert.ToDateTime(rdr["TIMEUTC"]);
+                    ErrorLog entity = new()
+                    {
+                        RequestMethod = rdr["REQUESTMETHOD"].ToString() ?? "",
+                        RequestPath = rdr["REQUESTURI"].ToString() ?? "",
+                        RequestHeader = rdr["REQUESTHEADER"].ToString() ?? "",
+                        ErrorMessage = rdr["MESSAGE"].ToString() ?? "",
+                        DateTimeUtc = rdr["TIMEUTC"] != DBNull.Value ? null : Convert.ToDateTime(rdr["TIMEUTC"])
+                    };
 
                     listEntity.Add(entity);
                 }

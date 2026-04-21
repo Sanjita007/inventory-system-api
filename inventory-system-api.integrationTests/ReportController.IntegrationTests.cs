@@ -25,11 +25,11 @@ public class ReportControllerIntegrationTests : IClassFixture<CustomWebApplicati
 
         var response = await client.GetAsync("/api/v1/Report/GrossProfit");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<Models.Response>();
-        Assert.IsNotNull(payload);
-        Assert.IsTrue(payload.StatusCode == 200);
+        Assert.NotNull(payload);
+        Assert.True(payload.StatusCode == 200);
     }
 
     [Fact]
@@ -39,10 +39,10 @@ public class ReportControllerIntegrationTests : IClassFixture<CustomWebApplicati
 
         var response = await client.GetAsync("/api/v1/Report/Inventory");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<Models.Response>();
-        Assert.IsNotNull(payload);
-        Assert.IsTrue(payload.StatusCode == 200);
+        Assert.NotNull(payload);
+        Assert.True(payload.StatusCode == 200);
     }
 }

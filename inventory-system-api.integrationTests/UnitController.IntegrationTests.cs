@@ -25,12 +25,12 @@ public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplication
 
         var response = await client.GetAsync("/api/v1/Unit");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<Models.Response>();
-        Assert.IsNotNull(payload);
-        Assert.AreEqual(200, payload.StatusCode);
-        Assert.AreEqual("Success", payload.Message);
+        Assert.NotNull(payload);
+        Assert.Equal(200, payload.StatusCode);
+        Assert.Equal("Success", payload.Message);
         // Data may be null or an array depending on repository; assert shape only
     }
 
@@ -41,12 +41,12 @@ public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplication
 
         var response = await client.GetAsync("/api/v1/Unit/1");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<Models.Response>();
-        Assert.IsNotNull(payload);
-        Assert.AreEqual(200, payload.StatusCode);
-        Assert.AreEqual("Success", payload.Message);
+        Assert.NotNull(payload);
+        Assert.Equal(200, payload.StatusCode);
+        Assert.Equal("Success", payload.Message);
     }
 
     [Fact]
@@ -56,11 +56,11 @@ public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplication
 
         var response = await client.GetAsync("/api/v1/Unit/Convert?defaultUnitID=1&currentUnitID=2&valueToConvert=10");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<Models.Response>();
-        Assert.IsNotNull(payload);
-        Assert.AreEqual(200, payload.StatusCode);
+        Assert.NotNull(payload);
+        Assert.Equal(200, payload.StatusCode);
     }
 
     [Fact]
@@ -83,15 +83,15 @@ public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplication
         int newId = payload.GetProperty("data").GetProperty("id").GetInt32();
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         // Verify the unit was saved by fetching it back (assuming ID is returned in response)
         var getResponse = await client.GetAsync($"/api/v1/Unit/{newId}");
 
         var payloadReturn = await response.Content.ReadFromJsonAsync<Models.Response>();
 
-        Assert.AreEqual(HttpStatusCode.OK, getResponse.StatusCode);
-        Assert.IsNotNull(payloadReturn?.Data);
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+        Assert.NotNull(payloadReturn?.Data);
     }
 }
   

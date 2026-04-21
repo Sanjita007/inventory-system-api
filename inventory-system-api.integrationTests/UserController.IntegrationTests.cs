@@ -28,11 +28,11 @@ public class UserControllerIntegrationTests : IClassFixture<CustomWebApplication
 
         var response = await client.PostAsync("/api/v1/User/Login", content);
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.IsTrue(payload.TryGetProperty("data", out var data));
-        Assert.IsTrue(data.TryGetProperty("token", out var token));
-        Assert.IsFalse(string.IsNullOrEmpty(token.GetString()));
+        Assert.True(payload.TryGetProperty("data", out var data));
+        Assert.True(data.TryGetProperty("token", out var token));
+        Assert.False(string.IsNullOrEmpty(token.GetString()));
     }
 }

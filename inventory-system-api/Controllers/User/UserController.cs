@@ -68,6 +68,7 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Post(User entity)
         {
             int res = await _repo.AddEdit(entity);
@@ -76,14 +77,14 @@ namespace inventory_system_api.Controllers
 
         private object GenerateJSONWebToken(User user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]??""));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("Role", user.Role),
+                new Claim("Roles", user.Role),
                 new Claim("Date", DateTime.Now.ToString())
             };
 

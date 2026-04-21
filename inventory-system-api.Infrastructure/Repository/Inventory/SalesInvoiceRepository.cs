@@ -23,7 +23,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
                 result.Direction = ParameterDirection.Output;
 
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[Inv].[SP_SALES_INVOICE_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@VOUCHERNO", entity.VoucherNo);
@@ -61,13 +61,13 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<List<SalesInvoiceMaster>> Get()
         {
-            return await ExecuteQueryAsync("select * from Inv.tblSalesInvoiceMaster where CompanyID =1", MapEntity, null);
+            return await ExecuteQueryAsync("select * from tblSalesInvoiceMaster where CompanyID =1", MapEntity, []);
 
         }
 
         public override SalesInvoiceMaster MapEntity(IDataReader rdr)
         {
-            SalesInvoiceMaster entity = new SalesInvoiceMaster
+            SalesInvoiceMaster entity = new()
             {
                 ID = Convert.ToInt32(rdr["SalesInvoiceID"]),
                 VoucherNo = rdr["Voucher_No"].ToString(),
@@ -82,7 +82,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 ChangeAmount = rdr["ChangeAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ChangeAmt"]),
                 AdjustmentAmount = rdr["AdjustmentAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AdjustmentAmt"]),
                 CreatedBy = Convert.ToInt32(rdr["Created_By"]),
-                SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
+                //SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
                 CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
             };
 
@@ -91,7 +91,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public SalesInvoiceMaster MapEntityDetails(IDataReader rdr)
         {
-            SalesInvoiceMaster entity = new SalesInvoiceMaster
+            SalesInvoiceMaster entity = new()
             {
                 ID = Convert.ToInt32(rdr["SalesInvoiceID"]),
                 VoucherNo = rdr["Voucher_No"].ToString(),
@@ -106,14 +106,14 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 ChangeAmount = rdr["ChangeAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ChangeAmt"]),
                 AdjustmentAmount = rdr["AdjustmentAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AdjustmentAmt"]),
                 CreatedBy = Convert.ToInt32(rdr["Created_By"]),
-                SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
+                //SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
                 CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
             };
 
             //only get this one for the getByID because it would be heavy otherwise
             while (rdr.NextResult())
                 {
-                    entity.Details = new List<InvoiceDetail>();
+                entity.Details = [];
                     while (rdr.Read())
                     {
                         entity.Details.Add(new InvoiceDetail()
@@ -121,13 +121,13 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                             ID = Convert.ToInt32(rdr["SalesINvoice_DetailID"]),
                             MasterID = Convert.ToInt32(rdr["SalesInvoiceID"]),
                             ProductID = Convert.ToInt32(rdr["ProductID"]),
-                            ProductName = rdr["ProductName"].ToString(),
+                            ProductName = rdr["ProductName"].ToString()??"",
                             QtyUnitID = Convert.ToInt32(rdr["QtyUnitID"]),
                             DefaultUnitID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                            DefaultUnitName = rdr["DefaultUnitName"].ToString(),
-                            DefaultUnitSymbol = rdr["DefaultUnitSymbol"].ToString(),
+                            DefaultUnitName = rdr["DefaultUnitName"].ToString()??"",
+                            DefaultUnitSymbol = rdr["DefaultUnitSymbol"].ToString() ?? "",
                             TaxID = rdr["TaxID"] == DBNull.Value ? null : Convert.ToInt32(rdr["TaxID"]),
-                            ProductCode = rdr["Code"].ToString(),
+                            ProductCode = rdr["Code"].ToString() ?? "",
                             Quantity = Convert.ToInt32(rdr["Quantity"]),
                             Price = Convert.ToDecimal(rdr["SalesRate"]),
                             Amount = Convert.ToDecimal(rdr["Amount"]),
@@ -151,12 +151,12 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             int TotalRecords = 0;
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = _dbConnection.CreateCommand() as SqlCommand;
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
                 cmd.Parameters.AddWithValue("@pageNo", pageNo);
                 cmd.Parameters.AddWithValue("@rowsPerPage", rowPerPage);
-                cmd.CommandText = "select * from Inv.tblSalesInvoiceMaster where CompanyID =1 order by SalesInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
-                    "select count('x') from INv.tblSalesInvoiceMaster";
+                cmd.CommandText = "select * from tblSalesInvoiceMaster where CompanyID =1 order by SalesInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
+                    "select count('x') from tblSalesInvoiceMaster";
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
@@ -164,7 +164,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 while (rdr.Read())
                 {
-                    SalesInvoiceMaster entity = new SalesInvoiceMaster
+                    SalesInvoiceMaster entity = new()
                     {
                         ID = Convert.ToInt32(rdr["SalesInvoiceID"]),
                         VoucherNo = rdr["Voucher_No"].ToString(),
@@ -179,7 +179,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                         ChangeAmount = rdr["ChangeAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ChangeAmt"]),
                         AdjustmentAmount = rdr["AdjustmentAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AdjustmentAmt"]),
                         CreatedBy = Convert.ToInt32(rdr["Created_By"]),
-                        SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
+                        //SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
                         CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
                     };
 
@@ -203,9 +203,9 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<SalesInvoiceMaster> Get(int id)
         {
             
-                 string query = "select * from Inv.tblSalesInvoiceMaster where SalesInvoiceID = @Id and CompanyID =1;" +
+                 string query = "select * from tblSalesInvoiceMaster where SalesInvoiceID = @Id and CompanyID =1;" +
 
-                    "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from Inv.tblSalesInvoiceDetails sd inner join Inv.tblProduct p on sd.ProductID = p.ProductID inner join System.tblUnitMaintenance u on sd.QtyUnitID = u.UnitMaintenanceID  where SalesInvoiceID = @id";
+                    "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from tblSalesInvoiceDetails sd inner join tblProduct p on sd.ProductID = p.ProductID inner join tblUnitMaintenance u on sd.QtyUnitID = u.UnitMaintenanceID  where SalesInvoiceID = @id";
             SqlParameter[] param = [
                 new SqlParameter("@id", id) ];
 
