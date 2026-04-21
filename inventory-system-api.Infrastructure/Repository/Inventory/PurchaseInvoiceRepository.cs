@@ -24,7 +24,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 result.Direction = ParameterDirection.Output;
 
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[Inv].[SP_PURCHASE_INVOICE_ADD_EDIT]";
+                cmd.CommandText = "[SP_PURCHASE_INVOICE_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@ID", entity.ID);
                 cmd.Parameters.AddWithValue("@VOUCHERNO", entity.VoucherNo);
                 cmd.Parameters.AddWithValue("@PURCHINVOICEDATE", entity.Date);
