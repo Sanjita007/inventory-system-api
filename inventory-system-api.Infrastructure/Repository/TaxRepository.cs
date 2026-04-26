@@ -22,7 +22,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 result.Direction = ParameterDirection.Output;
 
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[spTaxAddEdit]";
+                cmd.CommandText = "[SP_TAX_ADD_EDIT]";
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@Name", entity.Name);
                 cmd.Parameters.AddWithValue("@Code", entity.Code);

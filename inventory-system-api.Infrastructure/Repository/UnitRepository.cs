@@ -82,7 +82,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT * FROM tblUnitMaintenance WHERE CompanyID = 1";
+                cmd.CommandText = "SELECT * FROM UNIT WHERE CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -110,7 +110,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT * FROM tblUnitMaintenance WHERE UnitMaintenanceID = @id and CompanyID = 1";
+                cmd.CommandText = "SELECT * FROM UNIT WHERE UnitMaintenanceID = @id and CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", id);
 
@@ -170,9 +170,9 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "spGetMultipleUnitConversionRates";
+                cmd.CommandText = "SP_GET_MULTIPLE_UNIT_CONVERSION_RATES";
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@unitsCSV", baseUnits);
+                cmd.Parameters.AddWithValue("@UNITSCSV", baseUnits);
 
                 _dbConnection.Open();
 

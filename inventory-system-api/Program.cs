@@ -34,7 +34,7 @@ builder.Services.AddControllers()
             var errorResponse = new inventory_system_api.Application.Models.ErrorResponse
             {
                 StatusCode = StatusCodes.Status400BadRequest,
-                Message = "Validation failed.", 
+                Message = "Validation failed: " + string.Join(", ", errors.Values.SelectMany(x => x)),
                 Errors = errors,
                 TraceId = context.HttpContext.TraceIdentifier
             };
