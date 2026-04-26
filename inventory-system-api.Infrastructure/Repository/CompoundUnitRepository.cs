@@ -80,8 +80,8 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = $"select CompoundUnitID, UnitID, cu.ParentUnitID, u.UnitName, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from tblCompoundUnit cu " +
-                    $"inner join tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID";
+                cmd.CommandText = $"select CompoundUnitID, UnitID, cu.ParentUnitID, u.UnitName, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from COMPOUND_UNIT cu " +
+                    $"inner join UNIT u on cu.UnitID = u.UnitMaintenanceID inner join UNIT pu on cu.ParentUnitID = pu.UnitMaintenanceID";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -112,8 +112,8 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = $"select CompoundUnitID, UnitID, u.UnitName, cu.ParentUnitID, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from tblCompoundUnit cu " +
-                    $"inner join tblUnitMaintenance u on cu.UnitID = u.UnitMaintenanceID inner join tblUnitMaintenance pu on cu.ParentUnitID = pu.UnitMaintenanceID where CompoundUnitID = @id";
+                cmd.CommandText = $"select CompoundUnitID, UnitID, u.UnitName, cu.ParentUnitID, pu.UnitName ParentUnitName, RelationValue, cu.Remarks from COMPOUND_UNIT cu " +
+                    $"inner join UNIT u on cu.UnitID = u.UnitMaintenanceID inner join UNIT pu on cu.ParentUnitID = pu.UnitMaintenanceID where CompoundUnitID = @id";
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.AddWithValue("@id", id);
