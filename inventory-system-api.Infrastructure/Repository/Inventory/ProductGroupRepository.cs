@@ -47,7 +47,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[spProductGroupDelete]";
+                cmd.CommandText = "SP_PRODUCT_GROUP_DELETE";
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
