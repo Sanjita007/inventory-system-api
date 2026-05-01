@@ -56,9 +56,23 @@ public class PurchaseInvoiceControllerIntegrationTests : IClassFixture<CustomWeb
 
         var newInvoice = new
         {
-            EntityName = "Test Supplier",
+            ID = 0,
+            VoucherNo = "PNEW",
+            EntityName = "NewSupplier",
             Date = DateTime.UtcNow,
-            NetAmount = 200.00m,
+            TotalQty = 0m,
+            GrossAmount = 0m,
+            SpecialDiscount = 0m,
+            NetAmount = 0m,
+            TotalTCAmount = 0m,
+            TenderAmount = 0m,
+            ChangeAmount = 0m,
+            AdjustmentAmount = 0m,
+            Status = "PAID",
+            CreatedDate = DateTime.UtcNow,
+            CreatedBy = 1,
+            CompanyID = 1,
+            Remarks = "unit test",
             Details = new[] {
                 new { ProductID = 1, ProductName = "P1", Quantity = 2, Price = 100.00m, NetAmount = 200.00m }
             }
