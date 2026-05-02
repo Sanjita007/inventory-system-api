@@ -24,6 +24,9 @@ namespace inventory_system_api.Infrastructure.Repository
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
                 cmd.CommandText = "[SP_UNIT_ADD_EDIT]";
                 cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
+                result.Direction = ParameterDirection.Output;
+                cmd.Parameters.Add(result);
 
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@Name", entity.Name);
@@ -33,7 +36,8 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@UserID", "root");
 
                 _dbConnection.Open();
-                res = await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync();
+                res = Convert.ToInt32(result.Value);
 
             }
             return res;
