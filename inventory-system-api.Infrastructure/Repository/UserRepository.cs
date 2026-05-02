@@ -51,7 +51,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "[spUserDelete]";
+                cmd.CommandText = "[SP_USER_DELETE]";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
 
@@ -68,7 +68,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email,Department, Role from User where CompanyID = 1";
+                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email,Department, Role from [User] where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -100,7 +100,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select UserID, UserType, UserName, Name, Address, Contact, Email, Department, Role from User where CompanyID = 1 and UserID = @id";
+                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email, Department, Role from [User] where CompanyID = 1 and UserID = @id";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", id);
 
@@ -177,7 +177,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select Password from User where CompanyID = 1 and UserID = @id";
+                cmd.CommandText = "select Password from [User] where CompanyID = 1 and UserID = @id";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", userID);
 

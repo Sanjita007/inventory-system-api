@@ -46,7 +46,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT [fnConvertCompoundUnit](@defUnitID, @currUnitID, @actualValue, 1)";
+                cmd.CommandText = "SELECT dbo.[FN_CONVERT_COMPOUND_UNIT](@defUnitID, @currUnitID, @actualValue, 1)";
                 cmd.CommandType = CommandType.Text;
 
                 cmd.Parameters.AddWithValue("@defUnitID", defaultUnitID);
@@ -65,7 +65,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "[spUnitDelete]";
+                cmd.CommandText = "[SP_UNIT_DELETE]";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
 

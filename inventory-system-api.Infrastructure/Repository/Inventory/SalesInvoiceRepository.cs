@@ -46,7 +46,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                res = await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync();
+                res = Convert.ToInt32(result.Value);
 
             }
 
@@ -56,7 +57,16 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<int> Delete(int id)
         {
-            throw new NotImplementedException();
+            using (_dbConnection as SqlConnection)
+            {
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "[SP_SALES_INVOICE_DELETE]";
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.CommandType = CommandType.StoredProcedure;
+                _dbConnection.Open();
+                return await cmd.ExecuteNonQueryAsync();
+
+            }
         }
 
         public async Task<List<SalesInvoiceMaster>> Get()
@@ -105,7 +115,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 TenderAmount = rdr["TenderAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["TenderAmt"]),
                 ChangeAmount = rdr["ChangeAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ChangeAmt"]),
                 AdjustmentAmount = rdr["AdjustmentAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AdjustmentAmt"]),
-                CreatedBy = Convert.ToInt32(rdr["Created_By"]),
+                //CreatedBy = Convert.ToInt32(rdr["Created_By"]),
                 //SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
                 CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
             };
