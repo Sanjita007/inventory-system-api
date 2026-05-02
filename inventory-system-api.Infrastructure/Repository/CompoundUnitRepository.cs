@@ -22,6 +22,8 @@ namespace inventory_system_api.Infrastructure.Repository
             using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
             cmd.CommandText = "[SP_COMPOUND_UNIT_ADD_EDIT]";
             cmd.CommandType = CommandType.StoredProcedure;
+            SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
+            result.Direction = ParameterDirection.Output;
 
             cmd.Parameters.AddWithValue("@id", entity.ID);
             cmd.Parameters.AddWithValue("@UnitID", entity.UnitID);
@@ -32,7 +34,8 @@ namespace inventory_system_api.Infrastructure.Repository
             cmd.Parameters.AddWithValue("@User", "root");
 
             _dbConnection.Open();
-            res = await cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync();
+            res = Convert.ToInt32(result.Value ?? 0);
 
             return res;
 
@@ -63,7 +66,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "[spUnitDelete]";
+                cmd.CommandText = "[SP_COMPOUNT_UNIT_DELETE]";
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
 

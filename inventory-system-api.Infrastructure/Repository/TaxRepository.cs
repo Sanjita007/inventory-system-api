@@ -32,7 +32,8 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                res = await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync();
+                res = Convert.ToInt32(result.Value ?? 0);
 
             }
 
@@ -45,7 +46,7 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[spUnitDelete]";
+                cmd.CommandText = "[SP_TAX_DELETE]";
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
@@ -61,7 +62,7 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from tblTax where CompanyID = 1";
+                cmd.CommandText = "select * from TAX where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -89,7 +90,7 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from tblTax where CompanyID = 1 and TaxID = @Id";
+                cmd.CommandText = "select * from TAX where CompanyID = 1 and TaxID = @Id";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.CommandType = CommandType.Text;

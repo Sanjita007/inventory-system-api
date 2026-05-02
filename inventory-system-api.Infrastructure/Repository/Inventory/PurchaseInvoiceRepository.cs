@@ -45,7 +45,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                res = await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync();
+                res = Convert.ToInt32(result.Value??0);
 
             }
 
@@ -192,17 +193,15 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<PurchaseInvoiceMaster> Get(int id)
         {
             
-                 string query = "select * from PURCHASE_INVOICE where PurchaseInvoiceID = @Id and CompanyID =1;" +
+            string query = "select * from PURCHASE_INVOICE where PurchaseInvoiceID = @Id and CompanyID =1;" +
 
                     "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from PURCHASE_INVOICE_DETAILS sd inner join Product p on sd.ProductID = p.ProductID inner join UNIT u on sd.QtyUnitID = u.UnitMaintenanceID  where PurchaseInvoiceID = @id";
-            SqlParameter[] param = [
-                new SqlParameter("@id", id) ];
+            SqlParameter[] param = [ new SqlParameter("@id", id) ];
 
                
             List<PurchaseInvoiceMaster> list = await ExecuteQueryAsync(query, MapEntityDetails, param);
 
-            return list.FirstOrDefault()
-            ;
+            return list.FirstOrDefault();
         }
 
     }
