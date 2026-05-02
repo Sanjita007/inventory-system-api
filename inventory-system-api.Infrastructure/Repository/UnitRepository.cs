@@ -26,6 +26,10 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.CommandType = CommandType.StoredProcedure;
                 SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
                 result.Direction = ParameterDirection.Output;
+<<<<<<< HEAD
+=======
+                cmd.Parameters.Add(result);
+>>>>>>> 8568763ccc9684ff339b519a3d9cad7d842a8082
 
                 cmd.Parameters.AddWithValue("@id", entity.ID);
                 cmd.Parameters.AddWithValue("@Name", entity.Name);
@@ -36,7 +40,11 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
                 await cmd.ExecuteNonQueryAsync();
+<<<<<<< HEAD
                 res = Convert.ToInt32(result.Value ?? 0);
+=======
+                res = Convert.ToInt32(result.Value);
+>>>>>>> 8568763ccc9684ff339b519a3d9cad7d842a8082
 
             }
             return res;

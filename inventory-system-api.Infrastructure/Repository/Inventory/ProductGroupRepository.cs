@@ -35,8 +35,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 await cmd.ExecuteNonQueryAsync();
-                res = Convert.ToInt32(result.Value ?? 0);
-
+                res = Convert.ToInt32(result.Value);
             }
 
             return res;

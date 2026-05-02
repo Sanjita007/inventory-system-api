@@ -61,7 +61,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<List<PurchaseInvoiceMaster>> Get()
         {
-            return await ExecuteQueryAsync("select * from PURCHASE_INVOICE_DETAILS where CompanyID =1", MapEntity, []);
+            return await ExecuteQueryAsync("select * from PURCHASE_INVOICE", MapEntity, []);
 
         }
 
@@ -79,7 +79,6 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 //TotalAmount = rdr["Total_Amount"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Total_Amount"]),
                 TotalTCAmount = rdr["TotalTCAmount"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["TotalTCAmount"]),
                 
-                CreatedBy = Convert.ToInt32(rdr["Created_By"]),
                 CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
             };
 
@@ -148,7 +147,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.Parameters.AddWithValue("@pageNo", pageNo);
                 cmd.Parameters.AddWithValue("@rowsPerPage", rowPerPage);
-                cmd.CommandText = "select * from PURCHASE_INVOICE where CompanyID =1 order by PurchaseInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
+                cmd.CommandText = "select * from PURCHASE_INVOICE order by PurchaseInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
                     "select count('x') from PURCHASE_INVOICE";
                 
                 cmd.CommandType = CommandType.Text;
@@ -193,7 +192,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<PurchaseInvoiceMaster> Get(int id)
         {
             
-            string query = "select * from PURCHASE_INVOICE where PurchaseInvoiceID = @Id and CompanyID =1;" +
+            string query = "select * from PURCHASE_INVOICE where PurchaseInvoiceID = @Id" +
 
                     "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from PURCHASE_INVOICE_DETAILS sd inner join Product p on sd.ProductID = p.ProductID inner join UNIT u on sd.QtyUnitID = u.UnitMaintenanceID  where PurchaseInvoiceID = @id";
             SqlParameter[] param = [ new SqlParameter("@id", id) ];

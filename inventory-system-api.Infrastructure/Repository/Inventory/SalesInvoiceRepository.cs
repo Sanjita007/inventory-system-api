@@ -71,7 +71,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<List<SalesInvoiceMaster>> Get()
         {
-            return await ExecuteQueryAsync("select * from SALES_INVOICE where CompanyID =1", MapEntity, []);
+            return await ExecuteQueryAsync("select * from SALES_INVOICE ", MapEntity, []);
 
         }
 
@@ -91,7 +91,6 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 TenderAmount = rdr["TenderAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["TenderAmt"]),
                 ChangeAmount = rdr["ChangeAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["ChangeAmt"]),
                 AdjustmentAmount = rdr["AdjustmentAmt"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["AdjustmentAmt"]),
-                CreatedBy = Convert.ToInt32(rdr["Created_By"]),
                 //SalesDueDate = Convert.ToDateTime(rdr["SalesInvoice_Date"]),
                 CreatedDate = Convert.ToDateTime(rdr["Created_Date"])
             };
@@ -165,7 +164,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.Parameters.AddWithValue("@pageNo", pageNo);
                 cmd.Parameters.AddWithValue("@rowsPerPage", rowPerPage);
-                cmd.CommandText = "select * from SALES_INVOICE where CompanyID =1 order by SalesInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
+                cmd.CommandText = "select * from SALES_INVOICE order by SalesInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
                     "select count('x') from SALES_INVOICE";
 
                 cmd.CommandType = CommandType.Text;

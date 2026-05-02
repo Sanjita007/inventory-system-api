@@ -48,7 +48,11 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 await cmd.ExecuteNonQueryAsync();
+<<<<<<< HEAD
                 res = Convert.ToInt32(result.Value ?? 0);
+=======
+                res = Convert.ToInt32(result.Value);
+>>>>>>> 8568763ccc9684ff339b519a3d9cad7d842a8082
 
             }
 
@@ -76,7 +80,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From Product p inner join tblUnitMaintenance u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
+                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From Product p inner join UNIT u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
@@ -121,7 +125,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from tblProduct where ProductID = @Id and CompanyID =1";
+                cmd.CommandText = "select * from PRODUCT where ProductID = @Id and CompanyID =1";
                 cmd.Parameters.AddWithValue("@id", id);
 
                 cmd.CommandType = CommandType.Text;

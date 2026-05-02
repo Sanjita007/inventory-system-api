@@ -24,6 +24,7 @@ namespace inventory_system_api.Infrastructure.Repository
             cmd.CommandType = CommandType.StoredProcedure;
             SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
             result.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(result);
 
             cmd.Parameters.AddWithValue("@id", entity.ID);
             cmd.Parameters.AddWithValue("@UnitID", entity.UnitID);
@@ -34,8 +35,7 @@ namespace inventory_system_api.Infrastructure.Repository
             cmd.Parameters.AddWithValue("@User", "root");
 
             _dbConnection.Open();
-            await cmd.ExecuteNonQueryAsync();
-            res = Convert.ToInt32(result.Value ?? 0);
+            res = await cmd.ExecuteNonQueryAsync();
 
             return res;
 
