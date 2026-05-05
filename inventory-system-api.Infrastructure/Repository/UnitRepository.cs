@@ -15,7 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(Unit entity)
+        public async Task<int> AddEdit(Unit entity, CancellationToken cancellationToken)
         {
             int res = 0;
 
@@ -36,7 +36,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@UserID", "root");
 
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
                 res = Convert.ToInt32(result.Value);
 
             }
@@ -44,7 +44,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
         }
 
-        public async Task<decimal?> ConvertUnit(int defaultUnitID, int currentUnitID, decimal valueToConvert)
+        public async Task<decimal?> ConvertUnit(int defaultUnitID, int currentUnitID, decimal valueToConvert, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -58,12 +58,12 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@actualValue", valueToConvert);
 
                 _dbConnection.Open();
-                var value = await cmd.ExecuteScalarAsync();
+                var value = await cmd.ExecuteScalarAsync(cancellationToken);
             return value == DBNull.Value ? null : Convert.ToDecimal(value);
             }
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -74,11 +74,11 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@id", id);
 
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
             }
         }
 
-        public async Task<List<Unit>> Get()
+        public async Task<List<Unit>> Get(CancellationToken cancellationToken)
         {
             List<Unit> listEntity = new List<Unit>();
 
@@ -91,7 +91,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     listEntity.Add(new Unit
@@ -106,7 +106,7 @@ namespace inventory_system_api.Infrastructure.Repository
             return listEntity;
         }
 
-        public async Task<Unit> Get(int id)
+        public async Task<Unit> Get(int id, CancellationToken cancellationToken)
         {
             Unit entity= new();
 
@@ -120,7 +120,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     entity = new Unit
@@ -135,7 +135,7 @@ namespace inventory_system_api.Infrastructure.Repository
             return entity;
         }
 
-        public async Task<List<UnitDetails>> GetRelatedUnit(int BaseUnitID)
+        public async Task<List<UnitDetails>> GetRelatedUnit(int BaseUnitID, CancellationToken cancellationToken)
         {
             List<UnitDetails> entity = new List<UnitDetails>();
 
@@ -149,7 +149,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     entity.Add(new UnitDetails
@@ -166,7 +166,7 @@ namespace inventory_system_api.Infrastructure.Repository
             return entity;
         }
 
-        public async Task<List<UnitDetails>> GetMultipleRelatedUnit(string baseUnits)
+        public async Task<List<UnitDetails>> GetMultipleRelatedUnit(string baseUnits, CancellationToken cancellationToken)
         {
             List<UnitDetails> entity = new List<UnitDetails>();
 
@@ -180,7 +180,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     entity.Add(new UnitDetails

@@ -21,34 +21,34 @@ namespace inventory_system_api.Infrastructure.Service
             _prodGroupRepo = prodGroupRepo;
         }
 
-        public async Task<int> AddEdit(Product entity)
+        public async Task<int> AddEdit(Product entity, CancellationToken cancellationToken)
         {
-            return await _productRepo.AddEdit(entity);
+            return await _productRepo.AddEdit(entity, cancellationToken);
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
-            return await _productRepo.Delete(id);
+            return await _productRepo.Delete(id, cancellationToken);
         }
 
-        public async Task<List<Product>> Get()
+        public async Task<List<Product>> Get(CancellationToken cancellationToken)
         {
-            return await _productRepo.Get();
+            return await _productRepo.Get(cancellationToken);
         }
 
-        public async Task<Product> Get(int id)
+        public async Task<Product> Get(int id, CancellationToken cancellationToken)
         {
-            return await _productRepo.Get(id);
+            return await _productRepo.Get(id, cancellationToken);
         }
 
-        public async Task<List<ProductDetails>> GetProductsWithUnits()
+        public async Task<List<ProductDetails>> GetProductsWithUnits(CancellationToken cancellationToken)
         {
-            List<Product> products = await _productRepo.Get();
+            List<Product> products = await _productRepo.Get(cancellationToken);
             //List<ProductDetails> productDetails = [];
 
             List<int> units = products.Select(r => r.UnitID).Distinct().ToList();
 
-            List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(String.Join(",", units));
+            List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(String.Join(",", units), cancellationToken);
 
 
             var unitDetailsLookup = details
@@ -82,15 +82,15 @@ namespace inventory_system_api.Infrastructure.Service
             return productDetails;
         }
 
-        public async Task<Product> Search(string code)
+        public async Task<Product> Search(string code, CancellationToken cancellationToken)
         {
-            return await _productRepo.Search(code);
+            return await _productRepo.Search(code, cancellationToken);
         }
 
-        public async Task<List<Tree>> GetProductTrees()
+        public async Task<List<Tree>> GetProductTrees(CancellationToken cancellationToken)
         {
-            List<Product> products = await Get();
-            List<ProductGroup> productGroups = await _prodGroupRepo.Get();
+            List<Product> products = await Get(cancellationToken);
+            List<ProductGroup> productGroups = await _prodGroupRepo.Get(cancellationToken);
 
             List<Tree> tree = TreeMethod(productGroups, products, 0, 0);
 

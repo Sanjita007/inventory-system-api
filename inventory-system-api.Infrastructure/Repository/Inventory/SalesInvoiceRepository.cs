@@ -15,7 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(SalesInvoiceMaster entity)
+        public async Task<int> AddEdit(SalesInvoiceMaster entity, CancellationToken cancellationToken)
         {
             int res = 0;
             using (_dbConnection as SqlConnection)
@@ -46,7 +46,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
                 res = Convert.ToInt32(result.Value);
 
             }
@@ -55,7 +55,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         }
 
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -64,14 +64,14 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             }
         }
 
-        public async Task<List<SalesInvoiceMaster>> Get()
+        public async Task<List<SalesInvoiceMaster>> Get(CancellationToken cancellationToken)
         {
-            return await ExecuteQueryAsync("select * from SALES_INVOICE ", MapEntity, []);
+            return await ExecuteQueryAsync("select * from SALES_INVOICE ", MapEntity, [], cancellationToken);
 
         }
 
@@ -154,7 +154,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return entity;
         }
 
-        public async Task<Navigate> Navigate(int pageNo, int rowPerPage)
+        public async Task<Navigate> Navigate(int pageNo, int rowPerPage, CancellationToken cancellationToken)
         {
             List<SalesInvoiceMaster> listEntity = [];
             int TotalRecords = 0;
@@ -169,7 +169,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -209,7 +209,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         }
 
-        public async Task<SalesInvoiceMaster> Get(int id)
+        public async Task<SalesInvoiceMaster> Get(int id, CancellationToken cancellationToken)
         {
             
                  string query = "select * from SALES_INVOICE where SalesInvoiceID = @Id and CompanyID =1;" +
@@ -219,7 +219,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 new SqlParameter("@id", id) ];
 
                
-            List<SalesInvoiceMaster> list = await ExecuteQueryAsync(query, MapEntityDetails, param);
+            List<SalesInvoiceMaster> list = await ExecuteQueryAsync(query, MapEntityDetails, param, cancellationToken);
 
             return list.FirstOrDefault();
         }

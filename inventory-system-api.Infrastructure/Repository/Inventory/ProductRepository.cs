@@ -14,7 +14,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(Product entity)
+        public async Task<int> AddEdit(Product entity, CancellationToken cancellationToken)
         {
             int res = 0;
             using (_dbConnection as SqlConnection)
@@ -47,7 +47,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
                 res = Convert.ToInt32(result.Value);
 
             }
@@ -55,7 +55,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return res;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -64,12 +64,12 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             }
         }
 
-        public async Task<List<Product>> Get()
+        public async Task<List<Product>> Get(CancellationToken cancellationToken)
         {
 
             List<Product> listEntity = [];
@@ -79,7 +79,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.CommandText = "select p.*, u.UnitName, u.Symbol From Product p inner join UNIT u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -114,7 +114,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return listEntity;
         }
 
-        public async Task<Product> Get(int id)
+        public async Task<Product> Get(int id, CancellationToken cancellationToken)
         {
 
             Product entity = new();
@@ -126,7 +126,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -158,7 +158,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return entity;
         }
 
-        public async Task<Product> Search(string code)
+        public async Task<Product> Search(string code, CancellationToken cancellationToken)
         {
             Product entity = new();
             using (_dbConnection as SqlConnection)
@@ -169,7 +169,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {

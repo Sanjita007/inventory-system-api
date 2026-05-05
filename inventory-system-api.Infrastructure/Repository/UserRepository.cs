@@ -14,7 +14,7 @@ namespace inventory_system_api.Infrastructure.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(User entity)
+        public async Task<int> AddEdit(User entity, CancellationToken cancellationToken)
         {
             int res = 0;
 
@@ -39,14 +39,14 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@UserID", "root");
 
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
                 res = Convert.ToInt32(result.Value);
 
             }
             return res;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -57,11 +57,11 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@id", id);
 
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
             }
         }
 
-        public async Task<List<User>> Get()
+        public async Task<List<User>> Get(CancellationToken cancellationToken)
         {
             List<User> listEntity = new List<User>();
 
@@ -74,7 +74,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     listEntity.Add(new User
@@ -93,7 +93,7 @@ namespace inventory_system_api.Infrastructure.Repository
             return listEntity;
         }
 
-        public async Task<User> Get(int id)
+        public async Task<User> Get(int id, CancellationToken cancellationToken)
         {
             User entity = new();
 
@@ -107,7 +107,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     entity = new User
@@ -126,7 +126,7 @@ namespace inventory_system_api.Infrastructure.Repository
         }
 
 
-        public async Task<User> VerifyAndGetUserDetails(string userName, string password)
+        public async Task<User> VerifyAndGetUserDetails(string userName, string password, CancellationToken cancellationToken)
         {
             string pass = "";
             User user = new();
@@ -141,7 +141,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     user = new User
@@ -170,7 +170,7 @@ namespace inventory_system_api.Infrastructure.Repository
             }
         }
 
-        public async Task<bool> ValidatePassword(int userID, string password)
+        public async Task<bool> ValidatePassword(int userID, string password, CancellationToken cancellationToken)
         {
             string pass = "";
 
@@ -184,7 +184,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync();
+                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
 
@@ -196,7 +196,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
         }
 
-        public async Task<int> UpdatePassword(UpdatePasswordModel entity)
+        public async Task<int> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken)
         {
             int res = 0;
 
@@ -213,7 +213,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 //cmd.Parameters.AddWithValue("@UserID", "root");
 
                 _dbConnection.Open();
-                res = await cmd.ExecuteNonQueryAsync();
+                res = await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             }
             return res;

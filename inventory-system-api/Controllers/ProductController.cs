@@ -14,51 +14,51 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Product entity)
+        public async Task<IActionResult> Post(Product entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity);
+            int res = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse(new { ID = res });
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Product entity)
+        public async Task<IActionResult> Put(Product entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity);
+            int res = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse();
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var list = await _repo.Get();
+            var list = await _repo.Get(cancellationToken);
             return OkResponse(list);
         }
 
         [HttpGet("Details")]
-        public async Task<IActionResult> GetDetails()
+        public async Task<IActionResult> GetDetails(CancellationToken cancellationToken)
         {
-            var list = await _repo.GetProductsWithUnits();
+            var list = await _repo.GetProductsWithUnits(cancellationToken);
             return OkResponse(list);
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
-            var entity = await _repo.Get(id);
+            var entity = await _repo.Get(id, cancellationToken);
             return OkResponse(entity);
         }
 
         [HttpGet("Tree")]
-        public async Task<IActionResult> GetTree()
+        public async Task<IActionResult> GetTree(CancellationToken cancellationToken)
         {
-            var list = await _repo.GetProductTrees();
+            var list = await _repo.GetProductTrees(cancellationToken);
             return OkResponse(list);
         }
 
         [HttpGet("Search")]
-        public async Task<IActionResult> Search(string code, string? name)
+        public async Task<IActionResult> Search(string code, string? name, CancellationToken cancellationToken)
         {
-            var entity = await _repo.Search(code);
+            var entity = await _repo.Search(code, cancellationToken);
             return OkResponse(entity);
         }
 
@@ -84,9 +84,9 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var res = await _repo.Delete(id);
+            var res = await _repo.Delete(id, cancellationToken);
             return OkResponse();
         }
     }

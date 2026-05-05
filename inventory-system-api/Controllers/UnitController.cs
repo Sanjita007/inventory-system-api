@@ -16,43 +16,43 @@ namespace accswift_api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Unit entity)
+        public async Task<IActionResult> Post(Unit entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity);
+            int res = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse(new { ID = res });
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var list = await _repo.Get();
+            var list = await _repo.Get(cancellationToken);
             return OkResponse(list);
         }
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
-            var entity = await _repo.Get(id);
+            var entity = await _repo.Get(id, cancellationToken);   
             return OkResponse(entity);
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var res = await _repo.Delete(id);
+            var res = await _repo.Delete(id, cancellationToken);
             return OkResponse();
         }
 
         [HttpGet("Convert")]
-        public async Task<IActionResult> Convert(int defaultUnitID, int currentUnitID, decimal valueToConvert)
+        public async Task<IActionResult> Convert(int defaultUnitID, int currentUnitID, decimal valueToConvert, CancellationToken cancellationToken)
         {
-            var res = await _repo.ConvertUnit(defaultUnitID, currentUnitID, valueToConvert);
+            var res = await _repo.ConvertUnit(defaultUnitID, currentUnitID, valueToConvert, cancellationToken);
             return OkResponse(res);
         }
 
         [HttpGet("Related")]
-        public async Task<IActionResult> Related(int baseUnitID)
+        public async Task<IActionResult> Related(int baseUnitID, CancellationToken cancellationToken)
         {
-            var res = await _repo.GetRelatedUnit(baseUnitID);
+            var res = await _repo.GetRelatedUnit(baseUnitID, cancellationToken);
             return OkResponse(res);
         }
 

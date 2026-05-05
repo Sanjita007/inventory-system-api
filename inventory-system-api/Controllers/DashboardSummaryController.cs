@@ -14,24 +14,24 @@ namespace accswift_api.Controllers
         }
 
         [HttpGet("SalesPurch")]
-        public async Task<IActionResult> GetSalesPurch()
+        public async Task<IActionResult> GetSalesPurch(CancellationToken cancellationToken)
         {
-            var list = await _repo.GetSalesPurchDashboardSummary();
+            var list = await _repo.GetSalesPurchDashboardSummary(cancellationToken);
             return OkResponse(list);
         }
 
         [HttpGet("Products")]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> GetProducts(CancellationToken cancellationToken)
         {
-            var list = await _repo.GetProductDashboardSummary();
+            var list = await _repo.GetProductDashboardSummary(cancellationToken);
             return OkResponse(list);
         }
 
 
         [HttpGet("Recent")]
-        public async Task<IActionResult> GetRecent()
+        public async Task<IActionResult> GetRecent(CancellationToken cancellationToken)
         {
-            var list = await _repo.GetRecentTransactionSummary();
+            var list = await _repo.GetRecentTransactionSummary(cancellationToken);
             return OkResponse(list);
         }
 

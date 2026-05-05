@@ -13,7 +13,7 @@ namespace inventory_system_api.Infrastructure.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(Tax entity)
+        public async Task<int> AddEdit(Tax entity, CancellationToken cancellationToken)
         {
             int res = 0;
             using (_dbConnection as SqlConnection)
@@ -32,7 +32,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
                 res = Convert.ToInt32(result.Value??0);
 
             }
@@ -40,7 +40,7 @@ namespace inventory_system_api.Infrastructure.Repository
             return res;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
 
             using (_dbConnection as SqlConnection)
@@ -50,12 +50,12 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             }
         }
 
-        public async Task<List<Tax>> Get()
+        public async Task<List<Tax>> Get(CancellationToken cancellationToken)
         {
 
             List<Tax> listEntity = [];
@@ -65,7 +65,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.CommandText = "select * from TAX where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -83,7 +83,7 @@ namespace inventory_system_api.Infrastructure.Repository
             return listEntity;
         }
 
-        public async Task<Tax> Get(int id)
+        public async Task<Tax> Get(int id, CancellationToken cancellationToken)
         {
 
             Tax entity = new Tax();
@@ -95,7 +95,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {

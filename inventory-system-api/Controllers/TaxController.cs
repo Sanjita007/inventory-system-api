@@ -14,41 +14,41 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var list = await _repo.Get();
+            var list = await _repo.Get(cancellationToken);
             return OkResponse(list);
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
-            var entity = await _repo.Get(id);
+            var entity = await _repo.Get(id, cancellationToken);
             return OkResponse(entity);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Tax entity)
+        public async Task<IActionResult> Post(Tax entity, CancellationToken cancellationToken)
         {
             if (entity.ID > 0) ErrorResponse("Cannot update data with id, please add new record");
 
-            var res = await _repo.AddEdit(entity);
-            return OkResponse(new { ID = res });
+            var res = await _repo.AddEdit(entity, cancellationToken);
+            return OkResponse(new { ID = res });        
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Tax entity)
+        public async Task<IActionResult> Put(Tax entity, CancellationToken cancellationToken)
         {
             if (entity.ID == 0) ErrorResponse("Cannot add data with id, please update the record");
-            var list = await _repo.AddEdit(entity);
+            var list = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse(list);
         }
 
         
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var res = await _repo.Delete(id);
+            var res = await _repo.Delete(id, cancellationToken);
             return OkResponse();
         }
     }

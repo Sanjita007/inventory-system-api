@@ -11,7 +11,7 @@ namespace inventory_system_api.Infrastructure.Repository
             _dbConnection = dbConnection;
         }
 
-        protected async Task<List<T>> ExecuteQueryAsync(string query, Func<IDataReader, T> mapFunction, SqlParameter[] parameters, CommandType commandType = CommandType.Text)
+        protected async Task<List<T>>   ExecuteQueryAsync(string query, Func<IDataReader, T> mapFunction, SqlParameter[] parameters, CancellationToken cancelToken, CommandType commandType = CommandType.Text)
         {
             var entities = new List<T>();
             using (var conn = _dbConnection as SqlConnection)
@@ -25,7 +25,7 @@ namespace inventory_system_api.Infrastructure.Repository
                         cmd.Parameters.AddRange(parameters);
                     }
                     conn.Open();
-                    using (var reader = cmd.ExecuteReader())
+                    using (var reader = await cmd.ExecuteReaderAsync(cancelToken))
                     {
                         while (await reader.ReadAsync())
                         {
@@ -41,7 +41,7 @@ namespace inventory_system_api.Infrastructure.Repository
         }
 
 
-        protected async Task<int> ExecuteNonQueryAsync(string query, SqlParameter[] parameters, CommandType commandType = CommandType.Text)
+        protected async Task<int> ExecuteNonQueryAsync(string query, SqlParameter[] parameters, CancellationToken cancelToken, CommandType commandType = CommandType.Text)
         {
             int res = -1;
             using (var conn = _dbConnection as SqlConnection)
@@ -55,7 +55,7 @@ namespace inventory_system_api.Infrastructure.Repository
                     {
                         cmd.Parameters.AddRange(parameters);
                     }
-                    res = cmd.ExecuteNonQuery();
+                    res = await cmd.ExecuteNonQueryAsync(cancelToken);
                     conn.Close();
                 }
             }

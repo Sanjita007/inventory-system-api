@@ -14,16 +14,16 @@ namespace accswift_api.Controllers
         }
 
         [HttpGet("GrossProfit")]
-        public async Task<IActionResult> GetGrossProfitReport()
+        public async Task<IActionResult> GetGrossProfitReport(CancellationToken cancellationToken)
         {
-            var list = await _repo.GetGrossProfitReport();
+            var list = await _repo.GetGrossProfitReport(cancellationToken);
             return OkResponse(list);
         }
 
         [HttpGet("Inventory")]
-        public async Task<IActionResult> GetInventoryReport()
+        public async Task<IActionResult> GetInventoryReport(CancellationToken cancellationToken)
         {
-            var list = await _repo.GetInventoryReport();
+            var list = await _repo.GetInventoryReport(cancellationToken);
             return OkResponse(list);
         }
 

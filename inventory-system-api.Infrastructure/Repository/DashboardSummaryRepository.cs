@@ -15,7 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             _dbConnection = dbConnection;
         }
 
-        public async Task<DashboardSummary> GetDashboardSummary()
+        public async Task<DashboardSummary> GetDashboardSummary(CancellationToken cancellationToken)
         {
             DashboardSummary dashboardSummary = new DashboardSummary();
 
@@ -26,7 +26,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 dashboardSummary.SalesPurch = new SalesPurchSummary();
                 dashboardSummary.Product = new List<ProductSummary>();
 
@@ -58,7 +58,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             return dashboardSummary;
         }
 
-        public async Task<List<ProductSummary>> GetProductDashboardSummary()
+        public async Task<List<ProductSummary>> GetProductDashboardSummary(CancellationToken cancellationToken)
         {
 
             List<ProductSummary> products = new List<ProductSummary>();
@@ -69,8 +69,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
-
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     
@@ -92,7 +91,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
         }
 
        
-        public async Task<SalesPurchSummary> GetSalesPurchDashboardSummary()
+        public async Task<SalesPurchSummary> GetSalesPurchDashboardSummary(CancellationToken cancellationToken)
         {
             SalesPurchSummary   SalesPurch = new SalesPurchSummary();
 
@@ -103,7 +102,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -120,7 +119,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             return SalesPurch;
         }
 
-        public async Task<List<RecentTransactionSummary>> GetRecentTransactionSummary()
+        public async Task<List<RecentTransactionSummary>> GetRecentTransactionSummary(CancellationToken cancellationToken)
         {
 
             List<RecentTransactionSummary> products = new List<RecentTransactionSummary>();
@@ -134,7 +133,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
