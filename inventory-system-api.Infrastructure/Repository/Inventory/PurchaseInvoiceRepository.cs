@@ -61,7 +61,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<List<PurchaseInvoiceMaster>> Get(CancellationToken cancellationToken)
         {
-            return await ExecuteQueryAsync("select * from PURCHASE_INVOICE", MapEntity, [], cancellationToken);
+            return await ExecuteQueryAsync("SP_GET_PURCHASE_INVOICE", MapEntity, [], cancellationToken);
 
         }
 
@@ -145,12 +145,11 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.Parameters.AddWithValue("@pageNo", pageNo);
-                cmd.Parameters.AddWithValue("@rowsPerPage", rowPerPage);
-                cmd.CommandText = "select * from PURCHASE_INVOICE order by PurchaseInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
-                    "select count('x') from PURCHASE_INVOICE";
+                cmd.Parameters.AddWithValue("@PAGENO", pageNo);
+                cmd.Parameters.AddWithValue("@ROWSPERPAGE", rowPerPage);
+                cmd.CommandText = "SP_NAVIGATE_PURCHASE_INVOICE";
                 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -192,13 +191,12 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<PurchaseInvoiceMaster> Get(int id, CancellationToken cancellationToken)
         {
             
-            string query = "select * from PURCHASE_INVOICE where PurchaseInvoiceID = @Id" +
-
-                    "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from PURCHASE_INVOICE_DETAILS sd inner join Product p on sd.ProductID = p.ProductID inner join UNIT u on sd.QtyUnitID = u.UnitMaintenanceID  where PurchaseInvoiceID = @id";
+            string query = "SP_GET_PURCHASE_INVOICE";
             SqlParameter[] param = [ new SqlParameter("@id", id) ];
 
                
-            List<PurchaseInvoiceMaster> list = await ExecuteQueryAsync(query, MapEntityDetails, param, cancellationToken);
+            List<PurchaseInvoiceMaster> list = await ExecuteQueryAsync(query, MapEntityDetails, param
+                , cancellationToken, commandType: CommandType.StoredProcedure);
 
             return list.FirstOrDefault();
         }

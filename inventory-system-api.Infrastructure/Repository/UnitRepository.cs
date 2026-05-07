@@ -86,7 +86,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT * FROM UNIT WHERE CompanyID = 1";
+                cmd.CommandText = "SP_GET_UNIT";
                 cmd.CommandType = CommandType.Text;
 
                 _dbConnection.Open();
@@ -114,7 +114,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT * FROM UNIT WHERE UnitMaintenanceID = @id and CompanyID = 1";
+                cmd.CommandText = "SP_GET_UNIT";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", id);
 

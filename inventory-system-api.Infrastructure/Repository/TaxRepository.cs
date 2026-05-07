@@ -62,8 +62,8 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from TAX where CompanyID = 1";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SP_GET_TAX";
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -90,10 +90,10 @@ namespace inventory_system_api.Infrastructure.Repository
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from TAX where CompanyID = 1 and TaxID = @Id";
+                cmd.CommandText = "SP_GET_TAX";
                 cmd.Parameters.AddWithValue("@id", id);
 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 

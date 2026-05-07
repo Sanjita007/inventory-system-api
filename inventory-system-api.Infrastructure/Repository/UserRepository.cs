@@ -69,8 +69,8 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email,Department, Role from [User] where CompanyID = 1";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SP_GET_USER";
+                cmd.CommandType = CommandType.StoredProcedure;
 
                 _dbConnection.Open();
 
@@ -101,8 +101,8 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select UserID, UserName, Name, Address, Contact, Email, Department, Role from [User] where CompanyID = 1 and UserID = @id";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SP_GET_USER";
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
 
                 _dbConnection.Open();
@@ -135,8 +135,8 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select * from [User] where CompanyID = 1 and UserName = @userName";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SP_GET_USER";
+                cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@userName", userName);
 
                 _dbConnection.Open();
@@ -178,7 +178,7 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "select Password from [User] where CompanyID = 1 and UserID = @id";
+                cmd.CommandText = "SP_GET_PASSWORD_BY_USERID";
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@id", userID);
 

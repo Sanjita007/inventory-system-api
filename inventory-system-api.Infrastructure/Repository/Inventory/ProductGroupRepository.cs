@@ -63,9 +63,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = $"select g.GroupID, g.Parent_GrpID ParentGroupID, g.EngName EngName, g.NepName, pg.EngName ParentGroupName, g.Level,g.Remarks " +
-                    $"from PRODUCT_GROUP g left join PRODUCT_GROUP pg on pg.GroupID = g.Parent_GrpID  where g.CompanyID =1";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = $"SP_GET_PRODUCT_GROUP";
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -96,11 +95,10 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = $"select g.GroupID, g.Parent_GrpID ParentGroupID, g.EngName EngName, g.NepName, pg.EngName ParentGroupName, g.Level, g.Remarks " +
-                    $"from PRODUCT_GROUP g left join PRODUCT_GROUP pg on pg.GroupID = g.Parent_GrpID  where g.GroupID = @id and g.CompanyID =1";
+                cmd.CommandText = $"SP_GET_PRODUCT_GROUP";
                 cmd.Parameters.AddWithValue("@id", id);
 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 

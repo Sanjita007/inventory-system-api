@@ -51,8 +51,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from tblAPIERRORLOG";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SP_GET_API_ERROR_LOG";
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync();
 

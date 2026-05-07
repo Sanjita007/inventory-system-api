@@ -76,8 +76,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select p.*, u.UnitName, u.Symbol From Product p inner join UNIT u on p.unitMaintenanceID = u.unitMaintenanceID where p.CompanyID = '1'";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SP_GET_PRODUCT";
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -121,10 +121,10 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from PRODUCT where ProductID = @Id and CompanyID =1";
+                cmd.CommandText = "SP_GET_PRODUCT";
                 cmd.Parameters.AddWithValue("@id", id);
 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
@@ -164,10 +164,10 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand? cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "select * from Product where ProductCode = @code and CompanyID =1";
-                cmd.Parameters.AddWithValue("@code", code);
+                cmd.CommandText = "SP_GET_PRODUCT";
+                cmd.Parameters.AddWithValue("@SEARCH_VALUE", code);
 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
                 IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
