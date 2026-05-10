@@ -41,13 +41,14 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
 
         var newProduct = new
         {
-            EngName = "Test Product",
-            NepName = "परीक्षण",
-            GroupID = 1,
-            Code = "TP001",
+            EngName = "Test Product 1",
+            NepName = "परीक्षण 1",
+
+            GroupID = 72,
+            Code = "TP0011",
             DepotID = 1,
             Remarks = "integration test",
-            UnitID = 1,
+            UnitID = 18,
             UnitName = "Piece",
             UnitSymbol = "pc",
             SalesRate = 100.0m,
@@ -55,11 +56,9 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
             PurchaseRate = 90.0m,
             PurchaseDiscount = 0.0m,
             TotalValue = 90.0m,
-            Image = "img.png",
             IsBuiltIn = false,
             IsActive = true,
             CreatedBy = "integration",
-            BackColor = "#FFF",
             IsVatApplicable = true,
             IsInventoryApplicable = true,
             Quantity = 10.0m,
@@ -73,7 +72,7 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
             Company = "TestCo",
             Website = "https://test",
             CompanyID = 1,
-            Size = "M",
+            Size ="3",
             TaxID = 1,
             ConversionRate = 1.0m
         };

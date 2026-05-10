@@ -97,12 +97,13 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
         var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
 
+        string guid = Guid.NewGuid().ToString();
         // create first
         var newInvoice = new
         {
             ID = 0,
-            VoucherNo = "VNEW",
-            EntityName = "New",
+            VoucherNo = "VNEW" + guid,
+            EntityName = "New " + guid,
             Date = DateTime.UtcNow,
             ProjectID = 1,
             TotalQty = 1m,
@@ -117,7 +118,7 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
             CreatedDate = DateTime.UtcNow,
             CreatedBy = 1,
             CompanyID = 1,
-            Remarks = "unit test",
+            Remarks = "unit test" + guid,
             Details = new[] { new { ProductID = 1, ProductName = "P1", Quantity = 1, Price = 50.00m, NetAmount = 50.00m } }
         };
         var createResp = await client.PostAsync("/api/v1/SalesInvoice", JsonContent.Create(newInvoice));
@@ -131,7 +132,7 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
         var updateInvoice = new
         {
             ID = id,
-            EntityName = "Updated Customer",
+            EntityName = "Updated Customer" + guid,
             Date = DateTime.UtcNow,
             NetAmount = 200.00m,
             Details = new[] { new { ProductID = 1, ProductName = "P1", Quantity = 2, Price = 100.00m, NetAmount = 200.00m } }

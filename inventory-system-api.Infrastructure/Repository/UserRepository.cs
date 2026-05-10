@@ -39,8 +39,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@UserID", "root");
 
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
-                res = Convert.ToInt32(result.Value);
+                res = await cmd.ExecuteNonQueryAsync();
 
             }
             return res;

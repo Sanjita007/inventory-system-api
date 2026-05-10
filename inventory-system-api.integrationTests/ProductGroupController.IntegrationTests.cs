@@ -39,7 +39,7 @@ public class ProductGroupControllerIntegrationTests : IClassFixture<CustomWebApp
         var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
 
-        var newGroup = new { ParentGroupID = 0, EngName = "IGroup", NepName = "समूह", Level = 0, ParentGroupName = "", Remarks = "test" };
+        var newGroup = new { ParentGroupID = 72, EngName = "IGroup", NepName = "समूह", Level = 0, ParentGroupName = "", Remarks = "test" };
         var content = JsonContent.Create(newGroup);
 
         var response = await client.PostAsync("/api/v1/ProductGroup", content);
