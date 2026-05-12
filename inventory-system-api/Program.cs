@@ -1,10 +1,13 @@
-﻿using inventory_system_api;
-using inventory_system_api.Middleware;
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using inventory_system_api;
+using inventory_system_api.Application.Validator;
+using inventory_system_api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -13,7 +16,6 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Data;
 using System.Text;
-using inventory_system_api.Application.Validator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +69,7 @@ builder.Services.AddCors(options =>
 
 // add repositories
 builder.Services.AddRepositories();
+builder.Services.AddHttpContextAccessor();
 
 #region API versioning
 builder.Services.AddApiVersioning(options =>
@@ -87,6 +90,21 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 #endregion
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("GlobalMethodPolicy", policy =>
+        policy.Requirements.Add(new MethodRoleRequirement()));
+});
+
+builder.Services.AddSingleton<IAuthorizationHandler, CustomMethodRoleHandler>();
+
+// Apply it globally to all controllers
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(new AuthorizeFilter("GlobalMethodPolicy"));
+});
+
 
 #region Swagger
 builder.Services.AddSwaggerGen(options =>

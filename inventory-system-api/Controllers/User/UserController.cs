@@ -49,6 +49,7 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpPut]
+
         public async Task<IActionResult> Put(User entity, CancellationToken cancellationToken)
         {
             if (await _repo.ValidatePassword(entity.ID, entity.Password, cancellationToken))
@@ -68,14 +69,13 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Post(User entity, CancellationToken cancellationToken)
         {
             int res = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse(new { ID = res });
         }
 
-        private object GenerateJSONWebToken(User user)
+        private object GenerateJSONWebToken(User user, int expiresIn =60)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]??""));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -92,7 +92,7 @@ namespace inventory_system_api.Controllers
                 _config["Jwt:Issuer"],
                 _config["Jwt:Issuer"],
                 claims,
-                expires: DateTime.Now.AddMinutes(60),
+                expires: DateTime.Now.AddMinutes(expiresIn),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -104,6 +104,20 @@ namespace inventory_system_api.Controllers
             var list = await _repo.Get(cancellationToken);
             return OkResponse(list);
         }
+
+        [AllowAnonymous]
+        [HttpPost("Login/Guest")]
+        public IActionResult LoginGuest()
+        {
+            string userName = "GuestUser" + new Guid().ToString();
+
+           var token = GenerateJSONWebToken(new User() { UserName = userName,Role="GUEST"}, 15);
+            return OkResponse(new
+            {
+                Token = token
+            });
+        }
+
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
