@@ -9,13 +9,13 @@ namespace inventory_system_api.Application.IRepository
 
         public Task<User> Get(int id, CancellationToken cancellationToken);
 
-        public Task<int> AddEdit(User entity, CancellationToken cancellationToken);
-        public Task<int> Delete(int id, CancellationToken cancellationToken);
+        public Task<int> AddEdit(User entity, CancellationToken cancellationToken, int userId);
+        public Task<int> Delete(int id, CancellationToken cancellationToken, int userId);
        
         public Task<User> VerifyAndGetUserDetails(string userName, string password, CancellationToken cancellationToken);
         public Task<bool> ValidatePassword(int userID, string password, CancellationToken cancellationToken);
 
-        public Task<int> UpdatePassword(UpdatePasswordModel passwordModel, CancellationToken cancellationToken);
+        public Task<int> UpdatePassword(UpdatePasswordModel passwordModel, CancellationToken cancellationToken, int userId);
 
 
 

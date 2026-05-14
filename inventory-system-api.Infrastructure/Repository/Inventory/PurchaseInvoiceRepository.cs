@@ -15,7 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(PurchaseInvoiceMaster entity, CancellationToken cancellationToken)
+        public async Task<int> AddEdit(PurchaseInvoiceMaster entity, CancellationToken cancellationToken, int userId)
         {
             int res = 0;
             using (_dbConnection as SqlConnection)
@@ -40,7 +40,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@PURCHDETAILS", entity.Details.ToXml("PURCHINVOICEDETAILS"));
                 //cmd.Parameters.AddWithValue("@STATUS", entity.Status.ToString());
                 cmd.Parameters.AddWithValue("@AUDITLOGCSV", entity.ToJson());
-                cmd.Parameters.AddWithValue("@USER", "root");
+                cmd.Parameters.AddWithValue("@USERID", userId);
                 cmd.Parameters.Add(result);
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -54,9 +54,18 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         }
 
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
         {
-            throw new NotImplementedException();
+            using (_dbConnection as SqlConnection)
+            {
+                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+                cmd.CommandText = "SP_PRODUCT_GROUP_DELETE";
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.CommandType = CommandType.StoredProcedure;
+                _dbConnection.Open();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
+
+            }
         }
 
         public async Task<List<PurchaseInvoiceMaster>> Get(CancellationToken cancellationToken)

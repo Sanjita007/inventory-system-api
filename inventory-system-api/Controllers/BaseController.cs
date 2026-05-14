@@ -1,6 +1,8 @@
 ﻿using inventory_system_api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace inventory_system_api.Controllers
 {
@@ -10,6 +12,9 @@ namespace inventory_system_api.Controllers
     [Authorize]
     public class BaseController : ControllerBase
     {
+        
+        protected int UserId => int.Parse(User.FindFirstValue(JwtRegisteredClaimNames.NameId) ?? "0");
+
         private IActionResult CustomResponse(int statusode, string message, object result)
         {
             var response = new Response { StatusCode = statusode, Message = message, Data = result };

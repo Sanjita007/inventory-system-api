@@ -14,7 +14,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(ProductGroup entity, CancellationToken cancellationToken)
+        public async Task<int> AddEdit(ProductGroup entity, CancellationToken cancellationToken, int userId)
         {
             int res = 0;
             using (_dbConnection as SqlConnection)
@@ -29,7 +29,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@NepName", entity.NepName);
                 cmd.Parameters.AddWithValue("@ParentGroupID", entity.ParentGroupID);
                 cmd.Parameters.AddWithValue("@Remarks", entity.Remarks);
-                cmd.Parameters.AddWithValue("@User", "root");
+                cmd.Parameters.AddWithValue("@UserID", userId);
                 cmd.Parameters.Add(result);
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -41,7 +41,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return res;
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
         {
 
             using (_dbConnection as SqlConnection)

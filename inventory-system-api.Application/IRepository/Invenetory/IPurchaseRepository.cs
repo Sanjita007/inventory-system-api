@@ -24,15 +24,17 @@ namespace inventory_system_api.Application.IRepository.Invenetory
         /// Add or update the product
         /// </summary>
         /// <param name="entity"></param>
+        /// <param name="userId"></param>   
         /// <returns></returns>
-        public Task<int> AddEdit(PurchaseInvoiceMaster entity, CancellationToken cancellationToken);
+        public Task<int> AddEdit(PurchaseInvoiceMaster entity, CancellationToken cancellationToken, int userId);
 
         /// <summary>
         /// Delete a product based on the ID
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        public Task<int> Delete(int id, CancellationToken cancellationToken);
+        public Task<int> Delete(int id, CancellationToken cancellationToken, int userId);
 
         public Task<Navigate> Navigate(int pageNo, int rowPerPage, CancellationToken cancellationToken);
 

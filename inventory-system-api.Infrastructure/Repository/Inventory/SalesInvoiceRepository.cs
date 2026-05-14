@@ -16,7 +16,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(SalesInvoiceMaster entity, CancellationToken cancellationToken)
+        public async Task<int> AddEdit(SalesInvoiceMaster entity, CancellationToken cancellationToken, int userId)
         {
             int res = 0;
             using (_dbConnection as SqlConnection)
@@ -42,7 +42,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@SALESDETAILS", entity.Details.ToXml("SALESINVOICEDETAILS"));
                 cmd.Parameters.AddWithValue("@STATUS", entity.Status.ToString());
                 cmd.Parameters.AddWithValue("@AUDITLOGCSV", entity.ToJson());
-                cmd.Parameters.AddWithValue("@USER", "root");
+                cmd.Parameters.AddWithValue("@USERID", userId);
                 cmd.Parameters.Add(result);
 
                 cmd.CommandType = CommandType.StoredProcedure;
@@ -56,7 +56,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         }
 
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
         {
             using (_dbConnection as SqlConnection)
             {

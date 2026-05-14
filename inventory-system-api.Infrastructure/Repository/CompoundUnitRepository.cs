@@ -15,7 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(CompoundUnit entity,CancellationToken cancellationToken)
+        public async Task<int> AddEdit(CompoundUnit entity,CancellationToken cancellationToken, int userId)
         {
             int res = 0;
 
@@ -32,7 +32,7 @@ namespace inventory_system_api.Infrastructure.Repository
             cmd.Parameters.AddWithValue("@RelationValue", entity.RelationValue);
             cmd.Parameters.AddWithValue("@Remarks", entity.Remarks);
            
-            cmd.Parameters.AddWithValue("@User", "root");
+            cmd.Parameters.AddWithValue("@UserID", userId);
 
             _dbConnection.Open();
             await cmd.ExecuteNonQueryAsync(cancellationToken);
@@ -61,7 +61,7 @@ namespace inventory_system_api.Infrastructure.Repository
             }
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
         {
             using (_dbConnection as SqlConnection)
             {

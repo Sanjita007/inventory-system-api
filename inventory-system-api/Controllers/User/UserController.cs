@@ -56,7 +56,7 @@ namespace inventory_system_api.Controllers
             {
                 return BadRequest(new Response() { StatusCode = 400, Message = "Password does not match to the existing one", });
             }
-            var res = await _repo.AddEdit(entity, cancellationToken);
+            var res = await _repo.AddEdit(entity, cancellationToken, UserId);
             return OkResponse();
         }
 
@@ -64,14 +64,14 @@ namespace inventory_system_api.Controllers
         public async Task<IActionResult> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken)
         {
             
-            await _repo.UpdatePassword(entity, cancellationToken);
+            await _repo.UpdatePassword(entity, cancellationToken, UserId);
             return OkResponse();
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(User entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity, cancellationToken);
+            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
             return OkResponse(new { ID = res });
         }
 
@@ -82,6 +82,7 @@ namespace inventory_system_api.Controllers
 
             var claims = new[]
             {
+                new Claim(JwtRegisteredClaimNames.NameId, user.ID.ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("Roles", user.Role),
