@@ -25,12 +25,12 @@ namespace inventory_system_api.Controllers
 
         [AllowAnonymous]
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginUser login)
+        public async Task<IActionResult> Login([FromBody] LoginUser login, CancellationToken cancellationToken)
         {
             IActionResult response = null;
 
             // Authenticate the user
-            User user = await _repo.VerifyAndGetUserDetails(login.UserName, login.Password); //IsAuthenticateUser(login);
+            User user = await _repo.VerifyAndGetUserDetails(login.UserName, login.Password, cancellationToken); //IsAuthenticateUser(login);
 
             if (user != null)
             {
@@ -49,29 +49,29 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(User entity)
+        public async Task<IActionResult> Put(User entity, CancellationToken cancellationToken)
         {
-            if (await _repo.ValidatePassword(entity.ID, entity.Password))
+            if (await _repo.ValidatePassword(entity.ID, entity.Password, cancellationToken))
             {
                 return BadRequest(new Response() { StatusCode = 400, Message = "Password does not match to the existing one", });
             }
-            var res = await _repo.AddEdit(entity);
+            var res = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse();
         }
 
         [HttpPut("UpdatePassword")]
-        public async Task<IActionResult> UpdatePassword(UpdatePasswordModel entity)
+        public async Task<IActionResult> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken)
         {
             
-            await _repo.UpdatePassword(entity);
+            await _repo.UpdatePassword(entity, cancellationToken);
             return OkResponse();
         }
 
         [HttpPost]
         //[Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> Post(User entity)
+        public async Task<IActionResult> Post(User entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity);
+            int res = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse(new { ID = res });
         }
 
@@ -99,16 +99,16 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var list = await _repo.Get();
+            var list = await _repo.Get(cancellationToken);
             return OkResponse(list);
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
-            var entity = await _repo.Get(id);
+            var entity = await _repo.Get(id, cancellationToken);
             return OkResponse(entity);
         }
 

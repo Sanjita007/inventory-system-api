@@ -11,11 +11,12 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
     {
         IDbConnection _dbConnection;
 
-        public SalesInvoiceRepository(IDbConnection dbConnection): base(dbConnection) { 
+        public SalesInvoiceRepository(IDbConnection dbConnection) : base(dbConnection)
+        {
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(SalesInvoiceMaster entity)
+        public async Task<int> AddEdit(SalesInvoiceMaster entity, CancellationToken cancellationToken)
         {
             int res = 0;
             using (_dbConnection as SqlConnection)
@@ -46,8 +47,8 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
-                res = Convert.ToInt32(result.Value??0);
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
+                res = Convert.ToInt32(result.Value);
 
             }
 
@@ -55,7 +56,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         }
 
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -64,15 +65,14 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             }
         }
 
-        public async Task<List<SalesInvoiceMaster>> Get()
+        public async Task<List<SalesInvoiceMaster>> Get(CancellationToken cancellationToken)
         {
-            return await ExecuteQueryAsync("select * from SALES_INVOICE ", MapEntity, []);
-
+            return await ExecuteQueryAsync("SP_GET_SALES_INVOICE", MapEntity, [], cancellationToken, CommandType.StoredProcedure);
         }
 
         public override SalesInvoiceMaster MapEntity(IDataReader rdr)
@@ -121,40 +121,40 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
             //only get this one for the getByID because it would be heavy otherwise
             while (rdr.NextResult())
-                {
+            {
                 entity.Details = [];
-                    while (rdr.Read())
+                while (rdr.Read())
+                {
+                    entity.Details.Add(new InvoiceDetail()
                     {
-                        entity.Details.Add(new InvoiceDetail()
-                        {
-                            ID = Convert.ToInt32(rdr["SalesINvoice_DetailID"]),
-                            MasterID = Convert.ToInt32(rdr["SalesInvoiceID"]),
-                            ProductID = Convert.ToInt32(rdr["ProductID"]),
-                            ProductName = rdr["ProductName"].ToString()??"",
-                            QtyUnitID = Convert.ToInt32(rdr["QtyUnitID"]),
-                            DefaultUnitID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                            DefaultUnitName = rdr["DefaultUnitName"].ToString()??"",
-                            DefaultUnitSymbol = rdr["DefaultUnitSymbol"].ToString() ?? "",
-                            TaxID = rdr["TaxID"] == DBNull.Value ? null : Convert.ToInt32(rdr["TaxID"]),
-                            ProductCode = rdr["Code"].ToString() ?? "",
-                            Quantity = Convert.ToInt32(rdr["Quantity"]),
-                            Price = Convert.ToDecimal(rdr["SalesRate"]),
-                            Amount = Convert.ToDecimal(rdr["Amount"]),
-                            DiscPercent = Convert.ToDecimal(rdr["DiscPercentage"]),
-                            Discount = Convert.ToDecimal(rdr["Discount"]),
-                            NetAmount = Convert.ToDecimal(rdr["Net_Amount"]),
-                            TaxAmount = Convert.ToDecimal(rdr["TaxAmount"]),
-                            VATAmount = Convert.ToDecimal(rdr["VATAmount"]),
-                            GeneralName = rdr["GeneralName"].ToString(),
-                            Remarks = rdr["Description"].ToString(),
-                        });
-                    }
+                        ID = Convert.ToInt32(rdr["SalesINvoice_DetailID"]),
+                        MasterID = Convert.ToInt32(rdr["SalesInvoiceID"]),
+                        ProductID = Convert.ToInt32(rdr["ProductID"]),
+                        ProductName = rdr["ProductName"].ToString() ?? "",
+                        QtyUnitID = Convert.ToInt32(rdr["QtyUnitID"]),
+                        DefaultUnitID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
+                        DefaultUnitName = rdr["DefaultUnitName"].ToString() ?? "",
+                        DefaultUnitSymbol = rdr["DefaultUnitSymbol"].ToString() ?? "",
+                        TaxID = rdr["TaxID"] == DBNull.Value ? null : Convert.ToInt32(rdr["TaxID"]),
+                        ProductCode = rdr["Code"].ToString() ?? "",
+                        Quantity = Convert.ToInt32(rdr["Quantity"]),
+                        Price = Convert.ToDecimal(rdr["SalesRate"]),
+                        Amount = Convert.ToDecimal(rdr["Amount"]),
+                        DiscPercent = Convert.ToDecimal(rdr["DiscPercentage"]),
+                        Discount = Convert.ToDecimal(rdr["Discount"]),
+                        NetAmount = Convert.ToDecimal(rdr["Net_Amount"]),
+                        TaxAmount = Convert.ToDecimal(rdr["TaxAmount"]),
+                        VATAmount = Convert.ToDecimal(rdr["VATAmount"]),
+                        GeneralName = rdr["GeneralName"].ToString(),
+                        Remarks = rdr["Description"].ToString(),
+                    });
                 }
+            }
 
             return entity;
         }
 
-        public async Task<Navigate> Navigate(int pageNo, int rowPerPage)
+        public async Task<Navigate> Navigate(int pageNo, int rowPerPage, CancellationToken cancellationToken)
         {
             List<SalesInvoiceMaster> listEntity = [];
             int TotalRecords = 0;
@@ -164,12 +164,11 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.Parameters.AddWithValue("@pageNo", pageNo);
                 cmd.Parameters.AddWithValue("@rowsPerPage", rowPerPage);
-                cmd.CommandText = "select * from SALES_INVOICE order by SalesInvoiceID offset (@pageNo -1)*@rowsPerPage ROWS FETCH NEXT @rowsPerPage ROWS ONLY;" +
-                    "select count('x') from SALES_INVOICE";
+                cmd.CommandText = "SP_NAVIGATE_SALES_INVOICE";
 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -209,17 +208,15 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         }
 
-        public async Task<SalesInvoiceMaster> Get(int id)
+        public async Task<SalesInvoiceMaster> Get(int id, CancellationToken cancellationToken)
         {
-            
-                 string query = "select * from SALES_INVOICE where SalesInvoiceID = @Id and CompanyID =1;" +
 
-                    "select sd.*, p.EngName ProductName, p.UnitMaintenanceID, u.UnitName DefaultUnitName, u.Symbol DefaultUnitSymbol from SALES_INVOICE_DETAILS sd inner join PRODUCT p on sd.ProductID = p.ProductID inner join UNIT u on sd.QtyUnitID = u.UnitMaintenanceID  where SalesInvoiceID = @id";
+            string query = "SP_GET_SALES_INVOICE";
             SqlParameter[] param = [
                 new SqlParameter("@id", id) ];
 
-               
-            List<SalesInvoiceMaster> list = await ExecuteQueryAsync(query, MapEntityDetails, param);
+
+            List<SalesInvoiceMaster> list = await ExecuteQueryAsync(query, MapEntityDetails, param, cancellationToken, CommandType.StoredProcedure);
 
             return list.FirstOrDefault();
         }

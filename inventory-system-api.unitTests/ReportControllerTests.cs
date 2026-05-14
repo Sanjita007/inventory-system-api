@@ -11,6 +11,7 @@ namespace inventory_system_api.unitTests
     {
         private readonly Mock<IReportRepository> _mockRepo;
         private readonly ReportController _controller;
+        private CancellationToken cancellationToken = CancellationToken.None;
 
         public ReportControllerTests()
         {
@@ -36,10 +37,10 @@ namespace inventory_system_api.unitTests
                 TotalProfit = 90
             };
 
-            _mockRepo.Setup(r => r.GetGrossProfitReport()).ReturnsAsync(summary);
+            _mockRepo.Setup(r => r.GetGrossProfitReport(cancellationToken)).ReturnsAsync(summary);
 
             // Act
-            var result = await _controller.GetGrossProfitReport();
+            var result = await _controller.GetGrossProfitReport(cancellationToken);
 
             // Assert
             var ok = Assert.IsType<OkObjectResult>(result);
@@ -54,7 +55,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(210m, data.TotalCost);
             Assert.Equal(90m, data.TotalProfit);
 
-            _mockRepo.Verify(r => r.GetGrossProfitReport(), Times.Once);
+            _mockRepo.Verify(r => r.GetGrossProfitReport(cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -76,10 +77,10 @@ namespace inventory_system_api.unitTests
                 TotalInValue = 900
             };
 
-            _mockRepo.Setup(r => r.GetInventoryReport()).ReturnsAsync(summary);
+            _mockRepo.Setup(r => r.GetInventoryReport(cancellationToken)).ReturnsAsync(summary);
 
             // Act
-            var result = await _controller.GetInventoryReport();
+            var result = await _controller.GetInventoryReport(cancellationToken);
 
             // Assert
             var ok = Assert.IsType<OkObjectResult>(result);
@@ -95,7 +96,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(9m, data.TotalQuantityOnHand);
             Assert.Equal(900m, data.TotalInValue);
 
-            _mockRepo.Verify(r => r.GetInventoryReport(), Times.Once);
+            _mockRepo.Verify(r => r.GetInventoryReport(cancellationToken), Times.Once);
         }
     }
 }

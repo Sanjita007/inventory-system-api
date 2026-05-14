@@ -39,13 +39,15 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
         var client = _factory.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
 
+        string guid = Guid.NewGuid().ToString();
+
         var newProduct = new
         {
-            EngName = "Test Product 1",
-            NepName = "परीक्षण 1",
+            EngName = "Test Product 1" + guid,
+            NepName = "परीक्षण 1" + guid,
 
             GroupID = 72,
-            Code = "TP0011",
+            Code = "TP" + guid,
             DepotID = 1,
             Remarks = "integration test",
             UnitID = 18,

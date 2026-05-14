@@ -11,6 +11,7 @@ namespace inventory_system_api.unitTests
     {
         private readonly Mock<IProductService> _mockRepo;
         private readonly ProductController _controller;
+        private CancellationToken cancellationToken = CancellationToken.None;
 
         public ProductControllerTests()
         {
@@ -70,10 +71,10 @@ namespace inventory_system_api.unitTests
             };
 
             // use mock to make a fake Product object for test
-            _mockRepo.Setup(repo => repo.Get(productId)).ReturnsAsync(fakeProduct);
+            _mockRepo.Setup(repo => repo.Get(productId, cancellationToken)).ReturnsAsync(fakeProduct);
 
             // Act
-            var result = await _controller.Get(productId);
+            var result = await _controller.Get(productId, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -135,10 +136,10 @@ namespace inventory_system_api.unitTests
                 TaxID = 3,
                 ConversionRate = 1.0m
             };
-            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<Product>())).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<Product>(), cancellationToken)).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Post(newProduct);
+            var result = await _controller.Post(newProduct, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -148,7 +149,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, returned.StatusCode); // this is our custom response code
             Assert.Equal("Success", returned.Message);
             Assert.NotNull(returned.Data);
-            _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<Product>()), Times.Once);
+            _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<Product>(), cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -157,11 +158,11 @@ namespace inventory_system_api.unitTests
             // Arrange
             int productIdToDelete = 10;
 
-            _mockRepo.Setup(repo => repo.Delete(productIdToDelete))
+            _mockRepo.Setup(repo => repo.Delete(productIdToDelete, cancellationToken))
                      .ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Delete(productIdToDelete);
+            var result = await _controller.Delete(productIdToDelete, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -172,7 +173,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal("Success", response.Message);
             Assert.Null(response.Data);
 
-            _mockRepo.Verify(repo => repo.Delete(productIdToDelete), Times.Once);
+            _mockRepo.Verify(repo => repo.Delete(productIdToDelete, cancellationToken), Times.Once);
         }
     }
 }

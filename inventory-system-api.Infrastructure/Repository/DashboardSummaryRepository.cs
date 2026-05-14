@@ -15,7 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             _dbConnection = dbConnection;
         }
 
-        public async Task<DashboardSummary> GetDashboardSummary()
+        public async Task<DashboardSummary> GetDashboardSummary(CancellationToken cancellationToken)
         {
             DashboardSummary dashboardSummary = new DashboardSummary();
 
@@ -26,7 +26,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 dashboardSummary.SalesPurch = new SalesPurchSummary();
                 dashboardSummary.Product = new List<ProductSummary>();
 
@@ -58,19 +58,18 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             return dashboardSummary;
         }
 
-        public async Task<List<ProductSummary>> GetProductDashboardSummary()
+        public async Task<List<ProductSummary>> GetProductDashboardSummary(CancellationToken cancellationToken)
         {
 
             List<ProductSummary> products = new List<ProductSummary>();
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "SELECT TOP 4 ENGNAME, IMAGE, SALESRATE  FROM TBLPRODUCT WHERE IMAGE IS NOT NULL";
+                cmd.CommandText = "SP_GET_PRODUCT_DASHBOARD_SUMMARY";
 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
-
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
                 while (rdr.Read())
                 {
                     
@@ -92,7 +91,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
         }
 
        
-        public async Task<SalesPurchSummary> GetSalesPurchDashboardSummary()
+        public async Task<SalesPurchSummary> GetSalesPurchDashboardSummary(CancellationToken cancellationToken)
         {
             SalesPurchSummary   SalesPurch = new SalesPurchSummary();
 
@@ -103,7 +102,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -120,21 +119,18 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             return SalesPurch;
         }
 
-        public async Task<List<RecentTransactionSummary>> GetRecentTransactionSummary()
+        public async Task<List<RecentTransactionSummary>> GetRecentTransactionSummary(CancellationToken cancellationToken)
         {
 
             List<RecentTransactionSummary> products = new List<RecentTransactionSummary>();
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "SELECT TOP 5 CONVERT(DATE, SALESINVOICE_DATE, 111) SALES_DATE, CONCAT('SOLD $', M.NET_AMOUNT , ' WORTH OF PRODUCTS TO ', CUSTOMERNAME, ' - ', PRODUCTS ) DETAIL " +
-                    "FROM TBLSALESINVOICEMASTER M INNER JOIN (SELECT  SALESINVOICEID, STRING_AGG(ENGNAME, ', ') PRODUCTS" +
-                    "   FROM TBLSALESINVOICEDETAILS T INNER JOIN TBLPRODUCT P ON T.PRODUCTID = P.PRODUCTID GROUP BY SALESINVOICEID) DET ON M.SALESINVOICEID = DET.SALESINVOICEID " +
-                    "ORDER BY SALESINVOICE_DATE DESC";
+                cmd.CommandText = "SP_RECENT_TRANSACTION_SUMMARY";
 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {

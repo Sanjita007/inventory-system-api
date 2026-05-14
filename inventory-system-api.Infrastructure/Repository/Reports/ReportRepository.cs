@@ -14,7 +14,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             _dbConnection = dbConnection;
         }
 
-        public async Task<GrossProfitSummary> GetGrossProfitReport()
+        public async Task<GrossProfitSummary> GetGrossProfitReport(CancellationToken cancellationToken)
         {
             List<GrossProfit> entity = [];
             decimal TotalRev = 0, TotalCost = 0, TotalProfit = 0;
@@ -25,7 +25,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -59,7 +59,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
             return new GrossProfitSummary { GrossProfitList = entity , TotalCost= TotalCost, TotalProfit = TotalProfit, TotalRevenue = TotalRev};
         }
 
-        public async Task<InventorySummary> GetInventoryReport()
+        public async Task<InventorySummary> GetInventoryReport(CancellationToken cancellationToken)
         {
             List<InventoryDetail> entity = [];
             decimal TotalqtyIn = 0, TotalqtyOut = 0, TotalqtyOnHand = 0, TotalInValue=0;
@@ -70,7 +70,7 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {

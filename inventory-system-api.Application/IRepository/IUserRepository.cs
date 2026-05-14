@@ -5,18 +5,17 @@ namespace inventory_system_api.Application.IRepository
     public interface IUserRepository
     {
         
-        public Task<List<User>> Get();
+        public Task<List<User>> Get(CancellationToken cancellationToken);
 
-        public Task<User> Get(int id);
+        public Task<User> Get(int id, CancellationToken cancellationToken);
 
-        public Task<int> AddEdit(User entity);
-
-        public Task<int> Delete(int id);
+        public Task<int> AddEdit(User entity, CancellationToken cancellationToken);
+        public Task<int> Delete(int id, CancellationToken cancellationToken);
        
-        public Task<User> VerifyAndGetUserDetails(string userName, string password);
-        public Task<bool> ValidatePassword(int userID, string password);
+        public Task<User> VerifyAndGetUserDetails(string userName, string password, CancellationToken cancellationToken);
+        public Task<bool> ValidatePassword(int userID, string password, CancellationToken cancellationToken);
 
-        public Task<int> UpdatePassword(UpdatePasswordModel passwordModel);
+        public Task<int> UpdatePassword(UpdatePasswordModel passwordModel, CancellationToken cancellationToken);
 
 
 

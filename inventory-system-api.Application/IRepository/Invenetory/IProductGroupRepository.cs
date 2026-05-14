@@ -9,29 +9,29 @@ namespace inventory_system_api.Application.IRepository.Invenetory
         /// Get all the products or product list
         /// </summary>
         /// <returns></returns>
-        public Task<List<ProductGroup>> Get();
+        public Task<List<ProductGroup>> Get(CancellationToken cancellationToken);
 
         /// <summary>
         /// Get Product by Product Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<ProductGroup> Get(int id);
+        public Task<ProductGroup> Get(int id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Add or update the product
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public Task<int> AddEdit(ProductGroup entity);
+        public Task<int> AddEdit(ProductGroup entity, CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete a product based on the ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<int> Delete(int id);
+        public Task<int> Delete(int id, CancellationToken cancellationToken);
 
-        public Task<List<Tree>> GetProductTrees();
+        public Task<List<Tree>> GetProductTrees(CancellationToken cancellationToken);
     }
 }

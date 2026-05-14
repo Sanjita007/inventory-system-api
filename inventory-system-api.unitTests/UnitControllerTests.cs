@@ -12,6 +12,7 @@ namespace inventory_system_api.unitTests
     {
         private readonly Mock<IUnitRepository> _mockRepo;
         private readonly UnitController _controller;
+        private CancellationToken cancellationToken = CancellationToken.None;
 
         public UnitControllerTests()
         {
@@ -27,10 +28,10 @@ namespace inventory_system_api.unitTests
             var fakeUnit = new Unit { ID = unitId, Name = "Ton", Symbol="T"};
 
             // use mock to make a fake Tax object for test
-            _mockRepo.Setup(repo => repo.Get(unitId)).ReturnsAsync(fakeUnit);
+            _mockRepo.Setup(repo => repo.Get(unitId, cancellationToken)).ReturnsAsync(fakeUnit);
 
             // Act
-            var result = await _controller.Get(unitId);
+            var result = await _controller.Get(unitId, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -48,10 +49,10 @@ namespace inventory_system_api.unitTests
         {
             // Arrange
             var newUnit = new Unit { ID = 1, Name = "Ton", Symbol = "T" };
-            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<Unit>())).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<Unit>(), cancellationToken)).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Post(newUnit);
+            var result = await _controller.Post(newUnit, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -70,11 +71,11 @@ namespace inventory_system_api.unitTests
             // Arrange
             int taxIdToDelete = 10;
 
-            _mockRepo.Setup(repo => repo.Delete(taxIdToDelete))
+            _mockRepo.Setup(repo => repo.Delete(taxIdToDelete, cancellationToken))
                      .ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Delete(taxIdToDelete);
+            var result = await _controller.Delete(taxIdToDelete, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -86,7 +87,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal("Success", response.Message);
             //Assert.Equal(1, response.Data);
 
-            _mockRepo.Verify(repo => repo.Delete(taxIdToDelete), Times.Once);
+            _mockRepo.Verify(repo => repo.Delete(taxIdToDelete, cancellationToken), Times.Once);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using inventory_system_api.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace inventory_system_api.Controllers
@@ -7,7 +6,7 @@ namespace inventory_system_api.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    [Authorize]
+    //[Authorize]/-+8
     public class BaseController : ControllerBase
     {
         private IActionResult CustomResponse(int statusode, string message, object result)

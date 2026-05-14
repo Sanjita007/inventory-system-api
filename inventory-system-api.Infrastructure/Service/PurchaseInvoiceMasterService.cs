@@ -17,29 +17,29 @@ namespace inventory_system_api.Infrastructure.Service
             _salesInvoiceRepo = salesInvoiceRepo;
         }
 
-        public Task<int> AddEdit(PurchaseInvoiceMaster entity)
+        public Task<int> AddEdit(PurchaseInvoiceMaster entity, CancellationToken cancellationToken)
         {
-            return _salesInvoiceRepo.AddEdit(entity);
+            return _salesInvoiceRepo.AddEdit(entity, cancellationToken);
         }
 
-        public Task<int> Delete(int id)
+        public Task<int> Delete(int id, CancellationToken cancellationToken)
         {
-            return _salesInvoiceRepo.Delete(id);
+            return _salesInvoiceRepo.Delete(id, cancellationToken);
         }
 
-        public Task<List<PurchaseInvoiceMaster>> Get()
+        public Task<List<PurchaseInvoiceMaster>> Get(CancellationToken cancellationToken)
         {
-            return _salesInvoiceRepo.Get();
+            return _salesInvoiceRepo.Get(cancellationToken);
         }
 
-        public async Task<PurchaseInvoiceMaster> Get(int id)
+        public async Task<PurchaseInvoiceMaster> Get(int id, CancellationToken cancellationToken)
         {
-            PurchaseInvoiceMaster entity = await _salesInvoiceRepo.Get(id);
+            PurchaseInvoiceMaster entity = await _salesInvoiceRepo.Get(id, cancellationToken);
 
 
             List<int> units = entity.Details.Select(r => r.DefaultUnitID).Distinct().ToList();
 
-            List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(string.Join(",", units));
+            List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(string.Join(",", units), cancellationToken);
 
 
             var unitDetailsLookup = details
@@ -63,9 +63,9 @@ namespace inventory_system_api.Infrastructure.Service
             return entity;
         }
 
-        public Task<Navigate> Navigate(int pageNo, int rowPerPage)
+        public Task<Navigate> Navigate(int pageNo, int rowPerPage, CancellationToken cancellationToken)
         {
-            return _salesInvoiceRepo.Navigate(pageNo, rowPerPage);
+            return _salesInvoiceRepo.Navigate(pageNo, rowPerPage, cancellationToken);
         }
     }
 }

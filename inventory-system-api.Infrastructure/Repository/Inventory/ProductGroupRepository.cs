@@ -14,7 +14,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(ProductGroup entity)
+        public async Task<int> AddEdit(ProductGroup entity, CancellationToken cancellationToken)
         {
             int res = 0;
             using (_dbConnection as SqlConnection)
@@ -34,14 +34,14 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
                 res = Convert.ToInt32(result.Value);
             }
 
             return res;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
 
             using (_dbConnection as SqlConnection)
@@ -51,23 +51,22 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             }
         }
 
-        public async Task<List<ProductGroup>> Get()
+        public async Task<List<ProductGroup>> Get(CancellationToken cancellationToken)
         {
 
             List<ProductGroup> listEntity = [];
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = $"select g.GroupID, g.Parent_GrpID ParentGroupID, g.EngName EngName, g.NepName, pg.EngName ParentGroupName, g.Level,g.Remarks " +
-                    $"from PRODUCT_GROUP g left join PRODUCT_GROUP pg on pg.GroupID = g.Parent_GrpID  where g.CompanyID =1";
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = $"SP_GET_PRODUCT_GROUP";
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -89,20 +88,19 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return listEntity;
         }
 
-        public async Task<ProductGroup> Get(int id)
+        public async Task<ProductGroup> Get(int id, CancellationToken cancellationToken)
         {
 
             ProductGroup entity = new();
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = $"select g.GroupID, g.Parent_GrpID ParentGroupID, g.EngName EngName, g.NepName, pg.EngName ParentGroupName, g.Level, g.Remarks " +
-                    $"from PRODUCT_GROUP g left join PRODUCT_GROUP pg on pg.GroupID = g.Parent_GrpID  where g.GroupID = @id and g.CompanyID =1";
+                cmd.CommandText = $"SP_GET_PRODUCT_GROUP";
                 cmd.Parameters.AddWithValue("@id", id);
 
-                cmd.CommandType = CommandType.Text;
+                cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -124,9 +122,9 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return entity;
         }
 
-        public async Task<List<Tree>> GetProductTrees()
+        public async Task<List<Tree>> GetProductTrees(CancellationToken cancellationToken)
         {
-            List<ProductGroup> list = await Get();
+            List<ProductGroup> list = await Get(cancellationToken);
             List<Tree> tree = TreeMethod(list, 0, 0);
 
             return tree;

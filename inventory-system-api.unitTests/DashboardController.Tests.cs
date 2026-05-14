@@ -11,6 +11,7 @@ namespace inventory_system_api.unitTests
     {
         private readonly Mock<IDashboardSummaryRepository> _mockRepo;
         private readonly DashboardController _controller;
+        private CancellationToken cancellationToken = CancellationToken.None;
 
         public DashboardControllerTests()
         {
@@ -37,10 +38,10 @@ namespace inventory_system_api.unitTests
             };
 
             // use mock to make a fake Tax object for test
-            _mockRepo.Setup(repo => repo.GetProductDashboardSummary()).ReturnsAsync(fakeProducts);
+            _mockRepo.Setup(repo => repo.GetProductDashboardSummary(cancellationToken)).ReturnsAsync(fakeProducts);
 
             // Act
-            var result = await _controller.GetProducts();
+            var result = await _controller.GetProducts(cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -72,10 +73,10 @@ namespace inventory_system_api.unitTests
             };
 
             // use mock to make a fake Tax object for test
-            _mockRepo.Setup(repo => repo.GetProductDashboardSummary()).ReturnsAsync(fakeProducts);
+            _mockRepo.Setup(repo => repo.GetProductDashboardSummary(cancellationToken)).ReturnsAsync(fakeProducts);
 
             // Act
-            var result = await _controller.GetProducts();
+            var result = await _controller.GetProducts(cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

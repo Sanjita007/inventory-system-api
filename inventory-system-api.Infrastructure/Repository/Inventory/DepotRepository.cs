@@ -13,7 +13,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(Depot entity)
+        public async Task<int> AddEdit(Depot entity, CancellationToken cancellationToken)
         {
             int res = 0;
             //using (_dbConnection as SqlConnection)
@@ -50,7 +50,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return res;
         }
 
-        public async Task<int> Delete(int id)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken)
         {
 
             using (_dbConnection as SqlConnection)
@@ -60,12 +60,12 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync();
+                return await cmd.ExecuteNonQueryAsync(cancellationToken);
 
             }
         }
 
-        public async Task<List<Depot>> Get()
+        public async Task<List<Depot>> Get(CancellationToken cancellationToken)
         {
 
             List<Depot> listEntity = [];
@@ -75,7 +75,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.CommandText = "select top 10 * from DEPOT where CompanyID = 1";
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {
@@ -92,7 +92,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             return listEntity;
         }
 
-        public async Task<Depot> Get(int id)
+        public async Task<Depot> Get(int id, CancellationToken cancellationToken)
         {
 
             Depot entity = new();
@@ -104,7 +104,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.Text;
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync();
+                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
                 while (rdr.Read())
                 {

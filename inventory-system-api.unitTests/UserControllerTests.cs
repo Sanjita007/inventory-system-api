@@ -13,6 +13,7 @@ namespace inventory_system_api.unitTests
     {
         private readonly UserController _controller;
         private readonly Mock<IUserRepository> _mockRepo;
+        private CancellationToken cancellationToken = CancellationToken.None;
 
         // xUnit uses the Constructor instead of [TestInitialize]
         public UserControllerTests()
@@ -54,10 +55,10 @@ namespace inventory_system_api.unitTests
                 PhoneNo = string.Empty
             };
 
-            _mockRepo.Setup(r => r.VerifyAndGetUserDetails(loginUser.UserName, loginUser.Password)).ReturnsAsync(user);
+            _mockRepo.Setup(r => r.VerifyAndGetUserDetails(loginUser.UserName, loginUser.Password, cancellationToken)).ReturnsAsync(user);
 
             // Act
-            var result = await _controller.Login(loginUser);
+            var result = await _controller.Login(loginUser, cancellationToken);
 
             // Assert - check the return type and payload
             var okResult = Assert.IsType<OkObjectResult>(result);

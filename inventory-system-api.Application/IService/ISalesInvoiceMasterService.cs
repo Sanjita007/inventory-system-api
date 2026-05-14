@@ -9,14 +9,14 @@ namespace inventory_system_api.Application.IService
         /// Get all the products or product list
         /// </summary>
         /// <returns></returns>
-        public Task<List<SalesInvoiceMaster>> Get();
+        public Task<List<SalesInvoiceMaster>> Get(CancellationToken cancellationToken);
 
         /// <summary>
         /// Get Product by Product Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<SalesInvoiceMaster> Get(int id);
+        public Task<SalesInvoiceMaster> Get(int id, CancellationToken cancellationToken);
 
 
         /// <summary>
@@ -24,16 +24,16 @@ namespace inventory_system_api.Application.IService
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public Task<int> AddEdit(SalesInvoiceMaster entity);
+        public Task<int> AddEdit(SalesInvoiceMaster entity, CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete a product based on the ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<int> Delete(int id);
+        public Task<int> Delete(int id, CancellationToken cancellationToken1);
 
-        public Task<Navigate> Navigate(int pageNo, int rowPerPage);
+        public Task<Navigate> Navigate(int pageNo, int rowPerPage, CancellationToken cancellationToken);
 
     }
 

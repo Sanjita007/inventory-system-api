@@ -12,6 +12,7 @@ namespace inventory_system_api.unitTests
     {
         private readonly Mock<IProductGroupRepository> _mockRepo;
         private readonly ProductGroupController _controller;
+        private CancellationToken cancellationToken = CancellationToken.None;
 
         public ProductGroupControllerTests()
         {
@@ -24,22 +25,24 @@ namespace inventory_system_api.unitTests
         {
             // Arrange
             var groupId = 1;
+            string guid = Guid.NewGuid().ToString();
+
             var fakeGroup = new ProductGroup
             {
                 ID = groupId,
                 ParentGroupID = 12,
-                EngName = "Test Group",
-                NepName = "टेस्ट समूह",
+                EngName = "Test Group" + guid,
+                NepName = "टेस्ट समूह" + guid,
                 Level = 1,
                 ParentGroupName = "Parent Group",
                 Remarks = "This is a test product group"
 
             };
 
-            _mockRepo.Setup(repo => repo.Get(groupId)).ReturnsAsync(fakeGroup);
+            _mockRepo.Setup(repo => repo.Get(groupId, cancellationToken)).ReturnsAsync(fakeGroup);
 
             // Act
-            var result = await _controller.Get(groupId);
+            var result = await _controller.Get(groupId, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -57,21 +60,23 @@ namespace inventory_system_api.unitTests
         {
             int groupId = 1;
             // Arrange
+            string guid = Guid.NewGuid().ToString();
+
             var newGroup = new ProductGroup
             {
                 ID = groupId,
                 ParentGroupID = 12,
-                EngName = "Test Group",
-                NepName = "टेस्ट समूह",
+                EngName = "Test Group" + guid,
+                NepName = "टेस्ट समूह" + guid,
                 Level = 1,
                 ParentGroupName = "Parent Group",
                 Remarks = "This is a test product group"
             };
 
-            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<ProductGroup>())).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<ProductGroup>(), cancellationToken)).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Post(newGroup);
+            var result = await _controller.Post(newGroup, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -81,7 +86,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, returned.StatusCode); // custom response
             Assert.Equal("Success", returned.Message);
             Assert.NotNull(returned.Data);
-            _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<ProductGroup>()), Times.Once);
+            _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<ProductGroup>(), cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -90,10 +95,10 @@ namespace inventory_system_api.unitTests
             // Arrange
             int groupIdToDelete = 10;
 
-            _mockRepo.Setup(repo => repo.Delete(groupIdToDelete)).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.Delete(groupIdToDelete, cancellationToken)).ReturnsAsync(1);
 
             // Act
-            var result = await _controller.Delete(groupIdToDelete);
+            var result = await _controller.Delete(groupIdToDelete, cancellationToken);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -103,7 +108,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal("Success", response.Message);
             Assert.Null(response.Data);
 
-            _mockRepo.Verify(repo => repo.Delete(groupIdToDelete), Times.Once);
+            _mockRepo.Verify(repo => repo.Delete(groupIdToDelete, cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -135,10 +140,10 @@ namespace inventory_system_api.unitTests
                 }
             };
 
-            _mockRepo.Setup(r => r.GetProductTrees()).ReturnsAsync(expectedTree);
+            _mockRepo.Setup(r => r.GetProductTrees(cancellationToken)).ReturnsAsync(expectedTree);
 
             // Act
-            var actionResult = await _controller.GetTree();
+            var actionResult = await _controller.GetTree(cancellationToken);
 
             // Assert - HTTP shape and payload
             var okResult = Assert.IsType<OkObjectResult>(actionResult);
@@ -167,7 +172,7 @@ namespace inventory_system_api.unitTests
             // Child B should have no children
             Assert.Empty(childB.Children);
 
-            _mockRepo.Verify(r => r.GetProductTrees(), Times.Once);
+            _mockRepo.Verify(r => r.GetProductTrees(cancellationToken), Times.Once);
         }
     }
 

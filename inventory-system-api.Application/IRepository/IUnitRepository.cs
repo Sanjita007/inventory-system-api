@@ -8,28 +8,28 @@ namespace inventory_system_api.Application.IRepository
         /// Get all the units or unit list
         /// </summary>
         /// <returns></returns>
-        public Task<List<Unit>> Get();
+        public Task<List<Unit>> Get(CancellationToken cancellationToken);
 
         /// <summary>
         /// Get Unit by Unit Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<Unit> Get(int id);
+        public Task<Unit> Get(int id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Add or update the unit
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public Task<int> AddEdit(Unit entity);
+        public Task<int> AddEdit(Unit entity, CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete a unit based on the ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<int> Delete(int id);
+        public Task<int> Delete(int id, CancellationToken cancellationToken);
 
         /// <summary>
         /// convert from default unit to current unit based on relationship among these units
@@ -38,9 +38,9 @@ namespace inventory_system_api.Application.IRepository
         /// <param name="currentUnitID"></param>
         /// <param name="valueToConvert"></param>
         /// <returns></returns>
-        public Task<decimal?> ConvertUnit(int defaultUnitID, int currentUnitID, decimal valueToConvert);
-        public Task<List<UnitDetails>> GetRelatedUnit(int BaseUnitID);
-        public Task<List<UnitDetails>> GetMultipleRelatedUnit(string baseUnits);
+        public Task<decimal?> ConvertUnit(int defaultUnitID, int currentUnitID, decimal valueToConvert, CancellationToken cancellationToken);
+        public Task<List<UnitDetails>> GetRelatedUnit(int BaseUnitID, CancellationToken cancellationToken);
+        public Task<List<UnitDetails>> GetMultipleRelatedUnit(string baseUnits, CancellationToken cancellationToken);
 
 
 

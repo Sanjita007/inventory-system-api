@@ -17,37 +17,37 @@ namespace accswift_api.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(CompoundUnit entity)
+        public async Task<IActionResult> Put(CompoundUnit entity, CancellationToken cancellationToken)
         {
-            var res = await _repo.AddEdit(entity);
+            var res = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(CompoundUnit entity)
+        public async Task<IActionResult> Post(CompoundUnit entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity);
+            int res = await _repo.AddEdit(entity, cancellationToken);
             return OkResponse(new { ID = res });
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(CancellationToken cancellationToken)
         {
-            var list = await _repo.Get();
+            var list = await _repo.Get(cancellationToken);
             return OkResponse(list);
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
-            var entity = await _repo.Get(id);
+            var entity = await _repo.Get(id, cancellationToken);
             return OkResponse(entity);
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var res = await _repo.Delete(id);
+            var res = await _repo.Delete(id, cancellationToken);
             return OkResponse();
         }
 

@@ -12,6 +12,7 @@ namespace inventory_system_api.unitTests
     {
         private readonly Mock<IPurchaseInvoiceMasterService> _mockRepo;
         private readonly PurchaseInvoiceController _controller;
+        private CancellationToken cancellationToken = CancellationToken.None;
 
         public PurchaseInvoiceControllerTests()
         {
@@ -70,9 +71,9 @@ namespace inventory_system_api.unitTests
                     }
                 }
             };
-            _mockRepo.Setup(r => r.Get()).ReturnsAsync(list);
+            _mockRepo.Setup(r => r.Get(cancellationToken)).ReturnsAsync(list);
 
-            var result = await _controller.Get();
+            var result = await _controller.Get(cancellationToken);
 
             var ok = Assert.IsType<OkObjectResult>(result);
             var resp = Assert.IsType<Models.Response>(ok.Value);
@@ -84,7 +85,7 @@ namespace inventory_system_api.unitTests
             Assert.Single(data);
             Assert.Equal("Supplier A", data[0].EntityName);
 
-            _mockRepo.Verify(r => r.Get(), Times.Once);
+            _mockRepo.Verify(r => r.Get(cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -112,9 +113,9 @@ namespace inventory_system_api.unitTests
                 Remarks = "unit test",
                 Details = new List<InvoiceDetail>()
             };
-            _mockRepo.Setup(r => r.Get(id)).ReturnsAsync(item);
+            _mockRepo.Setup(r => r.Get(id, cancellationToken)).ReturnsAsync(item);
 
-            var result = await _controller.Get(id);
+            var result = await _controller.Get(id, cancellationToken);
 
             var ok = Assert.IsType<OkObjectResult>(result);
             var resp = Assert.IsType<Models.Response>(ok.Value);
@@ -122,7 +123,7 @@ namespace inventory_system_api.unitTests
 
             Assert.Equal(200, resp.StatusCode);
             Assert.Equal("Supplier X", data.EntityName);
-            _mockRepo.Verify(r => r.Get(id), Times.Once);
+            _mockRepo.Verify(r => r.Get(id, cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -149,9 +150,9 @@ namespace inventory_system_api.unitTests
                 Remarks = "unit test",
                 Details = new List<InvoiceDetail>()
             };
-            _mockRepo.Setup(r => r.AddEdit(It.IsAny<PurchaseInvoiceMaster>())).ReturnsAsync(1);
+            _mockRepo.Setup(r => r.AddEdit(It.IsAny<PurchaseInvoiceMaster>(), cancellationToken)).ReturnsAsync(1);
 
-            var result = await _controller.Post(model);
+            var result = await _controller.Post(model, cancellationToken);
 
             var ok = Assert.IsType<OkObjectResult>(result);
             var resp = Assert.IsType<Models.Response>(ok.Value);
@@ -159,16 +160,16 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, ok.StatusCode);
             Assert.Equal(200, resp.StatusCode);
             Assert.Equal("Success", resp.Message);
-            _mockRepo.Verify(r => r.AddEdit(It.IsAny<PurchaseInvoiceMaster>()), Times.Once);
+            _mockRepo.Verify(r => r.AddEdit(It.IsAny<PurchaseInvoiceMaster>(), cancellationToken), Times.Once);
         }
 
         [Fact]
         public async Task Navigate_ReturnsOk_WithNavigateObject()
         {
             var nav = new Navigate { PageNo = 2, RowPerPage = 5, PageCount = 4, Entity = null };
-            _mockRepo.Setup(r => r.Navigate(2, 5)).ReturnsAsync(nav);
+            _mockRepo.Setup(r => r.Navigate(2, 5, cancellationToken)).ReturnsAsync(nav);
 
-            var result = await _controller.Navigate(2, 5);
+            var result = await _controller.Navigate(2, 5, cancellationToken);
 
             var ok = Assert.IsType<OkObjectResult>(result);
             var resp = Assert.IsType<Models.Response>(ok.Value);
@@ -176,22 +177,22 @@ namespace inventory_system_api.unitTests
 
             Assert.Equal(200, resp.StatusCode);
             Assert.Equal(2, data.PageNo);
-            _mockRepo.Verify(r => r.Navigate(2, 5), Times.Once);
+            _mockRepo.Verify(r => r.Navigate(2, 5, cancellationToken), Times.Once);
         }
 
         [Fact]
         public async Task Delete_ReturnsOk_WhenDeleted()
         {
-            _mockRepo.Setup(r => r.Delete(4)).ReturnsAsync(1);
+            _mockRepo.Setup(r => r.Delete(4, cancellationToken)).ReturnsAsync(1);
 
-            var result = await _controller.Delete(4);
+            var result = await _controller.Delete(4, cancellationToken);
 
             var ok = Assert.IsType<OkObjectResult>(result);
             var resp = Assert.IsType<Models.Response>(ok.Value);
 
             Assert.Equal(200, resp.StatusCode);
             Assert.Equal("Success", resp.Message);
-            _mockRepo.Verify(r => r.Delete(4), Times.Once);
+            _mockRepo.Verify(r => r.Delete(4, cancellationToken), Times.Once);
         }
     }
 }
