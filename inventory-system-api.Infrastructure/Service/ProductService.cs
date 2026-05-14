@@ -21,14 +21,14 @@ namespace inventory_system_api.Infrastructure.Service
             _prodGroupRepo = prodGroupRepo;
         }
 
-        public async Task<int> AddEdit(Product entity, CancellationToken cancellationToken)
+        public async Task<int> AddEdit(Product entity, CancellationToken cancellationToken, int userId)
         {
-            return await _productRepo.AddEdit(entity, cancellationToken);
+            return await _productRepo.AddEdit(entity, cancellationToken, userId);
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
         {
-            return await _productRepo.Delete(id, cancellationToken);
+            return await _productRepo.Delete(id, cancellationToken, userId);
         }
 
         public async Task<List<Product>> Get(CancellationToken cancellationToken)

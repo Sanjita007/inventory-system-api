@@ -24,14 +24,14 @@ namespace inventory_system_api.Application.IService
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public Task<int> AddEdit(SalesInvoiceMaster entity, CancellationToken cancellationToken);
+        public Task<int> AddEdit(SalesInvoiceMaster entity, CancellationToken cancellationToken, int userId);
 
         /// <summary>
         /// Delete a product based on the ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<int> Delete(int id, CancellationToken cancellationToken1);
+        public Task<int> Delete(int id, CancellationToken cancellationToken, int userId);
 
         public Task<Navigate> Navigate(int pageNo, int rowPerPage, CancellationToken cancellationToken);
 

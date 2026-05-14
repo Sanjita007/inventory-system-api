@@ -49,13 +49,14 @@ namespace inventory_system_api.Controllers
         }
 
         [HttpPut]
+
         public async Task<IActionResult> Put(User entity, CancellationToken cancellationToken)
         {
             if (await _repo.ValidatePassword(entity.ID, entity.Password, cancellationToken))
             {
                 return BadRequest(new Response() { StatusCode = 400, Message = "Password does not match to the existing one", });
             }
-            var res = await _repo.AddEdit(entity, cancellationToken);
+            var res = await _repo.AddEdit(entity, cancellationToken, UserId);
             return OkResponse();
         }
 
@@ -63,25 +64,25 @@ namespace inventory_system_api.Controllers
         public async Task<IActionResult> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken)
         {
             
-            await _repo.UpdatePassword(entity, cancellationToken);
+            await _repo.UpdatePassword(entity, cancellationToken, UserId);
             return OkResponse();
         }
 
         [HttpPost]
-        //[Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> Post(User entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity, cancellationToken);
+            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
             return OkResponse(new { ID = res });
         }
 
-        private object GenerateJSONWebToken(User user)
+        private object GenerateJSONWebToken(User user, int expiresIn =60)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]??""));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
+                new Claim(JwtRegisteredClaimNames.NameId, user.ID.ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("Roles", user.Role),
@@ -92,7 +93,7 @@ namespace inventory_system_api.Controllers
                 _config["Jwt:Issuer"],
                 _config["Jwt:Issuer"],
                 claims,
-                expires: DateTime.Now.AddMinutes(60),
+                expires: DateTime.Now.AddMinutes(expiresIn),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
@@ -104,6 +105,20 @@ namespace inventory_system_api.Controllers
             var list = await _repo.Get(cancellationToken);
             return OkResponse(list);
         }
+
+        [AllowAnonymous]
+        [HttpPost("Login/Guest")]
+        public IActionResult LoginGuest()
+        {
+            string userName = "GuestUser" + new Guid().ToString();
+
+           var token = GenerateJSONWebToken(new User() { UserName = userName,Role="GUEST"}, 15);
+            return OkResponse(new
+            {
+                Token = token
+            });
+        }
+
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)

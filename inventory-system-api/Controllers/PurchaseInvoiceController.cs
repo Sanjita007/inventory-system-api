@@ -21,14 +21,14 @@ namespace accswift_api.Controllers
             {
                 return ErrorResponse("Cannot have value of ID for post request");
             }
-            int res = await _repo.AddEdit(entity, cancellationToken);
+            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
             return OkResponse(new { ID = res });
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(PurchaseInvoiceMaster entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity, cancellationToken);
+            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
             return OkResponse();
         }
 
@@ -56,7 +56,7 @@ namespace accswift_api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var res = await _repo.Delete(id, cancellationToken);
+            var res = await _repo.Delete(id, cancellationToken, UserId);
             return OkResponse();
         }
     }

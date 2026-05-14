@@ -14,7 +14,7 @@ namespace inventory_system_api.Infrastructure.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(User entity, CancellationToken cancellationToken)
+        public async Task<int> AddEdit(User entity, CancellationToken cancellationToken, int userId)
         {
             int res = 0;
 
@@ -36,7 +36,7 @@ namespace inventory_system_api.Infrastructure.Repository
                 cmd.Parameters.AddWithValue("@Contact", entity.PhoneNo);
                 cmd.Parameters.AddWithValue("@Email", entity.Email);
 
-                cmd.Parameters.AddWithValue("@UserID", "root");
+                cmd.Parameters.AddWithValue("@UserID", userId);
 
                 _dbConnection.Open();
                 await cmd.ExecuteNonQueryAsync(cancellationToken);
@@ -46,7 +46,7 @@ namespace inventory_system_api.Infrastructure.Repository
             return res;
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken)
+        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -196,7 +196,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
         }
 
-        public async Task<int> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken)
+        public async Task<int> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken, int userId)
         {
             int res = 0;
 
