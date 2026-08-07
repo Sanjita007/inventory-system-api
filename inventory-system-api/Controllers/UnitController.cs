@@ -2,7 +2,6 @@
 using inventory_system_api.Application.Models.Inventory;
 using inventory_system_api.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace accswift_api.Controllers
 {
@@ -20,6 +19,13 @@ namespace accswift_api.Controllers
         {
             int res = await _repo.AddEdit(entity, cancellationToken, UserId);
             return OkResponse(new { ID = res });
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(Unit entity, CancellationToken cancellationToken)
+        {
+            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
+            return OkResponse();
         }
 
         [HttpGet]

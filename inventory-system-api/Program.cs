@@ -243,3 +243,4 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
         }
     }
 }
+public partial class Program { }

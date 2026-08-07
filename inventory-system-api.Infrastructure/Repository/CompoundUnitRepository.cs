@@ -35,6 +35,7 @@ namespace inventory_system_api.Infrastructure.Repository
             cmd.Parameters.AddWithValue("@UserID", userId);
 
             _dbConnection.Open();
+            res = await cmd.ExecuteNonQueryAsync();
             await cmd.ExecuteNonQueryAsync(cancellationToken);
             res = Convert.ToInt32(result.Value);
 

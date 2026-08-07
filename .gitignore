@@ -109,9 +109,8 @@ docker-compose.override.yml
 /inventory-system-api.unitTests/obj/Debug/net10.0
 /inventory-system-api.unitTests/obj
 /inventory-system-api.Application/obj
-/inventory-system-api.integrationTests/bin
-/inventory-system-api.integrationTests/obj/Debug/net8.0
-/inventory-system-api.integrationTests/obj/Release/net8.0
-/inventory-system-api.unitTests/bin/Debug/net8.0
-/inventory-system-api.unitTests/bin/Release/net8.0
+/inventory-system-api.integrationTests/bin/Debug/net8.0
 /inventory-system-api.integrationTests/obj
+/inventory-system-api.unitTests/bin/Debug/net8.0
+/inventory-system-api.integrationTests/bin/Release/net8.0
+/inventory-system-api.unitTests/bin/Release/net8.0
