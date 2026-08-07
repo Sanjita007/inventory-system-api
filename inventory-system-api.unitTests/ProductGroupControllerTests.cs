@@ -73,7 +73,7 @@ namespace inventory_system_api.unitTests
                 Remarks = "This is a test product group"
             };
 
-            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<ProductGroup>(), cancellationToken)).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<ProductGroup>(), cancellationToken, 1)).ReturnsAsync(1);
 
             // Act
             var result = await _controller.Post(newGroup, cancellationToken);
@@ -86,7 +86,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, returned.StatusCode); // custom response
             Assert.Equal("Success", returned.Message);
             Assert.NotNull(returned.Data);
-            _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<ProductGroup>(), cancellationToken), Times.Once);
+            _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<ProductGroup>(), cancellationToken, 1), Times.Once);
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace inventory_system_api.unitTests
             // Arrange
             int groupIdToDelete = 10;
 
-            _mockRepo.Setup(repo => repo.Delete(groupIdToDelete, cancellationToken)).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.Delete(groupIdToDelete, cancellationToken, 1)).ReturnsAsync(1);
 
             // Act
             var result = await _controller.Delete(groupIdToDelete, cancellationToken);
@@ -108,7 +108,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal("Success", response.Message);
             Assert.Null(response.Data);
 
-            _mockRepo.Verify(repo => repo.Delete(groupIdToDelete, cancellationToken), Times.Once);
+            _mockRepo.Verify(repo => repo.Delete(groupIdToDelete, cancellationToken, 1), Times.Once);
         }
 
         [Fact]

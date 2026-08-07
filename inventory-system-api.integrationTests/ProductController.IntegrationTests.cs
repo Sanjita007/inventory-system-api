@@ -83,9 +83,10 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
 
         var response = await client.PostAsync("/api/v1/Product", content);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True(payload.TryGetProperty("data", out var data));
         Assert.True(data.TryGetProperty("id", out var idProp));
         Assert.True(idProp.GetInt32() > 0);

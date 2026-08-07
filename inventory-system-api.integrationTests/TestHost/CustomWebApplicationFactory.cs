@@ -44,6 +44,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             {
                 options.DefaultAuthenticateScheme = "Test";
                 options.DefaultChallengeScheme = "Test";
+
             });
         });
     }

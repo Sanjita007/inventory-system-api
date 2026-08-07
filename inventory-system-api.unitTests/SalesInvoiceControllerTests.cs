@@ -154,7 +154,7 @@ namespace inventory_system_api.unitTests
                 new InvoiceDetail { ProductID = 1, ProductName = "P1", Quantity = 1, Price = 123.45m, NetAmount = 123.45m }
             ]
             };
-            _mockRepo.Setup(r => r.AddEdit(It.IsAny<SalesInvoiceMaster>(), cancellationToken)).ReturnsAsync(1);
+            _mockRepo.Setup(r => r.AddEdit(It.IsAny<SalesInvoiceMaster>(), cancellationToken,1)).ReturnsAsync(1);
 
             var result = await _controller.Post(model, cancellationToken);
 
@@ -164,7 +164,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, ok.StatusCode);
             Assert.Equal(200, resp.StatusCode);
             Assert.Equal("Success", resp.Message);
-            _mockRepo.Verify(r => r.AddEdit(It.IsAny<SalesInvoiceMaster>(), cancellationToken), Times.Once);
+            _mockRepo.Verify(r => r.AddEdit(It.IsAny<SalesInvoiceMaster>(), cancellationToken,1), Times.Once);
         }
 
         [Fact]
@@ -187,7 +187,7 @@ namespace inventory_system_api.unitTests
         [Fact]
         public async Task Delete_ReturnsOk_WhenDeleted()
         {
-            _mockRepo.Setup(r => r.Delete(3, cancellationToken)).ReturnsAsync(1);
+            _mockRepo.Setup(r => r.Delete(3, cancellationToken,1)).ReturnsAsync(1);
 
             var result = await _controller.Delete(3, cancellationToken);
 
@@ -196,7 +196,7 @@ namespace inventory_system_api.unitTests
 
             Assert.Equal(200, resp.StatusCode);
             Assert.Equal("Success", resp.Message);
-            _mockRepo.Verify(r => r.Delete(3, cancellationToken), Times.Once);
+            _mockRepo.Verify(r => r.Delete(3, cancellationToken, 1), Times.Once);
         }
     }
 }
