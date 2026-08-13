@@ -25,7 +25,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         {
             var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var connectionString = configuration.GetConnectionString("DefaultConnectionString");
+            var connectionString = configuration.GetConnectionString("TestConnectionString");
             
             var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IDbConnection));
             if (descriptor != null) services.Remove(descriptor);

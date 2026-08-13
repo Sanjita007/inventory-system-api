@@ -11,19 +11,19 @@ namespace inventory_system_api.integrationTests;
 
 public class ProductGroupControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 {
-    private readonly CustomWebApplicationFactory _factory;
+    private readonly HttpClient _client;
 
     public ProductGroupControllerIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _factory = factory;
+        _client = factory.CreateClient();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
     }
 
     [Fact]
     public async Task Get_ReturnsOk_WithGroups()
     {
-        var client = _factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/ProductGroup");
+        var response = await _client.GetAsync("/api/v1/ProductGroup");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -36,13 +36,12 @@ public class ProductGroupControllerIntegrationTests : IClassFixture<CustomWebApp
     [Fact]
     public async Task CreateGroup_ReturnsOk_AndReturnsId()
     {
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
+        string guid = Guid.NewGuid().ToString();   
 
-        var newGroup = new { ParentGroupID = 72, EngName = "IGroup", NepName = "समूह", Level = 0, ParentGroupName = "", Remarks = "test" };
+        var newGroup = new { ParentGroupID = 72, EngName = "IGroup" + guid, NepName = "समूह" + guid, Level = 0, ParentGroupName = "", Remarks = "test" };
         var content = JsonContent.Create(newGroup);
 
-        var response = await client.PostAsync("/api/v1/ProductGroup", content);
+        var response = await _client.PostAsync("/api/v1/ProductGroup", content);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

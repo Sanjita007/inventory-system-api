@@ -11,19 +11,18 @@ namespace inventory_system_api.integrationTests;
 
 public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 {
-    private readonly CustomWebApplicationFactory _factory;
+    private readonly HttpClient _client;
 
     public SalesInvoiceControllerIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _factory = factory;
+        _client = factory.CreateClient();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
     }
 
     [Fact]
     public async Task Get_ReturnsOk_WithSalesList()
     {
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/api/v1/SalesInvoice");
+        var response = await _client.GetAsync("/api/v1/SalesInvoice");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -36,9 +35,7 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
     [Fact]
     public async Task GetById_ReturnsOk_WhenExists()
     {
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/api/v1/SalesInvoice/1");
+        var response = await _client.GetAsync("/api/v1/SalesInvoice/14");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -51,9 +48,6 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
     [Fact]
     public async Task CreateSales_ReturnsOk_AndReturnsId()
     {
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-
         var newInvoice = new
         {
             ID = 0,
@@ -69,7 +63,7 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
             TenderAmount = 0m,
             ChangeAmount = 0m,
             AdjustmentAmount = 0m,
-            Status = "PAID",
+            Status = "UNPAID", // because the invoice cannot be updated if it is already paid
             CreatedDate = DateTime.UtcNow,
             CreatedBy = 1,
             CompanyID = 1,
@@ -81,7 +75,7 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
 
         var content = JsonContent.Create(newInvoice);
 
-        var response = await client.PostAsync("/api/v1/SalesInvoice", content);
+        var response = await _client.PostAsync("/api/v1/SalesInvoice", content);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -94,9 +88,6 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
     [Fact]
     public async Task Put_ReturnsOk_OnSuccess()
     {
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-
         string guid = Guid.NewGuid().ToString();
         // create first
         var newInvoice = new
@@ -114,14 +105,14 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
             TenderAmount = 0m,
             ChangeAmount = 0m,
             AdjustmentAmount = 0m,
-            Status = "PAID",
+            Status = "UNPAID", // because the invoice cannot be updated if it is already paid
             CreatedDate = DateTime.UtcNow,
             CreatedBy = 1,
             CompanyID = 1,
             Remarks = "unit test" + guid,
             Details = new[] { new { ProductID = 1, ProductName = "P1", Quantity = 1, Price = 50.00m, NetAmount = 50.00m } }
         };
-        var createResp = await client.PostAsync("/api/v1/SalesInvoice", JsonContent.Create(newInvoice));
+        var createResp = await _client.PostAsync("/api/v1/SalesInvoice", JsonContent.Create(newInvoice));
         Assert.Equal(HttpStatusCode.OK, createResp.StatusCode);
         var createPayload = await createResp.Content.ReadFromJsonAsync<JsonElement>();
         Assert.True(createPayload.TryGetProperty("data", out var createData));
@@ -132,13 +123,14 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
         var updateInvoice = new
         {
             ID = id,
+            VoucherNo = "VNEW" + guid,
             EntityName = "Updated Customer" + guid,
             Date = DateTime.UtcNow,
             NetAmount = 200.00m,
             Details = new[] { new { ProductID = 1, ProductName = "P1", Quantity = 2, Price = 100.00m, NetAmount = 200.00m } }
         };
 
-        var putResp = await client.PutAsync("/api/v1/SalesInvoice", JsonContent.Create(updateInvoice));
+        var putResp = await _client.PutAsync("/api/v1/SalesInvoice", JsonContent.Create(updateInvoice));
         Assert.Equal(HttpStatusCode.OK, putResp.StatusCode);
 
         var putPayload = await putResp.Content.ReadFromJsonAsync<Models.Response>();
@@ -150,18 +142,16 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
     [Fact]
     public async Task Delete_ReturnsOk_WhenDeleted()
     {
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-
         // create first
         var newInvoice = new
         {
+            VoucherNo = "VDEL"+ Guid.NewGuid().ToString(),
             EntityName = "To Delete",
             Date = DateTime.UtcNow,
             NetAmount = 77.00m,
             Details = new[] { new { ProductID = 1, ProductName = "P1", Quantity = 1, Price = 77.00m, NetAmount = 77.00m } }
         };
-        var createResp = await client.PostAsync("/api/v1/SalesInvoice", JsonContent.Create(newInvoice));
+        var createResp = await _client.PostAsync("/api/v1/SalesInvoice", JsonContent.Create(newInvoice));
         Assert.Equal(HttpStatusCode.OK, createResp.StatusCode);
         var createPayload = await createResp.Content.ReadFromJsonAsync<JsonElement>();
         Assert.True(createPayload.TryGetProperty("data", out var createData));
@@ -169,7 +159,7 @@ public class SalesInvoiceControllerIntegrationTests : IClassFixture<CustomWebApp
         var id = idProp.GetInt32();
 
         // delete
-        var delResp = await client.DeleteAsync($"/api/v1/SalesInvoice/{id}");
+        var delResp = await _client.DeleteAsync($"/api/v1/SalesInvoice/{id}");
         Assert.Equal(HttpStatusCode.OK, delResp.StatusCode);
 
         var delPayload = await delResp.Content.ReadFromJsonAsync<Models.Response>();

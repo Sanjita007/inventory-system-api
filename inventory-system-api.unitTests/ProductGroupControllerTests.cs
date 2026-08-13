@@ -18,6 +18,8 @@ namespace inventory_system_api.unitTests
         {
             _mockRepo = new Mock<IProductGroupRepository>();
             _controller = new ProductGroupController(_mockRepo.Object);
+            _controller.SetMockUser(userId: 1);
+
         }
 
         [Fact]
@@ -25,14 +27,13 @@ namespace inventory_system_api.unitTests
         {
             // Arrange
             var groupId = 1;
-            string guid = Guid.NewGuid().ToString();
 
             var fakeGroup = new ProductGroup
             {
                 ID = groupId,
                 ParentGroupID = 12,
-                EngName = "Test Group" + guid,
-                NepName = "टेस्ट समूह" + guid,
+                EngName = "Test Group",
+                NepName = "टेस्ट समूह",
                 Level = 1,
                 ParentGroupName = "Parent Group",
                 Remarks = "This is a test product group"
@@ -59,15 +60,15 @@ namespace inventory_system_api.unitTests
         public async Task AddEdit_ReturnsOk_OnSuccess()
         {
             int groupId = 1;
+           
             // Arrange
-            string guid = Guid.NewGuid().ToString();
 
             var newGroup = new ProductGroup
             {
                 ID = groupId,
                 ParentGroupID = 12,
-                EngName = "Test Group" + guid,
-                NepName = "टेस्ट समूह" + guid,
+                EngName = "Test Group",
+                NepName = "टेस्ट समूह",
                 Level = 1,
                 ParentGroupName = "Parent Group",
                 Remarks = "This is a test product group"

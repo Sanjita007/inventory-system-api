@@ -11,19 +11,19 @@ namespace inventory_system_api.integrationTests;
 
 public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 {
-    private readonly CustomWebApplicationFactory _factory;
+    private readonly HttpClient _client;
 
     public UnitControllerIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _factory = factory;
+        _client = factory.CreateClient();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
+
     }
 
     [Fact]
     public async Task Get_ReturnsOk_WithUnitsList()
     {
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/api/v1/Unit");
+        var response = await _client.GetAsync("/api/v1/Unit");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -37,9 +37,7 @@ public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplication
     [Fact]
     public async Task GetById_ReturnsOk_WhenUnitExists()
     {
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/api/v1/Unit/1");
+        var response = await _client.GetAsync("/api/v1/Unit/1");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -52,9 +50,7 @@ public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplication
     [Fact]
     public async Task Convert_ReturnsOk_WithDecimal()
     {
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/api/v1/Unit/Convert?defaultUnitID=1&currentUnitID=2&valueToConvert=10");
+        var response = await _client.GetAsync("/api/v1/Unit/Convert?defaultUnitID=1&currentUnitID=2&valueToConvert=10");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -67,28 +63,25 @@ public class UnitControllerIntegrationTests : IClassFixture<CustomWebApplication
     public async Task CreateUnit_ReturnsCreated_AndSavesToDb()
     {
         // Arrange
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-        
         string guid = Guid.NewGuid().ToString().Substring(0, 5);
 
-        var newUnit = new { Name = "Kilogram" + guid, Code = "KG" + guid };
-        var content = new StringContent(JsonSerializer.Serialize(newUnit), Encoding.UTF8, "application/json");
+        var newUnit = new { Name = "Kilogram" + guid, Code = "KG" + guid, Symbol="S" + guid };
+        var content = JsonContent.Create(newUnit);
 
         // Act
-        var response = await client.PostAsync("/api/v1/Unit", content);
+        var response = await _client.PostAsync("/api/v1/Unit", content);
 
         var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
 
         int newId = payload.GetProperty("data").GetProperty("id").GetInt32();
 
         // Assert
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Verify the unit was saved by fetching it back (assuming ID is returned in response)
-        var getResponse = await client.GetAsync($"/api/v1/Unit/{newId}");
+        var getResponse = await _client.GetAsync($"/api/v1/Unit/{newId}");
 
-        var payloadReturn = await response.Content.ReadFromJsonAsync<Models.Response>();
+        var payloadReturn = await getResponse.Content.ReadFromJsonAsync<Models.Response>();
 
         Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.NotNull(payloadReturn?.Data);

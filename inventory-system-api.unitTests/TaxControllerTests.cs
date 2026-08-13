@@ -17,6 +17,7 @@ namespace inventory_system_api.unitTests
         {
             _mockRepo = new Mock<ITaxRepository>();
             _controller = new TaxController(_mockRepo.Object);
+            _controller.SetMockUser(userId: 1);
         }
 
         [Fact]

@@ -18,6 +18,8 @@ namespace inventory_system_api.unitTests
         {
             _mockRepo = new Mock<IPurchaseInvoiceMasterService>();
             _controller = new PurchaseInvoiceController(_mockRepo.Object);
+            _controller.SetMockUser(userId: 1);
+
         }
 
         [Fact]

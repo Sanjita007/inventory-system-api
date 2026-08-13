@@ -17,6 +17,8 @@ namespace inventory_system_api.unitTests
         {
             _mockRepo = new Mock<IDashboardSummaryRepository>();
             _controller = new DashboardController(_mockRepo.Object);
+            _controller.SetMockUser(userId: 1);
+
         }
 
         [Fact]
