@@ -22,6 +22,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
+                result.Value = 0;
                 result.Direction = ParameterDirection.Output;
 
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();

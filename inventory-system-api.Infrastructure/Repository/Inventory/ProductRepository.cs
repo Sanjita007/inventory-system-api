@@ -20,6 +20,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             using (_dbConnection as SqlConnection)
             {
                 SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
+                result.Value = 0;
                 result.Direction = ParameterDirection.Output;
 
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
@@ -37,7 +38,9 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                 cmd.Parameters.AddWithValue("@IsActive", entity.IsActive);
                 cmd.Parameters.AddWithValue("@CompanyID", entity.CompanyID);
                 cmd.Parameters.AddWithValue("@Image", entity.Image?.FromBase64());
+                cmd.Parameters.AddWithValue("@Email", entity.Email);
                 cmd.Parameters.AddWithValue("@Remarks", entity.Remarks);
+                cmd.Parameters.AddWithValue("@OPENPURCHASEQTY", entity.Quantity);
 
                 cmd.Parameters.AddWithValue("@OpenPurchaseRate", entity.PurchaseRate);
                 cmd.Parameters.AddWithValue("@OpenSalesRate", entity.SalesRate);
@@ -47,10 +50,9 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync();
 
                 await cmd.ExecuteNonQueryAsync(cancellationToken);
-                res = Convert.ToInt32(result.Value);
+                res = Convert.ToInt32(result.Value==DBNull.Value?0:result.Value);
 
             }
 
@@ -95,7 +97,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                         SalesRate = rdr["SalesRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SalesRate"]),
                         PurchaseRate = rdr["PurchaseRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PurchaseRate"]),
                         TaxID = rdr["TaxID"] == DBNull.Value ? null : Convert.ToInt32(rdr["TaxID"]),
-                        IsActive = rdr["IsActive"] == DBNull.Value ? false : Convert.ToBoolean(rdr["IsActive"]),
+                        IsActive = rdr["IsActive"] == DBNull.Value ? false : Convert.ToBoolean(Convert.ToInt32(rdr["IsActive"])),
                         IsInventoryApplicable = rdr["IsINventoryApplicable"] == DBNull.Value ? false : Convert.ToBoolean(rdr["IsINventoryApplicable"]),
                         IsDecimalApplicable = rdr["IsDecimalApplicable"] == DBNull.Value ? false : Convert.ToBoolean(rdr["IsDecimalApplicable"]),
                         IsVatApplicable = rdr["IsVatApplicable"] == DBNull.Value ? false : Convert.ToBoolean(rdr["IsVatApplicable"]),
@@ -105,7 +107,9 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                         UnitSymbol = rdr["Symbol"].ToString(),
                         CreatedBy = rdr["Created_By"].ToString() ?? "",
                         CreatedDate = rdr["Created_Date"] == DBNull.Value ? null : Convert.ToDateTime(rdr["Created_Date"]),
-                        Image = rdr["Image"] == DBNull.Value ? null : ((byte[])rdr["Image"]).ToBase64()
+                        Image = rdr["Image"] == DBNull.Value ? null : ((byte[])rdr["Image"]).ToBase64(),
+                        Quantity = rdr["OpeningQuantity"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["OpeningQuantity"]),
+                        Email = rdr["Email"] == DBNull.Value ? null : rdr["Email"].ToString(),
 
                     };
 
@@ -142,7 +146,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                         SalesRate = rdr["SalesRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SalesRate"]),
                         PurchaseRate = rdr["PurchaseRate"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PurchaseRate"]),
                         TaxID = rdr["TaxID"] == DBNull.Value ? null : Convert.ToInt32(rdr["TaxID"]),
-                        IsActive = rdr["IsActive"] != DBNull.Value & rdr["IsActive"].ToString() != "0",
+                        IsActive = rdr["IsActive"] == DBNull.Value ? false : Convert.ToBoolean(Convert.ToInt32(rdr["IsActive"])),
                         IsInventoryApplicable = rdr["IsINventoryApplicable"] != DBNull.Value & rdr["IsINventoryApplicable"].ToString() != "0",
                         IsDecimalApplicable = rdr["IsDecimalApplicable"] != DBNull.Value & rdr["IsDecimalApplicable"].ToString() != "0",
                         IsVatApplicable = rdr["IsVatApplicable"] != DBNull.Value & rdr["IsVatApplicable"].ToString() != "0",
@@ -150,7 +154,10 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                         UnitID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
                         CreatedBy = rdr["Created_By"].ToString()??"",
                         CreatedDate = Convert.ToDateTime(rdr["Created_Date"]),
-                        Image = rdr["Image"] == DBNull.Value ? null : ((byte[])rdr["Image"]).ToBase64()
+                        Image = rdr["Image"] == DBNull.Value ? null : ((byte[])rdr["Image"]).ToBase64(),
+                        Quantity = rdr["OPENINGQTY"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["OPENINGQTY"]),
+                        Email = rdr["Email"] == DBNull.Value ? null : rdr["Email"].ToString(),
+
 
                     };
 
