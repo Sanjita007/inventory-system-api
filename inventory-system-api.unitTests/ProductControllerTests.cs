@@ -17,6 +17,7 @@ namespace inventory_system_api.unitTests
         {
             _mockRepo = new Mock<IProductService>();
             _controller = new ProductController(_mockRepo.Object);
+            _controller.SetMockUser(userId: 1);
         }
 
         [Fact]
@@ -148,7 +149,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, okResult.StatusCode); // this is the HTTP response
             Assert.Equal(200, returned.StatusCode); // this is our custom response code
             Assert.Equal("Success", returned.Message);
-            Assert.NotNull(returned.Data);
+            Assert.NotNull(returned.Data); // just checking if the data is null or not for now.. but later i have to check the id as well 
             _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<Product>(), cancellationToken,1), Times.Once);
         }
 

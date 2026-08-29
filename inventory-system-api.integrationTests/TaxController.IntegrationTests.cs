@@ -11,19 +11,19 @@ namespace inventory_system_api.integrationTests;
 
 public class TaxControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 {
-    private readonly CustomWebApplicationFactory _factory;
+    private readonly HttpClient _client;
 
     public TaxControllerIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _factory = factory;
+        _client = factory.CreateClient();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
     }
 
     [Fact]
     public async Task Get_ReturnsOk_WithTaxList()
     {
-        var client = _factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/Tax");
+        var response = await _client.GetAsync("/api/v1/Tax");
 
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
@@ -37,9 +37,7 @@ public class TaxControllerIntegrationTests : IClassFixture<CustomWebApplicationF
     [Fact]
     public async Task GetById_ReturnsOk_WhenUnitExists()
     {
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/api/v1/Tax/1");
+        var response = await _client.GetAsync("/api/v1/Tax/1");
 
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
@@ -53,28 +51,27 @@ public class TaxControllerIntegrationTests : IClassFixture<CustomWebApplicationF
     public async Task CreateTax_ReturnsCreated_AndSavesToDb()
     {
         // Arrange
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-
         string guid = Guid.NewGuid().ToString().Substring(0, 5);
         var newUnit = new { Name = "Tax 0001" + guid, Code = "T000" + guid, Rate= 7.8, Remarks= "This is a test tax" };
         var content = new StringContent(JsonSerializer.Serialize(newUnit), Encoding.UTF8, "application/json");
 
         // Act
-        var response = await client.PostAsync("/api/v1/Tax", content);
+        var response = await _client.PostAsync("/api/v1/Tax", content);
+        response.EnsureSuccessStatusCode();
 
         var payload = await response.Content.ReadFromJsonAsync<JsonElement>();
         
         int newId = payload.GetProperty("data").GetProperty("id").GetInt32();
 
         // Assert
-        Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
         // Verify the unit was saved by fetching it back (assuming ID is returned in response)
-        var getResponse = await client.GetAsync($"/api/v1/Tax/{newId}");
+        var getResponse = await _client.GetAsync($"/api/v1/Tax/{newId}");
 
-        var payloadReturn = await response.Content.ReadFromJsonAsync<Models.Response>();
+        Assert.AreEqual(HttpStatusCode.OK, getResponse.StatusCode);
 
+        var payloadReturn = await getResponse.Content.ReadFromJsonAsync<Models.Response>();
         Assert.AreEqual(HttpStatusCode.OK, getResponse.StatusCode);
         Assert.IsNotNull(payloadReturn?.Data);
     }

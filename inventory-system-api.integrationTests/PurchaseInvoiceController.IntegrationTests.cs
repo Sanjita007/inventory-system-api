@@ -11,19 +11,18 @@ namespace inventory_system_api.integrationTests;
 
 public class PurchaseInvoiceControllerIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 {
-    private readonly CustomWebApplicationFactory _factory;
+    private readonly HttpClient _client;
 
     public PurchaseInvoiceControllerIntegrationTests(CustomWebApplicationFactory factory)
     {
-        _factory = factory;
+        _client = factory.CreateClient();
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
     }
 
     [Fact]
     public async Task Get_ReturnsOk_WithPurchaseList()
     {
-        var client = _factory.CreateClient();
-
-        var response = await client.GetAsync("/api/v1/PurchaseInvoice");
+        var response = await _client.GetAsync("/api/v1/PurchaseInvoice");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -36,9 +35,8 @@ public class PurchaseInvoiceControllerIntegrationTests : IClassFixture<CustomWeb
     [Fact]
     public async Task GetById_ReturnsOk_WhenExists()
     {
-        var client = _factory.CreateClient();
 
-        var response = await client.GetAsync("/api/v1/PurchaseInvoice/1");
+        var response = await _client.GetAsync("/api/v1/PurchaseInvoice/1");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -51,9 +49,6 @@ public class PurchaseInvoiceControllerIntegrationTests : IClassFixture<CustomWeb
     [Fact]
     public async Task CreatePurchase_ReturnsOk_AndReturnsId()
     {
-        var client = _factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-
         var newInvoice = new
         {
             ID = 0,
@@ -80,7 +75,7 @@ public class PurchaseInvoiceControllerIntegrationTests : IClassFixture<CustomWeb
 
         var content = JsonContent.Create(newInvoice);
 
-        var response = await client.PostAsync("/api/v1/PurchaseInvoice", content);
+        var response = await _client.PostAsync("/api/v1/PurchaseInvoice", content);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -89,4 +84,48 @@ public class PurchaseInvoiceControllerIntegrationTests : IClassFixture<CustomWeb
         Assert.True(data.TryGetProperty("id", out var idProp));
         Assert.True(idProp.GetInt32() > 0);
     }
+
+    [Fact]
+    public async Task Delete_ReturnsOk_WhenDeleted()
+    {
+        // create first
+        var newInvoice = new
+        {
+            VoucherNo = "VDEL" + Guid.NewGuid().ToString(),
+            EntityName = "To Delete",
+            Date = DateTime.UtcNow,
+            NetAmount = 77.00m,
+            SpecialDiscount = 0m,
+            TenderAmount = 0m,
+            ChangeAmount = 0m,
+            AdjustmentAmount = 0m,
+            
+            GrossAmount = 77.00m,
+            TotalAmount = 77.00m,
+            Details = new[] {
+                new {
+                    ProductID = 1, ProductName = "P1",
+                                
+
+                    Quantity = 1, Price = 77.00m, NetAmount = 77.00m
+                }
+            }
+        };
+        var createResp = await _client.PostAsync("/api/v1/PurchaseInvoice", JsonContent.Create(newInvoice));
+        Assert.Equal(HttpStatusCode.OK, createResp.StatusCode);
+        var createPayload = await createResp.Content.ReadFromJsonAsync<JsonElement>();
+        Assert.True(createPayload.TryGetProperty("data", out var createData));
+        Assert.True(createData.TryGetProperty("id", out var idProp));
+        var id = idProp.GetInt32();
+
+        // delete
+        var delResp = await _client.DeleteAsync($"/api/v1/PurchaseInvoice/{id}");
+        Assert.Equal(HttpStatusCode.OK, delResp.StatusCode);
+
+        var delPayload = await delResp.Content.ReadFromJsonAsync<Models.Response>();
+        Assert.NotNull(delPayload);
+        Assert.Equal(200, delPayload.StatusCode);
+        Assert.Equal("Success", delPayload.Message);
+    }
+
 }
