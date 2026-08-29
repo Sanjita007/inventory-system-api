@@ -1,6 +1,6 @@
-﻿using inventory_system_api.Application.IRepository;
+﻿using Dapper;
+using inventory_system_api.Application.IRepository;
 using inventory_system_api.Application.Models.Reports;
-using inventory_system_api.Shared;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -17,42 +17,39 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
         public async Task<DashboardSummary> GetDashboardSummary(CancellationToken cancellationToken)
         {
-            DashboardSummary dashboardSummary = new DashboardSummary();
+            using var multi = await _dbConnection.QueryMultipleAsync(
+            new CommandDefinition(
+                    commandText: "DASHBOARD_SALES_PURCH_SUMMARY",
+                    commandType: CommandType.StoredProcedure,
+                    cancellationToken: cancellationToken
+                )
+            );
 
-            using (_dbConnection as SqlConnection)
+            var dashboardSummary = new DashboardSummary
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "DASHBOARD_SALES_PURCH_SUMMARY";
+                SalesPurch = new SalesPurchSummary(),
+                Product = new List<ProductSummary>()
+            };
 
-                cmd.CommandType = CommandType.StoredProcedure;
-                _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                dashboardSummary.SalesPurch = new SalesPurchSummary();
-                dashboardSummary.Product = new List<ProductSummary>();
+            // Sales & Purchase Summary
+            var salesPurchData = await multi.ReadAsync<dynamic>();
+            foreach (var row in salesPurchData)
+            {
+                dashboardSummary.SalesPurch.Months.Add(row.DATE?.ToString() ?? "");
+                dashboardSummary.SalesPurch.PurchAmounts.Add(row.PURCHASE == null ? 0m : Convert.ToDecimal(row.PURCHASE));
+                dashboardSummary.SalesPurch.SalesAmounts.Add(row.SALES == null ? 0m : Convert.ToDecimal(row.SALES));
+            }
 
-                while (rdr.Read())
+            // Product Summary
+            var productData = await multi.ReadAsync<dynamic>();
+            foreach (var row in productData)
+            {
+                dashboardSummary.Product.Add(new ProductSummary
                 {
-                    dashboardSummary.SalesPurch.Months.Add(rdr["DATE"].ToString()??"");
-                    dashboardSummary.SalesPurch.PurchAmounts.Add(rdr["PURCHASE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PURCHASE"]));
-                    dashboardSummary.SalesPurch.SalesAmounts.Add(rdr["SALES"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SALES"]));
-
-                }
-                if (rdr.NextResult())
-                {
-                    while (rdr.Read())
-                    {
-                        dashboardSummary.Product.Add(new ProductSummary()
-                        {
-                            Image = rdr["IMAGE"] == DBNull.Value ? null : ((byte[])rdr["IMAGE"]).ToBase64(),
-                            ProductName = rdr["ENGNAME"].ToString() ?? "",
-                            SalesPrice = rdr["SALESRATE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SALESRATE"]),
-
-                        });
-                      
-                    }
-                }
-
-                _dbConnection.Close();
+                    ImageByte = row.IMAGE == null ? null : (byte[])row.IMAGE,
+                    ProductName = row.ENGNAME?.ToString() ?? "",
+                    SalesPrice = row.SALESRATE == null ? 0m : Convert.ToDecimal(row.SALESRATE)
+                });
             }
 
             return dashboardSummary;
@@ -60,95 +57,56 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
         public async Task<List<ProductSummary>> GetProductDashboardSummary(CancellationToken cancellationToken)
         {
-
-            List<ProductSummary> products = new List<ProductSummary>();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "SP_GET_PRODUCT_DASHBOARD_SUMMARY";
-
-                cmd.CommandType = CommandType.StoredProcedure;
+                string commandText = "SP_GET_PRODUCT_DASHBOARD_SUMMARY";
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
-                    
-                        products.Add(new ProductSummary()
-                        {
-                            Image = rdr["IMAGE"] == DBNull.Value ? null : ((byte[])rdr["IMAGE"]).ToBase64(),
-                            ProductName = rdr["ENGNAME"].ToString() ?? "",
-                            SalesPrice = rdr["SALESRATE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SALESRATE"]),
 
-                        });
-
-                    }
-                
-
-                _dbConnection.Close();
+                return await _dbConnection.QueryAsync<ProductSummary>(
+                commandText, commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
             }
-
-            return products;
         }
 
-       
-        public async Task<SalesPurchSummary> GetSalesPurchDashboardSummary(CancellationToken cancellationToken)
+
+        public async Task<SalesPurchSummary?> GetSalesPurchDashboardSummary(CancellationToken cancellationToken)
         {
-            SalesPurchSummary   SalesPurch = new SalesPurchSummary();
+            SalesPurchSummary salesPurchSummary = new()
+            {
+                Months = [],
+                SalesAmounts = [],
+                PurchAmounts = []
+            };
 
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "DASHBOARD_SALES_PURCH_SUMMARY";
-
-                cmd.CommandType = CommandType.Text;
+                string commandText = "DASHBOARD_SALES_PURCH_SUMMARY";
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
-                while (rdr.Read())
+                var salesPurchData = await _dbConnection.QueryAsync<SalesPurchInitial>(
+                commandText, commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
+
+                foreach (var row in salesPurchData)
                 {
-                   SalesPurch.Months.Add(rdr["DATE"].ToString()?? "");
-                   SalesPurch.PurchAmounts.Add(rdr["PURCHASE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["PURCHASE"]));
-                   SalesPurch.SalesAmounts.Add(rdr["SALES"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["SALES"]));
-
-               
+                    salesPurchSummary.Months.Add(row.Date.ToString() ?? "");
+                    salesPurchSummary.PurchAmounts.Add(Convert.ToDecimal(row.Purchase));
+                    salesPurchSummary.SalesAmounts.Add(Convert.ToDecimal(row.Sales));
                 }
-
-                _dbConnection.Close();
             }
-
-            return SalesPurch;
+            return salesPurchSummary;
         }
+
 
         public async Task<List<RecentTransactionSummary>> GetRecentTransactionSummary(CancellationToken cancellationToken)
         {
-
-            List<RecentTransactionSummary> products = new List<RecentTransactionSummary>();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "SP_RECENT_TRANSACTION_SUMMARY";
-
-                cmd.CommandType = CommandType.StoredProcedure;
+                string commandText = "SP_RECENT_TRANSACTION_SUMMARY";
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
-                while (rdr.Read())
-                {
-
-                    products.Add(new RecentTransactionSummary()
-                    {
-                        Date = rdr["SALES_DATE"].ToString() ?? "",
-                        Details = rdr["DETAIL"].ToString() ?? "",
-
-                    });
-
-                }
-
-
-                _dbConnection.Close();
+                return await _dbConnection.QueryAsync<RecentTransactionSummary>(
+                commandText, commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
+                
             }
-
-            return products;
         }
 
     }

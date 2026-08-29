@@ -17,7 +17,7 @@ namespace inventory_system_api.Application.IRepository.Invenetory
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>    
         /// <returns></returns>
-        public Task<PurchaseInvoiceMaster> Get(int id, CancellationToken cancellationToken);
+        public Task<PurchaseInvoiceMaster?> Get(int id, CancellationToken cancellationToken);
        
 
         /// <summary>

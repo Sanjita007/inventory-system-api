@@ -1,4 +1,5 @@
 ﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.IService;
 using inventory_system_api.Application.Models;
 using inventory_system_api.Application.Models.System;
 using inventory_system_api.Models;
@@ -15,9 +16,9 @@ namespace inventory_system_api.Controllers
     public class UserController : BaseController
     {
         private IConfiguration _config;
-        private IUserRepository _repo;
+        private IUserService _repo;
 
-        public UserController(IConfiguration config, IUserRepository repo)
+        public UserController(IConfiguration config, IUserService repo)
         {
             _config = config;
             _repo = repo;
@@ -27,10 +28,10 @@ namespace inventory_system_api.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginUser login, CancellationToken cancellationToken)
         {
-            IActionResult response = null;
+            IActionResult response;
 
             // Authenticate the user
-            User user = await _repo.VerifyAndGetUserDetails(login.UserName, login.Password, cancellationToken); //IsAuthenticateUser(login);
+            User? user = await _repo.VerifyAndGetUserDetails(login.UserName, login.Password, cancellationToken); //IsAuthenticateUser(login);
 
             if (user != null)
             {
@@ -52,7 +53,7 @@ namespace inventory_system_api.Controllers
 
         public async Task<IActionResult> Put(User entity, CancellationToken cancellationToken)
         {
-            if (await _repo.ValidatePassword(entity.ID, entity.Password, cancellationToken))
+            if (!await _repo.ValidatePassword(entity.ID, entity.Password, cancellationToken))
             {
                 return BadRequest(new Response() { StatusCode = 400, Message = "Password does not match to the existing one", });
             }
@@ -124,7 +125,7 @@ namespace inventory_system_api.Controllers
         public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
             var entity = await _repo.Get(id, cancellationToken);
-            return OkResponse(entity);
+            return OkResponse(entity!);
         }
 
         

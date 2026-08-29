@@ -29,7 +29,7 @@ public class CustomMethodRoleHandler : AuthorizationHandler<MethodRoleRequiremen
         var user = context.User;
 
         // logic for GET/POST/PUT...
-        if (HttpMethods.IsGet(method) && user.Identity.IsAuthenticated)
+        if (HttpMethods.IsGet(method) && user!.Identity!.IsAuthenticated)
         {
             context.Succeed(requirement);
         }

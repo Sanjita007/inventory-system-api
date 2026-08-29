@@ -15,8 +15,8 @@ namespace inventory_system_api.Application.IRepository.Invenetory
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<Product> Get(int id, CancellationToken cancellationToken);
-        public Task<Product> Search(string code, CancellationToken cancellationToken);
+        public Task<Product?> Get(int id, CancellationToken cancellationToken);
+        public Task<List<Product>> Search(string code, CancellationToken cancellationToken);
 
         /// <summary>
         /// Add or update the product

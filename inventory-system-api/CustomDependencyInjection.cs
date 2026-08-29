@@ -26,6 +26,7 @@ namespace inventory_system_api
             services.AddScoped<IDepotRepository, DepotRepository>();
             services.AddScoped<ITaxRepository, TaxRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
             services.AddSingleton<IErrorLogRepository, ErrorLogRepositoy>();
             return services;
         }

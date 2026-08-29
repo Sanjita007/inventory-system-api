@@ -1,4 +1,5 @@
 ﻿using inventory_system_api.Application.Models.Inventory;
+using inventory_system_api.Shared;
 
 namespace inventory_system_api.Models.Inventory
 {
@@ -16,11 +17,12 @@ namespace inventory_system_api.Models.Inventory
         public string? UnitName { get; set; }
         public string? UnitSymbol { get; set; }
         public decimal SalesRate { get; set; } = 0;
-        public decimal PurchaseQuantity { get; set; } = 0;
+        public decimal OpeningQuantity { get; set; } = 0;
         public decimal PurchaseRate { get; set; } = 0;
         public decimal PurchaseDiscount { get; set; } = 0;
         public decimal TotalValue { get; set; } = 0;
-        public string? Image { get; set; } = null;
+        public byte[]? Image { get; set; } = null;
+        public string? ImageBase64 => Image != null ? Image?.ToBase64() : null;
         public bool IsBuiltIn { get; set; } = false;
         public bool IsActive { get; set; } = false;
         public string CreatedBy { get; set; } = "root";
@@ -65,7 +67,7 @@ namespace inventory_system_api.Models.Inventory
             this.Remarks = p.Remarks;
             this.UnitID = p.UnitID;
             this.SalesRate = p.SalesRate;
-            this.PurchaseQuantity = p.PurchaseQuantity;
+            this.OpeningQuantity = p.OpeningQuantity;
             this.PurchaseRate = p.PurchaseRate;
             this.PurchaseDiscount = p.PurchaseDiscount;
             this.TotalValue = p.TotalValue;

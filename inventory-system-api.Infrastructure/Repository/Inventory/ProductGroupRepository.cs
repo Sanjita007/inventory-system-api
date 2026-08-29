@@ -1,4 +1,5 @@
-﻿using inventory_system_api.Application.IRepository.Invenetory;
+﻿using Dapper;
+using inventory_system_api.Application.IRepository.Invenetory;
 using inventory_system_api.Application.Models;
 using inventory_system_api.Application.Models.Inventory;
 using Microsoft.Data.SqlClient;
@@ -16,110 +17,68 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         public async Task<int> AddEdit(ProductGroup entity, CancellationToken cancellationToken, int userId)
         {
-            int res = 0;
             using (_dbConnection as SqlConnection)
             {
-                SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
-                result.Direction = ParameterDirection.Output;
+                var parameters = new DynamicParameters(new
+                {
+                    entity.ID,
+                    entity.EngName,
+                    entity.NepName,
+                    entity.ParentGroupID,
+                    entity.Remarks,
+                    userId
+                });
 
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SP_PRODUCT_GROUP_ADD_EDIT]";
-                cmd.Parameters.AddWithValue("@id", entity.ID);
-                cmd.Parameters.AddWithValue("@EngName", entity.EngName);
-                cmd.Parameters.AddWithValue("@NepName", entity.NepName);
-                cmd.Parameters.AddWithValue("@ParentGroupID", entity.ParentGroupID);
-                cmd.Parameters.AddWithValue("@Remarks", entity.Remarks);
-                cmd.Parameters.AddWithValue("@UserID", userId);
-                cmd.Parameters.Add(result);
+                parameters.Add("return", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                cmd.CommandType = CommandType.StoredProcedure;
-                _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync(cancellationToken);
-                res = Convert.ToInt32(result.Value);
+                await _dbConnection.ExecuteAsync(new CommandDefinition("[SP_PRODUCT_GROUP_ADD_EDIT]", parameters,
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
+
+                return parameters.Get<int>("return");
             }
 
-            return res;
         }
 
         public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
         {
-
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "SP_PRODUCT_GROUP_DELETE";
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.CommandType = CommandType.StoredProcedure;
+                string commandText = "SP_PRODUCT_GROUP_DELETE";
+
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync(cancellationToken);
+                return await _dbConnection.ExecuteAsync(new CommandDefinition(commandText, new { id },
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
 
             }
         }
 
         public async Task<List<ProductGroup>> Get(CancellationToken cancellationToken)
         {
-
-            List<ProductGroup> listEntity = [];
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = $"SP_GET_PRODUCT_GROUP";
-                cmd.CommandType = CommandType.StoredProcedure;
+                string commandText = "SP_GET_PRODUCT_GROUP";
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
-                while (rdr.Read())
-                {
-                    ProductGroup entity = new()
-                    {
-                        ID = Convert.ToInt32(rdr["GroupID"]),
-                        ParentGroupID = rdr["ParentGroupID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["ParentGroupID"]),
-                        EngName = rdr["EngName"].ToString() ?? "",
-                        NepName = rdr["NepName"].ToString() ?? "",
-                        Level = rdr["Level"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["Level"]),
-                        ParentGroupName = rdr["ParentGroupName"].ToString() ?? "",
-                        Remarks = rdr["Remarks"].ToString() ?? ""
-                    };
+                return await _dbConnection.QueryAsync<ProductGroup>(commandText,
+                    commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
 
-                    listEntity.Add(entity);
-                }
-                _dbConnection.Close();
             }
-            return listEntity;
-        }
 
-        public async Task<ProductGroup> Get(int id, CancellationToken cancellationToken)
+          }
+
+        public async Task<ProductGroup?> Get(int id, CancellationToken cancellationToken)
         {
 
-            ProductGroup entity = new();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = $"SP_GET_PRODUCT_GROUP";
-                cmd.Parameters.AddWithValue("@id", id);
-
-                cmd.CommandType = CommandType.StoredProcedure;
+                string commandText = "SP_GET_PRODUCT_GROUP";
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
-                while (rdr.Read())
-                {
-                    entity = new ProductGroup
-                    {
-                        ID = Convert.ToInt32(rdr["GroupID"]),
-                        ParentGroupID = rdr["ParentGroupID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["ParentGroupID"]),
-                        EngName = rdr["EngName"].ToString() ?? "",
-                        NepName = rdr["NepName"].ToString() ?? "",
-                        Level = rdr["Level"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["Level"]),
-                        ParentGroupName = rdr["ParentGroupName"].ToString() ?? "",
-                        Remarks = rdr["Remarks"].ToString() ?? ""
+                return await _dbConnection.QueryFirstOrDefaultAsync<ProductGroup>(new CommandDefinition(commandText, new { id },
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
 
-                    };
-
-                }
-                _dbConnection.Close();
             }
-            return entity;
+            
         }
 
         public async Task<List<Tree>> GetProductTrees(CancellationToken cancellationToken)

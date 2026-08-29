@@ -1,7 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Xml.Linq;
 
 namespace inventory_system_api.Shared
@@ -70,7 +67,7 @@ namespace inventory_system_api.Shared
         {
             if (obj == null) return "";
 
-            var doc = JsonConvert.DeserializeXNode(obj.ToJson(), rootName)!;
+            var doc = JsonConvert.DeserializeXNode(obj.ToJson().ToUpper(), rootName)!;
             var declaration = doc.Declaration ?? _defaultDeclaration;
             return $"{declaration}{Environment.NewLine}{doc}";
         }
