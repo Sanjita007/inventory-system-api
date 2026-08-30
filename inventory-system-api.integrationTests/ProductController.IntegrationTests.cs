@@ -93,7 +93,6 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
             NepName = "अपडेटेड नाम " + guid,
             SalesRate = 200.0m,
             PurchaseRate = 180.0m,
-            Quantity = 20.0m,
             IsActive = false,
             IsVatApplicable = true,
             IsInventoryApplicable = true,

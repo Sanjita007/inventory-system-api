@@ -1,4 +1,5 @@
 ﻿using inventory_system_api.Application.IRepository;
+using inventory_system_api.Application.IService;
 using inventory_system_api.Application.Models;
 using inventory_system_api.Application.Models.System;
 using inventory_system_api.Controllers;
@@ -12,7 +13,7 @@ namespace inventory_system_api.unitTests
     public class UserControllerTests
     {
         private readonly UserController _controller;
-        private readonly Mock<IUserRepository> _mockRepo;
+        private readonly Mock<IUserService> _mockRepo;
         private CancellationToken cancellationToken = CancellationToken.None;
 
         // xUnit uses the Constructor instead of [TestInitialize]
@@ -28,7 +29,7 @@ namespace inventory_system_api.unitTests
                 .AddInMemoryCollection(inMemorySettings)
                 .Build();
 
-            _mockRepo = new Mock<IUserRepository>();
+            _mockRepo = new Mock<IUserService>();
             _controller = new UserController(config, _mockRepo.Object);
         }
 

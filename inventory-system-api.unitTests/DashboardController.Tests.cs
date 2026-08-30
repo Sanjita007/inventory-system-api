@@ -29,13 +29,11 @@ namespace inventory_system_api.unitTests
             {
                 ProductName = "Product A",
                 SalesPrice = 100.00m,
-                Image = "image_url_B"
             },
             new()
             {
                 ProductName = "Product B",
                 SalesPrice = 30.8m,
-                Image = "image_url_B"
             }
             };
 
@@ -64,13 +62,11 @@ namespace inventory_system_api.unitTests
             {
                 ProductName = "Product A",
                 SalesPrice = 100.00m,
-                Image = "image_url_B"
             },
             new()
             {
                 ProductName = "Product B",
                 SalesPrice = 30.8m,
-                Image = "image_url_B"
             }
             };
 
