@@ -36,8 +36,8 @@ builder.Services.AddControllers()
             var errorResponse = new inventory_system_api.Application.Models.ErrorResponse
             {
                 StatusCode = StatusCodes.Status400BadRequest,
-                Message = "Validation failed: " + string.Join(", ", errors.Values.SelectMany(x => x)),
-                Errors = errors,
+                Message = "Validation failed: " + string.Join(", ", errors.Values.SelectMany(x => x!)),
+                Errors = errors!,
                 TraceId = context.HttpContext.TraceIdentifier
             };
 
@@ -59,7 +59,8 @@ builder.Services.AddCors(options =>
                 "http://localhost:3000",   // React CRA
                 "http://localhost:5174",    // Vite dev server
                 "http://localhost:5173",  // Vite dev server
-                "https://inventory-app-san.netlify.app"
+                "https://inventory-app-san.netlify.app",
+                "*"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
@@ -153,7 +154,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]??"")),
             RoleClaimType = "Roles"
         };
     });

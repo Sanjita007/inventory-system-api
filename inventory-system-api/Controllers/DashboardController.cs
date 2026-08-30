@@ -17,7 +17,7 @@ namespace accswift_api.Controllers
         public async Task<IActionResult> GetSalesPurch(CancellationToken cancellationToken)
         {
             var list = await _repo.GetSalesPurchDashboardSummary(cancellationToken);
-            return OkResponse(list);
+            return OkResponse(list!);
         }
 
         [HttpGet("Products")]

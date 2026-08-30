@@ -45,7 +45,7 @@ namespace inventory_system_api.Controllers
         public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
             var entity = await _repo.Get(id, cancellationToken);
-            return OkResponse(entity);
+            return OkResponse(entity!);
         }
 
         [HttpGet("Tree")]

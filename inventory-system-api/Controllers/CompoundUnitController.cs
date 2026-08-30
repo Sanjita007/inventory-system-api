@@ -1,7 +1,6 @@
 ﻿using inventory_system_api.Application.IRepository;
 using inventory_system_api.Application.Models.System;
 using inventory_system_api.Controllers;
-using inventory_system_api.Models.Inventory;
 using Microsoft.AspNetCore.Mvc;
 
 namespace accswift_api.Controllers
@@ -41,7 +40,7 @@ namespace accswift_api.Controllers
         public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
             var entity = await _repo.Get(id, cancellationToken);
-            return OkResponse(entity);
+            return OkResponse(entity!);
         }
 
         [HttpDelete("{id:int}")]

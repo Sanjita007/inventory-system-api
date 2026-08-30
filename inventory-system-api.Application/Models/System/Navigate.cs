@@ -7,6 +7,6 @@
 
         public int PageCount {  get; set; }
 
-        public object Entity {  get; set; }
+        public object? Entity {  get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace inventory_system_api.Application.IRepository
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<Unit> Get(int id, CancellationToken cancellationToken);
+        public Task<Unit?> Get(int id, CancellationToken cancellationToken);
 
         /// <summary>
         /// Add or update the unit

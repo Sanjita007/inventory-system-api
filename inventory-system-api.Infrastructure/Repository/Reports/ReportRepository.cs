@@ -1,6 +1,6 @@
-﻿using inventory_system_api.Application.IRepository;
+﻿using Dapper;
+using inventory_system_api.Application.IRepository;
 using inventory_system_api.Application.Models.Reports;
-using Microsoft.Data.SqlClient;
 using System.Data;
 
 namespace inventory_system_api.Infrastructure.Repository.Reports
@@ -16,93 +16,41 @@ namespace inventory_system_api.Infrastructure.Repository.Reports
 
         public async Task<GrossProfitSummary> GetGrossProfitReport(CancellationToken cancellationToken)
         {
-            List<GrossProfit> entity = [];
-            decimal TotalRev = 0, TotalCost = 0, TotalProfit = 0;
-            using (_dbConnection as SqlConnection)
+            var command = new CommandDefinition(
+                commandText: "GROSS_PROFITABILITY_REPORT",
+                commandType: CommandType.StoredProcedure, 
+                cancellationToken: cancellationToken
+            );
+
+            var entity = (await _dbConnection.QueryAsync<GrossProfit>(command)).ToList();
+
+            return new GrossProfitSummary
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "GROSS_PROFITABILITY_REPORT";
-
-                cmd.CommandType = CommandType.Text;
-                _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-
-                while (rdr.Read())
-                {
-                    decimal Revenue = rdr["TotalRevenue"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["TotalRevenue"]);
-                    decimal Cost = rdr["TotalCost"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["TotalCost"]);
-                    decimal Profit = rdr["Profit"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Profit"]);
-
-                    TotalRev += Revenue;
-                    TotalCost += Cost;
-                    TotalProfit += Profit;
-
-                    entity.Add(new GrossProfit
-                    {
-                        ProductId = Convert.ToInt32(rdr["ProductID"]),
-                        ProductCode = rdr["ProductCode"].ToString()??"",
-                        ProductName = rdr["ProductName"].ToString() ?? "",
-
-                        QuantitySold = rdr["QuantitySold"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["QuantitySold"]),
-                        TotalRevenue = Revenue,
-                        TotalCost = Cost,
-                        Profit = Profit,
-                        Margin = rdr["Margin"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Margin"]),
-
-                    });
-
-                }
-
-                _dbConnection.Close();
-            }
-
-            return new GrossProfitSummary { GrossProfitList = entity , TotalCost= TotalCost, TotalProfit = TotalProfit, TotalRevenue = TotalRev};
+                GrossProfitList = entity,
+                TotalRevenue = entity.Sum(x => x.TotalRevenue),
+                TotalCost = entity.Sum(x => x.TotalCost),
+                TotalProfit = entity.Sum(x => x.Profit)
+            };
         }
 
         public async Task<InventorySummary> GetInventoryReport(CancellationToken cancellationToken)
         {
-            List<InventoryDetail> entity = [];
-            decimal TotalqtyIn = 0, TotalqtyOut = 0, TotalqtyOnHand = 0, TotalInValue=0;
-            using (_dbConnection as SqlConnection)
+            var command = new CommandDefinition(
+                commandText: "INVENTORY_VALUATION_REPORT",
+                commandType: CommandType.StoredProcedure,
+                cancellationToken: cancellationToken
+            );
+
+            var entity = (await _dbConnection.QueryAsync<InventoryDetail>(command)).ToList();
+
+            return new InventorySummary
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "INVENTORY_VALUATION_REPORT";
-
-                cmd.CommandType = CommandType.Text;
-                _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-
-                while (rdr.Read())
-                {
-                    decimal qtyIn = rdr["QUANTITYOUT"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["QUANTITYOUT"]);
-                    decimal qtyOut = rdr["QUANTITYIN"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["QUANTITYIN"]);
-                    decimal qtyOnHand = rdr["QTYONHAND"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["QTYONHAND"]);
-                    decimal qtyValue = rdr["TOTALINVVALUE"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["TOTALINVVALUE"]);
-
-                    TotalqtyIn += qtyIn;
-                    TotalqtyOut += qtyOut;
-                    TotalqtyOnHand += qtyOnHand;
-                    TotalInValue += qtyValue;
-
-                    entity.Add(new InventoryDetail
-                    {
-                        ProductId = Convert.ToInt32(rdr["ProductID"]),
-                        ProductCode = rdr["ProductCode"].ToString()??"",
-                        ProductName = rdr["ProductName"].ToString() ?? "",
-
-                        QuantityIn = qtyIn,
-                        QuantityOut = qtyOut,
-                        QuantityOnHand = qtyOnHand,
-                        TotalInValue =  qtyValue
-
-                    });
-
-                }
-
-                _dbConnection.Close();
-            }
-
-            return new InventorySummary { InventoryDetail= entity, TotalQuantityIn = TotalqtyIn, TotalQuantityOut = TotalqtyOut, TotalQuantityOnHand = TotalqtyOnHand, TotalInValue = TotalInValue};
+                InventoryDetail = entity,
+                TotalQuantityIn = entity.Sum(x => x.QuantityIn),
+                TotalQuantityOut = entity.Sum(x => x.QuantityOut),
+                TotalQuantityOnHand = entity.Sum(x => x.QuantityOnHand),
+                TotalInValue = entity.Sum(x => x.TotalInValue)
+            };
         }
 
     }

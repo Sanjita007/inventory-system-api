@@ -32,12 +32,12 @@ namespace inventory_system_api.Infrastructure.Service
             return _salesInvoiceRepo.Get(cancellationToken);
         }
 
-        public async Task<PurchaseInvoiceMaster> Get(int id, CancellationToken cancellationToken)
+        public async Task<PurchaseInvoiceMaster?> Get(int id, CancellationToken cancellationToken)
         {
-            PurchaseInvoiceMaster entity = await _salesInvoiceRepo.Get(id, cancellationToken);
+            PurchaseInvoiceMaster? entity = await _salesInvoiceRepo.Get(id, cancellationToken);
 
 
-            List<int> units = entity.Details.Select(r => r.DefaultUnitID).Distinct().ToList();
+            List<int> units = entity!.Details.Select(r => r.DefaultUnitID).Distinct().ToList();
 
             List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(string.Join(",", units), cancellationToken);
 
@@ -54,7 +54,7 @@ namespace inventory_system_api.Infrastructure.Service
                     unitDetailsLookup.TryGetValue(product.DefaultUnitID, out var relatedUnits);
 
                     // Create the final object, assigning the found units or an empty list.
-                    product.UnitDetails = relatedUnits;
+                    product.UnitDetails = relatedUnits!;
                     return product;
                 })];
 

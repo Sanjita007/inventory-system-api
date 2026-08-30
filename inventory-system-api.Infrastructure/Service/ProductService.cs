@@ -3,7 +3,6 @@ using inventory_system_api.Application.IRepository.Invenetory;
 using inventory_system_api.Application.IService;
 using inventory_system_api.Application.Models;
 using inventory_system_api.Application.Models.Inventory;
-using inventory_system_api.Models;
 using inventory_system_api.Models.Inventory;
 
 namespace inventory_system_api.Infrastructure.Service
@@ -36,7 +35,7 @@ namespace inventory_system_api.Infrastructure.Service
             return await _productRepo.Get(cancellationToken);
         }
 
-        public async Task<Product> Get(int id, CancellationToken cancellationToken)
+        public async Task<Product?> Get(int id, CancellationToken cancellationToken)
         {
             return await _productRepo.Get(id, cancellationToken);
         }
@@ -55,34 +54,29 @@ namespace inventory_system_api.Infrastructure.Service
                 .GroupBy(d => d.DefaultUnitID)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            List<ProductDetails> productDetails = products
+            List<ProductDetails> productDetails = [.. products
                 .Select(product =>
                 {
 
                     // Find units by UnitID. If the key doesn't exist, GetValueOrDefault provides null.
                     List<UnitDetails> relatedUnits;
-                    unitDetailsLookup.TryGetValue(product.UnitID, out relatedUnits);
+                    unitDetailsLookup.TryGetValue(product.UnitID, out relatedUnits!);
 
                     // Create the final object, assigning the found units or an empty list.
                     return new ProductDetails(product)
                     {
-                        UnitDetails = relatedUnits ?? new List<UnitDetails>()
+                        // satisfy required members from the source Product
+                        EngName = product.EngName,
+                        Code = product.Code,
+
+                        UnitDetails = relatedUnits ?? []
                     };
-                })
-                .ToList();
-            //foreach (Product product in products) {
-
-            //    List<UnitDetails> u = [.. details.Where(r => r.DefaultUnitID == product.UnitID)];
-            //    productDetails.Add(new ProductDetails(product)
-            //    {
-            //        UnitDetails = u
-            //    });
-            //}
-
+                })];
+           
             return productDetails;
         }
 
-        public async Task<Product> Search(string code, CancellationToken cancellationToken)
+        public async Task<List<Product>> Search(string code, CancellationToken cancellationToken)
         {
             return await _productRepo.Search(code, cancellationToken);
         }

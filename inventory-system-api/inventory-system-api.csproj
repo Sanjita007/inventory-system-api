@@ -29,8 +29,4 @@
     <ProjectReference Include="..\inventory-system-api.Infrastructure\inventory-system-api.Infrastructure.csproj" />
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File &quot;$(ProjectDir)sync_db.ps1&quot;" />
-  </Target>
-
 </Project>

@@ -2,6 +2,7 @@
 using inventory_system_api.Application.Models.System;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using Dapper;
 
 namespace inventory_system_api.Infrastructure.Repository
 {
@@ -15,29 +16,25 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<int> AddEdit(Tax entity, CancellationToken cancellationToken, int userId)
         {
-            int res = 0;
             using (_dbConnection as SqlConnection)
             {
-                SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
-                result.Direction = ParameterDirection.Output;
+                var parameters = new DynamicParameters(new
+                {
+                    entity.ID,
+                    entity.Code,
+                    entity.Name,
+                    entity.Remarks,
+                    entity.Rate,
+                    userId
+                });
 
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SP_TAX_ADD_EDIT]";
-                cmd.Parameters.AddWithValue("@id", entity.ID);
-                cmd.Parameters.AddWithValue("@Name", entity.Name);
-                cmd.Parameters.AddWithValue("@Code", entity.Code);
-                cmd.Parameters.AddWithValue("@Rate1", entity.Rate);
-                cmd.Parameters.AddWithValue("@UserID", userId);
-                cmd.Parameters.Add(result);
+                parameters.Add("return", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                cmd.CommandType = CommandType.StoredProcedure;
-                _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync(cancellationToken);
-                res = Convert.ToInt32(result.Value??0);
+                await _dbConnection.ExecuteAsync(new CommandDefinition("[SP_TAX_ADD_EDIT]", parameters, 
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
 
+                return parameters.Get<int>("return");
             }
-
-            return res;
         }
 
         public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
@@ -45,12 +42,11 @@ namespace inventory_system_api.Infrastructure.Repository
 
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SP_TAX_DELETE]";
-                cmd.Parameters.AddWithValue("@id", id);
-                cmd.CommandType = CommandType.StoredProcedure;
+                string commandText = "[SP_TAX_DELETE]";
+               
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync(cancellationToken);
+                return await _dbConnection.ExecuteAsync(new CommandDefinition(commandText, new { id },
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
 
             }
         }
@@ -61,54 +57,27 @@ namespace inventory_system_api.Infrastructure.Repository
             List<Tax> listEntity = [];
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "SP_GET_TAX";
-                cmd.CommandType = CommandType.StoredProcedure;
+                string commandText = "SP_GET_TAX";
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
 
-                while (rdr.Read())
-                {
-                    Tax entity = new Tax();
-                    entity.ID = Convert.ToInt32(rdr["TaxID"]);
-                    entity.Name = rdr["TaxName"].ToString() ?? "";
-                    entity.Remarks = rdr["Remarks"].ToString() ?? "";
-                    entity.Code = rdr["TaxCode"].ToString() ?? "";
-                    entity.Rate = Convert.ToDecimal(rdr["Rate1"]);
-
-                    listEntity.Add(entity);
-                }
-                _dbConnection.Close();
+                return await _dbConnection.QueryAsync<Tax>(commandText, 
+                    commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
+               
             }
-            return listEntity;
         }
 
-        public async Task<Tax> Get(int id, CancellationToken cancellationToken)
+        public async Task<Tax?> Get(int id, CancellationToken cancellationToken)
         {
 
             Tax entity = new Tax();
             using (_dbConnection as SqlConnection)
             {
-                SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "SP_GET_TAX";
-                cmd.Parameters.AddWithValue("@id", id);
-
-                cmd.CommandType = CommandType.StoredProcedure;
+                string commandText = "SP_GET_TAX";
                 _dbConnection.Open();
-                IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-
-                while (rdr.Read())
-                {
-                    entity.ID = Convert.ToInt32(rdr["TaxID"]);
-                    entity.Name = rdr["TaxName"].ToString()??"";
-                    entity.Remarks = rdr["Remarks"].ToString() ?? "";
-                    entity.Code = rdr["TaxCode"].ToString() ?? "";
-                    entity.Rate = rdr["Rate1"] == DBNull.Value ? 0 : Convert.ToDecimal(rdr["Rate1"]);
-
-                }
-                _dbConnection.Close();
+               
+                return await _dbConnection.QueryFirstOrDefaultAsync<Tax>(new CommandDefinition(commandText, new { id }, 
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
             }
-            return entity;
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using inventory_system_api.Application.IRepository;
+﻿using Dapper;
+using inventory_system_api.Application.IRepository;
 using inventory_system_api.Application.Models.System;
 using inventory_system_api.Shared;
 using Microsoft.Data.SqlClient;
@@ -16,150 +17,93 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<int> AddEdit(User entity, CancellationToken cancellationToken, int userId)
         {
-            int res = 0;
+            // udpate the password field with the hash value
+            entity.Password = Utility.HashPassword(entity.Password);
 
-            using (_dbConnection as SqlConnection)
+            // removing the using statement for now because an error is showing "The ConnectionString property has not been initialized."
+            //using (_dbConnection as SqlConnection)
+            //{
+            var parameters = new DynamicParameters(new
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SP_USER_ADD_EDIT]";
-                cmd.CommandType = CommandType.StoredProcedure;
-                SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
-                result.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(result);
+                entity.ID,
+                entity.UserName,
+                entity.Password,
+                entity.PhoneNo,
+                entity.Email,
+                entity.Address,
+                entity.Name,
+                entity.Role
+            });
 
-                cmd.Parameters.AddWithValue("@id", entity.ID);
-                cmd.Parameters.AddWithValue("@UserName", entity.UserName);
-                if(entity.ID <= 0)
-                    cmd.Parameters.AddWithValue("@Password", Utility.HashPassword(entity.Password));
-                cmd.Parameters.AddWithValue("@Name", entity.Name);
-                cmd.Parameters.AddWithValue("@Address", entity.Address);
-                cmd.Parameters.AddWithValue("@Contact", entity.PhoneNo);
-                cmd.Parameters.AddWithValue("@Email", entity.Email);
+            parameters.Add("return", dbType: DbType.Int32, direction: ParameterDirection.Output);
+            parameters.Add("userID", userId, dbType: DbType.Int32);
 
-                cmd.Parameters.AddWithValue("@UserID", userId);
+            await _dbConnection.ExecuteAsync(new CommandDefinition("[SP_USER_ADD_EDIT]", parameters,
+                commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
 
-                _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync(cancellationToken);
-                res = Convert.ToInt32(result.Value);
+            return parameters.Get<int>("return");
 
-            }
-            return res;
+            // }
+
         }
 
         public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "[SP_USER_DELETE]";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", id);
+                string commandText = "[SP_USER_DELETE]";
 
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync(cancellationToken);
+                return await _dbConnection.ExecuteAsync(new CommandDefinition(commandText, new { id },
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
+
             }
         }
 
-        public async Task<List<User>> Get(CancellationToken cancellationToken)
+        public async Task<List<UserMin>> Get(CancellationToken cancellationToken)
         {
-            List<User> listEntity = new List<User>();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "SP_GET_USER";
-                cmd.CommandType = CommandType.StoredProcedure;
-
+                string commandText = "SP_GET_USER";
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
-                    listEntity.Add(new User
-                    {
-                        ID = Convert.ToInt32(rdr["UserID"]),
-                        Name = rdr["Name"].ToString()??"",
-                        UserName = rdr["UserName"].ToString() ?? "",
-                        Address = rdr["Address"].ToString() ?? "",
-                        PhoneNo = rdr["Contact"].ToString() ?? "",
-                        Email = rdr["Email"].ToString() ?? "",
-                        Role = rdr["Role"].ToString() ?? "",
+                return await _dbConnection.QueryAsync<UserMin>(commandText,
+                    commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
 
-                    });
-                }
             }
-            return listEntity;
         }
 
-        public async Task<User> Get(int id, CancellationToken cancellationToken)
+        public async Task<UserMin?> Get(int id, CancellationToken cancellationToken)
         {
-            User entity = new();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "SP_GET_USER";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", id);
-
+                string commandText = "SP_GET_USER";
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
-                    entity = new User
-                    {
-                        ID = Convert.ToInt32(rdr["UserID"]),
-                        Name = rdr["Name"].ToString()??"",
-                        UserName = rdr["UserName"].ToString() ?? "",
-                        Address = rdr["Address"].ToString() ?? "",
-                        PhoneNo = rdr["Contact"].ToString() ?? "",
-                        Email = rdr["Email"].ToString() ?? "",
-                        Role = rdr["Role"].ToString() ?? "",
-                    };
-                }
+                return await _dbConnection.QueryFirstOrDefaultAsync<UserMin>(new CommandDefinition(commandText, new { id },
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
+
             }
-            return entity;
         }
 
 
-        public async Task<User> VerifyAndGetUserDetails(string userName, string password, CancellationToken cancellationToken)
+        public async Task<User?> VerifyAndGetUserDetails(string userName, string password, CancellationToken cancellationToken)
         {
-            string pass = "";
-            User user = new();
+            User? user = new();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "SP_GET_USER";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@userName", userName);
-
+                string commandText = "SP_GET_USER";
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
-                    user = new User
-                    {
-                        ID = Convert.ToInt32(rdr["UserID"]),
-                        Name = rdr["Name"].ToString() ?? "",
-                        UserName = rdr["UserName"].ToString() ?? "",
-                        Address = rdr["Address"].ToString() ?? "",
-                        PhoneNo = rdr["Contact"].ToString() ?? "",
-                        Email = rdr["Email"].ToString() ?? "",
-                        Role = rdr["Role"].ToString() ?? "",
-                    };
+                user = await _dbConnection.QueryFirstOrDefaultAsync<User>(new CommandDefinition(commandText, new { userName },
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
 
-                    pass = rdr["Password"].ToString()??"";
-                }
             }
 
-            if (BCrypt.Net.BCrypt.Verify(password, pass))
+            if (BCrypt.Net.BCrypt.Verify(password, user?.Password))
             {
                 return user;
 
@@ -170,27 +114,22 @@ namespace inventory_system_api.Infrastructure.Repository
             }
         }
 
-        public async Task<bool> ValidatePassword(int userID, string password, CancellationToken cancellationToken)
+        public async Task<bool> ValidatePassword(int id, string password, CancellationToken cancellationToken)
         {
             string pass = "";
 
-            using (_dbConnection as SqlConnection)
-            {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
+            //using (_dbConnection as SqlConnection)
+            //{
+            using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SP_GET_PASSWORD_BY_USERID";
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@id", userID);
+            string commandText = "SP_GET_PASSWORD_BY_USERID";
 
-                _dbConnection.Open();
+            _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
+            pass = await _dbConnection.ExecuteScalarAsync<string>(new CommandDefinition(commandText, new { id },
+                commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken)) ?? "";
 
-                    pass = rdr["Password"].ToString()??"";
-                }
-            }
+            //}
 
             return BCrypt.Net.BCrypt.Verify(password, pass);
 
@@ -198,25 +137,19 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<int> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken, int userId)
         {
-            int res = 0;
-
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SP_PASSWORD_UPDATE]";
-                cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@id", entity.ID);
-                //cmd.Parameters.AddWithValue("@OldPassword", Utility.HashPassword(entity.OldPassword));
-                cmd.Parameters.AddWithValue("@NewPassword", Utility.HashPassword(entity.NewPassword));
+                var parameters = new DynamicParameters(new
+                {
+                    entity.ID,
+                    NewPassword = Utility.HashPassword(entity.NewPassword)
+                });
 
-                //cmd.Parameters.AddWithValue("@UserID", "root");
-
-                _dbConnection.Open();
-                res = await cmd.ExecuteNonQueryAsync(cancellationToken);
+                return await _dbConnection.ExecuteAsync(new CommandDefinition("[SP_PASSWORD_UPDATE]", parameters,
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
 
             }
-            return res;
         }
     }
 }

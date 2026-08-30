@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace inventory_system_api.Application.Models.System
 {
-    public class User
+    public class User: UserMin
+    {
+        public string Password { get; set; } = string.Empty;
+    }
+    public class UserMin
     {
         public int ID { get; set; }
         public string UserName { get; set; } = string.Empty;
@@ -14,10 +18,8 @@ namespace inventory_system_api.Application.Models.System
         public string Address { get; set; } = string.Empty;
         public string PhoneNo { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
     }
-
     public class UpdatePasswordModel
     {
         public int ID { get; set; }

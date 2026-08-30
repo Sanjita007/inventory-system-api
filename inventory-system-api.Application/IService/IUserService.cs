@@ -1,23 +1,20 @@
 ﻿using inventory_system_api.Application.Models.System;
 
-namespace inventory_system_api.Application.IRepository
+namespace inventory_system_api.Application.IService
 {
-    public interface IUserRepository
+    public interface IUserService
     {
-        
         public Task<List<UserMin>> Get(CancellationToken cancellationToken);
 
         public Task<UserMin?> Get(int id, CancellationToken cancellationToken);
 
         public Task<int> AddEdit(User entity, CancellationToken cancellationToken, int userId);
         public Task<int> Delete(int id, CancellationToken cancellationToken, int userId);
-       
+
         public Task<User?> VerifyAndGetUserDetails(string userName, string password, CancellationToken cancellationToken);
         public Task<bool> ValidatePassword(int userID, string password, CancellationToken cancellationToken);
 
         public Task<int> UpdatePassword(UpdatePasswordModel passwordModel, CancellationToken cancellationToken, int userId);
-
-
 
 
     }

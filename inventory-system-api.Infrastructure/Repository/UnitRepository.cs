@@ -1,5 +1,7 @@
-﻿using inventory_system_api.Application.IRepository;
+﻿using Dapper;
+using inventory_system_api.Application.IRepository;
 using inventory_system_api.Application.Models.Inventory;
+using inventory_system_api.Application.Models.System;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
@@ -17,31 +19,25 @@ namespace inventory_system_api.Infrastructure.Repository
 
         public async Task<int> AddEdit(Unit entity, CancellationToken cancellationToken, int userId)
         {
-            int res = 0;
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-                cmd.CommandText = "[SP_UNIT_ADD_EDIT]";
-                cmd.CommandType = CommandType.StoredProcedure;
-                SqlParameter result = new SqlParameter("@return", dbType: SqlDbType.VarChar, 200);
-                result.Direction = ParameterDirection.Output;
-                cmd.Parameters.Add(result);
+                var parameters = new DynamicParameters(new
+                {
+                    entity.ID,
+                    entity.Name,
+                    entity.Remarks,
+                    entity.Symbol,
+                    userId
+                });
 
-                cmd.Parameters.AddWithValue("@id", entity.ID);
-                cmd.Parameters.AddWithValue("@Name", entity.Name);
-                cmd.Parameters.AddWithValue("@Symbol", entity.Symbol);
-                cmd.Parameters.AddWithValue("@Remarks", entity.Remarks);
-                
-                cmd.Parameters.AddWithValue("@UserID", userId);
+                parameters.Add("return", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-                _dbConnection.Open();
-                await cmd.ExecuteNonQueryAsync(cancellationToken);
-                res = Convert.ToInt32(result.Value);
+                await _dbConnection.ExecuteAsync(new CommandDefinition("[SP_UNIT_ADD_EDIT]", parameters,
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
 
+                return parameters.Get<int>("return");
             }
-            return res;
-
         }
 
         public async Task<decimal?> ConvertUnit(int defaultUnitID, int currentUnitID, decimal valueToConvert, CancellationToken cancellationToken)
@@ -50,16 +46,20 @@ namespace inventory_system_api.Infrastructure.Repository
             {
                 using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
 
-                cmd.CommandText = "SELECT dbo.[FN_CONVERT_COMPOUND_UNIT](@defUnitID, @currUnitID, @actualValue, 1)";
-                cmd.CommandType = CommandType.Text;
+                string commandText = "SELECT dbo.[FN_CONVERT_COMPOUND_UNIT](@defUnitID, @currUnitID, @actualValue, 1)";
 
-                cmd.Parameters.AddWithValue("@defUnitID", defaultUnitID);
-                cmd.Parameters.AddWithValue("@currUnitID", currentUnitID);
-                cmd.Parameters.AddWithValue("@actualValue", valueToConvert);
+                var parameters = new DynamicParameters(
+                new
+                {
+                    defUnitID = defaultUnitID,
+                    currUnitID = currentUnitID,
+                    actualValue = valueToConvert
+                });
+
 
                 _dbConnection.Open();
-                var value = await cmd.ExecuteScalarAsync(cancellationToken);
-            return value == DBNull.Value ? null : Convert.ToDecimal(value);
+                return await _dbConnection.ExecuteScalarAsync<decimal>(new CommandDefinition(commandText, parameters, 
+                    commandType: CommandType.Text, cancellationToken: cancellationToken));
             }
         }
 
@@ -67,134 +67,67 @@ namespace inventory_system_api.Infrastructure.Repository
         {
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "[SP_UNIT_DELETE]";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", id);
+                string commandText = "[SP_UNIT_DELETE]";
 
                 _dbConnection.Open();
-                return await cmd.ExecuteNonQueryAsync(cancellationToken);
+                return await _dbConnection.ExecuteAsync(new CommandDefinition(commandText, new { id },
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
+
             }
         }
 
         public async Task<List<Unit>> Get(CancellationToken cancellationToken)
         {
-            List<Unit> listEntity = new List<Unit>();
-
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "SP_GET_UNIT";
-                cmd.CommandType = CommandType.Text;
-
+                string commandText = "SP_GET_UNIT";
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
-                    listEntity.Add(new Unit
-                    {
-                        ID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                        Name = rdr["UnitName"].ToString() ?? "",
-                        Symbol = rdr["Symbol"].ToString() ?? "",
-                        Remarks = rdr["Remarks"].ToString() ?? "",
-                    });
-                }
+                return await _dbConnection.QueryAsync<Unit>(commandText,
+                    commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
+
             }
-            return listEntity;
         }
 
-        public async Task<Unit> Get(int id, CancellationToken cancellationToken)
+        public async Task<Unit?> Get(int id, CancellationToken cancellationToken)
         {
-            Unit entity= new();
 
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "SP_GET_UNIT";
-                cmd.CommandType = CommandType.Text;
-                cmd.Parameters.AddWithValue("@id", id);
-
+                string commandText = "SP_GET_UNIT";
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
-                    entity = new Unit
-                    {
-                        ID = Convert.ToInt32(rdr["UnitMaintenanceID"]),
-                        Name = rdr["UnitName"].ToString()??"",
-                        Symbol = rdr["Symbol"].ToString() ?? "",
-                        Remarks = rdr["Remarks"].ToString() ?? "",
-                    };
-                }
+                return await _dbConnection.QueryFirstOrDefaultAsync<Unit>(new CommandDefinition(commandText, new { id },
+                    commandType: CommandType.StoredProcedure, cancellationToken: cancellationToken));
+
             }
-            return entity;
         }
 
         public async Task<List<UnitDetails>> GetRelatedUnit(int BaseUnitID, CancellationToken cancellationToken)
         {
-            List<UnitDetails> entity = new List<UnitDetails>();
-
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "spGetUnitConversionRates";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@BaseUnitID", BaseUnitID);
-
+                string commandText = "SP_GET_UNIT_CONVERSION_RATES";
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
-                    entity.Add(new UnitDetails
-                    {
-                        ID = Convert.ToInt32(rdr["UnitID"]),
-                        Name = rdr["UnitName"].ToString()??"",
-                        DefaultUnitID =  rdr["DefaultUnitID"] == DBNull.Value ? 0 : Convert.ToInt32(rdr["DefaultUnitID"]),
-                        ConversionRate = rdr["ConversionRate"] == DBNull.Value
-                            ? 0
-                            : Convert.ToDecimal(rdr["ConversionRate"])
-                    });
-                }
+                return await _dbConnection.QueryAsync<UnitDetails>(commandText, new { BaseUnitID },
+                    commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
+
             }
-            return entity;
         }
 
         public async Task<List<UnitDetails>> GetMultipleRelatedUnit(string baseUnits, CancellationToken cancellationToken)
         {
-            List<UnitDetails> entity = new List<UnitDetails>();
-
             using (_dbConnection as SqlConnection)
             {
-                using SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();
-
-                cmd.CommandText = "SP_GET_MULTIPLE_UNIT_CONVERSION_RATES";
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@UNITSCSV", baseUnits);
-
+                string commandText = "SP_GET_MULTIPLE_UNIT_CONVERSION_RATES";
                 _dbConnection.Open();
 
-                using IDataReader rdr = await cmd.ExecuteReaderAsync(cancellationToken);
-                while (rdr.Read())
-                {
-                    entity.Add(new UnitDetails
-                    {
-                        ID = Convert.ToInt32(rdr["UnitID"]),
-                        DefaultUnitID = Convert.ToInt32(rdr["DefaultUnitID"]),
-                        Name = rdr["UnitName"].ToString() ?? "",
-                        ConversionRate = rdr["ConversionRate"] == DBNull.Value
-                            ? 0
-                            : Convert.ToDecimal(rdr["ConversionRate"])
-                    });
-                }
+                return await _dbConnection.QueryAsync<UnitDetails>(commandText, new { UNITSCSV = baseUnits },
+                    commandType: CommandType.StoredProcedure).ContinueWith(t => t.Result.ToList(), cancellationToken);
+
             }
-            return entity;
+           
         }
     }
 

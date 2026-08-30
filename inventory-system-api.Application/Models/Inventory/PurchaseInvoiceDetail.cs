@@ -4,8 +4,7 @@
     {
         public int ID { get; set; }
         public int MasterID { get; set; }
-        public string ProductCode { get; set; }
-        public string ProductName { get; set; }
+        public required string ProductName { get; set; }
         public int ProductID { get; set; }
         public decimal Quantity { get; set; }
         public decimal Price { get; set; }
@@ -15,8 +14,8 @@
         public decimal NetAmount { get; set; }
         public int QtyUnitID { get; set; }
         public int DefaultUnitID { get; set; }
-        public string DefaultUnitName { get; set; }
-        public string DefaultUnitSymbol { get; set; }
+        public string? DefaultUnitName { get; set; }
+        public string? DefaultUnitSymbol { get; set; }
         public int? TaxID { get; set; }
         public decimal TaxAmount { get; set; }
         public string? GeneralName { get; set; }
