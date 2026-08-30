@@ -15,7 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(ProductGroup entity, CancellationToken cancellationToken, int userId)
+        public async Task<int> AddEdit(ProductGroup entity, int userId, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -39,7 +39,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
 
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
+        public async Task<int> Delete(int id, int userId, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -97,7 +97,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             if(id == 0 && level == 0)
             {
                 // there is just 1 root and others are its children, so select only 1
-                ProductGroup gs = group.FirstOrDefault(r => r.Level == 0);
+                ProductGroup? gs = group.FirstOrDefault(r => r.Level == 0);
                 
                 children.Add(new Tree() { Id = gs.ID, Level = 0, Name = gs.EngName, ParentID = 0 });
 

@@ -14,7 +14,7 @@ namespace inventory_system_api.Controllers
         
         protected int UserId => int.Parse(User.FindFirstValue(JwtRegisteredClaimNames.NameId) ?? "0");
 
-        private IActionResult CustomResponse(int statusode, string message, object result)
+        private IActionResult CustomResponse(int statusode, string message, object? result)
         {
             var response = new Response { StatusCode = statusode, Message = message, Data = result };
 

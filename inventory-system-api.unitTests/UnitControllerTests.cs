@@ -50,7 +50,7 @@ namespace inventory_system_api.unitTests
         {
             // Arrange
             var newUnit = new Unit { ID = 1, Name = "Ton", Symbol = "T" };
-            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<Unit>(), cancellationToken, 1)).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<Unit>(), 1, cancellationToken)).ReturnsAsync(1);
 
             // Act
             var result = await _controller.Post(newUnit, cancellationToken);
@@ -72,7 +72,7 @@ namespace inventory_system_api.unitTests
             // Arrange
             int taxIdToDelete = 10;
 
-            _mockRepo.Setup(repo => repo.Delete(taxIdToDelete, cancellationToken, 1))
+            _mockRepo.Setup(repo => repo.Delete(taxIdToDelete, 1, cancellationToken))
                      .ReturnsAsync(1);
 
             // Act
@@ -88,7 +88,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal("Success", response.Message);
             //Assert.Equal(1, response.Data);
 
-            _mockRepo.Verify(repo => repo.Delete(taxIdToDelete, cancellationToken, 1), Times.Once);
+            _mockRepo.Verify(repo => repo.Delete(taxIdToDelete, 1, cancellationToken), Times.Once);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(PurchaseInvoiceMaster entity, CancellationToken cancellationToken, int userId)
+        public async Task<int> AddEdit(PurchaseInvoiceMaster entity, int userId, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -34,7 +34,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                     entity.TotalQty,
                     entity.TotalTCAmount,
                     entity.EntityName,
-                    Details = entity.Details.ToXml("PURCHINVOICEDETAILS"),
+                    Details = entity?.Details?.ToXml("PURCHINVOICEDETAILS"),
                     userId
                 });
 
@@ -48,7 +48,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         }
 
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
+        public async Task<int> Delete(int id, int userId, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {

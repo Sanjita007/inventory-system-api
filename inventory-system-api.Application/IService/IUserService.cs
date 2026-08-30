@@ -8,13 +8,13 @@ namespace inventory_system_api.Application.IService
 
         public Task<UserMin?> Get(int id, CancellationToken cancellationToken);
 
-        public Task<int> AddEdit(User entity, CancellationToken cancellationToken, int userId);
-        public Task<int> Delete(int id, CancellationToken cancellationToken, int userId);
+        public Task<int> AddEdit(User entity, int userId, CancellationToken cancellationToken);
+        public Task<int> Delete(int id, int userId, CancellationToken cancellationToken);
 
         public Task<User?> VerifyAndGetUserDetails(string userName, string password, CancellationToken cancellationToken);
         public Task<bool> ValidatePassword(int userID, string password, CancellationToken cancellationToken);
 
-        public Task<int> UpdatePassword(UpdatePasswordModel passwordModel, CancellationToken cancellationToken, int userId);
+        public Task<int> UpdatePassword(UpdatePasswordModel passwordModel, int userId, CancellationToken cancellationToken);
 
 
     }

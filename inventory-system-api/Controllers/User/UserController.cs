@@ -57,7 +57,7 @@ namespace inventory_system_api.Controllers
             {
                 return BadRequest(new Response() { StatusCode = 400, Message = "Password does not match to the existing one", });
             }
-            var res = await _repo.AddEdit(entity, cancellationToken, UserId);
+            var res = await _repo.AddEdit(entity, UserId, cancellationToken);
             return OkResponse();
         }
 
@@ -65,14 +65,14 @@ namespace inventory_system_api.Controllers
         public async Task<IActionResult> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken)
         {
             
-            await _repo.UpdatePassword(entity, cancellationToken, UserId);
+            await _repo.UpdatePassword(entity, UserId, cancellationToken);
             return OkResponse();
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(User entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
+            int res = await _repo.AddEdit(entity, UserId, cancellationToken);
             return OkResponse(new { ID = res });
         }
 

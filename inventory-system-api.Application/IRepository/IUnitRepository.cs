@@ -22,14 +22,14 @@ namespace inventory_system_api.Application.IRepository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public Task<int> AddEdit(Unit entity, CancellationToken cancellationToken, int userId);
+        public Task<int> AddEdit(Unit entity, int userId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete a unit based on the ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<int> Delete(int id, CancellationToken cancellationToken, int userId);
+        public Task<int> Delete(int id, int userId, CancellationToken cancellationToken);
 
         /// <summary>
         /// convert from default unit to current unit based on relationship among these units

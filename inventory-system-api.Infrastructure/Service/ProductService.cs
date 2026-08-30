@@ -20,14 +20,14 @@ namespace inventory_system_api.Infrastructure.Service
             _prodGroupRepo = prodGroupRepo;
         }
 
-        public async Task<int> AddEdit(Product entity, CancellationToken cancellationToken, int userId)
+        public async Task<int> AddEdit(Product entity, int userId, CancellationToken cancellationToken)
         {
-            return await _productRepo.AddEdit(entity, cancellationToken, userId);
+            return await _productRepo.AddEdit(entity, userId, cancellationToken);
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
+        public async Task<int> Delete(int id, int userId, CancellationToken cancellationToken)
         {
-            return await _productRepo.Delete(id, cancellationToken, userId);
+            return await _productRepo.Delete(id, userId, cancellationToken);
         }
 
         public async Task<List<Product>> Get(CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ namespace inventory_system_api.Infrastructure.Service
 
             List<int> units = products.Select(r => r.UnitID).Distinct().ToList();
 
-            List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(String.Join(",", units), cancellationToken);
+            List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(string.Join(",", units), cancellationToken);
 
 
             var unitDetailsLookup = details
@@ -91,7 +91,7 @@ namespace inventory_system_api.Infrastructure.Service
             return tree;
         }
 
-        public List<Tree> TreeMethod(List<ProductGroup> groups, List<Product> products, int level, int id)
+        private List<Tree> TreeMethod(List<ProductGroup> groups, List<Product> products, int level, int id)
         {
             List<Tree> children = new List<Tree>();
 

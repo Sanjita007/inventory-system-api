@@ -125,7 +125,7 @@ namespace inventory_system_api.unitTests
                 Size = "L",
                 TaxID = 3,
             };
-            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<Product>(), cancellationToken,1)).ReturnsAsync(1);
+            _mockRepo.Setup(repo => repo.AddEdit(It.IsAny<Product>(), 1, cancellationToken)).ReturnsAsync(1);
 
             // Act
             var result = await _controller.Post(newProduct, cancellationToken);
@@ -138,7 +138,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal(200, returned.StatusCode); // this is our custom response code
             Assert.Equal("Success", returned.Message);
             Assert.NotNull(returned.Data); // just checking if the data is null or not for now.. but later i have to check the id as well 
-            _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<Product>(), cancellationToken,1), Times.Once);
+            _mockRepo.Verify(repo => repo.AddEdit(It.IsAny<Product>(), 1, cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace inventory_system_api.unitTests
             // Arrange
             int productIdToDelete = 10;
 
-            _mockRepo.Setup(repo => repo.Delete(productIdToDelete, cancellationToken,1))
+            _mockRepo.Setup(repo => repo.Delete(productIdToDelete, 1, cancellationToken))
                      .ReturnsAsync(1);
 
             // Act
@@ -162,7 +162,7 @@ namespace inventory_system_api.unitTests
             Assert.Equal("Success", response.Message);
             Assert.Null(response.Data);
 
-            _mockRepo.Verify(repo => repo.Delete(productIdToDelete, cancellationToken,1), Times.Once);
+            _mockRepo.Verify(repo => repo.Delete(productIdToDelete, 1, cancellationToken), Times.Once);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace inventory_system_api.Infrastructure.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(CompoundUnit entity, CancellationToken cancellationToken, int userId)
+        public async Task<int> AddEdit(CompoundUnit entity, int userId, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -62,7 +62,7 @@ namespace inventory_system_api.Infrastructure.Repository
             }
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
+        public async Task<int> Delete(int id, int userId, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {

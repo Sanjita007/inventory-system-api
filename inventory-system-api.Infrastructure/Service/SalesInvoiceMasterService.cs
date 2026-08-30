@@ -17,14 +17,14 @@ namespace inventory_system_api.Infrastructure.Service
             _salesInvoiceRepo = salesInvoiceRepo;
         }
 
-        public Task<int> AddEdit(SalesInvoiceMaster entity, CancellationToken cancellationToken, int userId)
+        public Task<int> AddEdit(SalesInvoiceMaster entity, int userId, CancellationToken cancellationToken)
         {
-            return _salesInvoiceRepo.AddEdit(entity, cancellationToken, userId);
+            return _salesInvoiceRepo.AddEdit(entity, userId, cancellationToken);
         }
 
-        public Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
+        public Task<int> Delete(int id, int userId, CancellationToken cancellationToken)
         {
-            return _salesInvoiceRepo.Delete(id, cancellationToken, userId);
+            return _salesInvoiceRepo.Delete(id, userId, cancellationToken);
         }
 
         public Task<List<SalesInvoiceMaster>> Get(CancellationToken cancellationToken)

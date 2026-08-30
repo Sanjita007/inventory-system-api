@@ -12,14 +12,14 @@ namespace inventory_system_api.Infrastructure.Service
         {
             _repo = repo;
         }
-        public async Task<int> AddEdit(User entity, CancellationToken cancellationToken, int userId)
+        public async Task<int> AddEdit(User entity, int userId, CancellationToken cancellationToken)
         {
-            return await _repo.AddEdit(entity, cancellationToken, userId);
+            return await _repo.AddEdit(entity, userId, cancellationToken);
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
+        public async Task<int> Delete(int id, int userId, CancellationToken cancellationToken)
         {
-            return await _repo.Delete(id, cancellationToken, userId);
+            return await _repo.Delete(id, userId, cancellationToken);
         }
 
         public async Task<List<UserMin>> Get(CancellationToken cancellationToken)
@@ -32,9 +32,9 @@ namespace inventory_system_api.Infrastructure.Service
             return await _repo.Get(id, cancellationToken);
         }
 
-        public async Task<int> UpdatePassword(UpdatePasswordModel passwordModel, CancellationToken cancellationToken, int userId)
+        public async Task<int> UpdatePassword(UpdatePasswordModel passwordModel, int userId, CancellationToken cancellationToken)
         {
-            return await _repo.UpdatePassword(passwordModel, cancellationToken, userId);
+            return await _repo.UpdatePassword(passwordModel, userId, cancellationToken);
         }
 
         public async Task<bool> ValidatePassword(int userID, string password, CancellationToken cancellationToken)

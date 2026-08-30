@@ -32,7 +32,7 @@ namespace inventory_system_api.Controllers
         {
             if (entity.ID > 0) ErrorResponse("Cannot update data with id, please add new record");
 
-            var res = await _repo.AddEdit(entity, cancellationToken, UserId);
+            var res = await _repo.AddEdit(entity, UserId, cancellationToken );
             return OkResponse(new { ID = res });        
         }
 
@@ -40,7 +40,7 @@ namespace inventory_system_api.Controllers
         public async Task<IActionResult> Put(Tax entity, CancellationToken cancellationToken)
         {
             if (entity.ID == 0) ErrorResponse("Cannot add data with id, please update the record");
-            var list = await _repo.AddEdit(entity, cancellationToken, UserId);
+            var list = await _repo.AddEdit(entity, UserId, cancellationToken);
             return OkResponse(list);
         }
 
@@ -48,7 +48,7 @@ namespace inventory_system_api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var res = await _repo.Delete(id, cancellationToken, UserId);
+            var res = await _repo.Delete(id, UserId, cancellationToken);
             return OkResponse();
         }
     }

@@ -16,14 +16,14 @@ namespace inventory_system_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(Product entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
+            int res = await _repo.AddEdit(entity, UserId, cancellationToken);
             return OkResponse(new { ID = res });
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(Product entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
+            int res = await _repo.AddEdit(entity, UserId, cancellationToken);
             return OkResponse();
         }
 
@@ -86,7 +86,7 @@ namespace inventory_system_api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var res = await _repo.Delete(id, cancellationToken, UserId);
+            var res = await _repo.Delete(id, UserId, cancellationToken);
             return OkResponse();
         }
     }

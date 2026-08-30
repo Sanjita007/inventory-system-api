@@ -15,7 +15,7 @@ namespace inventory_system_api.Infrastructure.Repository
             _dbConnection = dbConnection;
         }
 
-        public async Task<int> AddEdit(User entity, CancellationToken cancellationToken, int userId)
+        public async Task<int> AddEdit(User entity, int userId, CancellationToken cancellationToken)
         {
             // udpate the password field with the hash value
             entity.Password = Utility.HashPassword(entity.Password);
@@ -47,7 +47,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
         }
 
-        public async Task<int> Delete(int id, CancellationToken cancellationToken, int userId)
+        public async Task<int> Delete(int id, int userId, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {
@@ -135,7 +135,7 @@ namespace inventory_system_api.Infrastructure.Repository
 
         }
 
-        public async Task<int> UpdatePassword(UpdatePasswordModel entity, CancellationToken cancellationToken, int userId)
+        public async Task<int> UpdatePassword(UpdatePasswordModel entity, int userId, CancellationToken cancellationToken)
         {
             using (_dbConnection as SqlConnection)
             {

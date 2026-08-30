@@ -17,14 +17,14 @@ namespace accswift_api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(Unit entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
+            int res = await _repo.AddEdit(entity, UserId, cancellationToken);
             return OkResponse(new { ID = res });
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(Unit entity, CancellationToken cancellationToken)
         {
-            int res = await _repo.AddEdit(entity, cancellationToken, UserId);
+            int res = await _repo.AddEdit(entity, UserId, cancellationToken);
             return OkResponse();
         }
 
@@ -44,7 +44,7 @@ namespace accswift_api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var res = await _repo.Delete(id, cancellationToken, UserId);
+            var res = await _repo.Delete(id, UserId, cancellationToken);
             return OkResponse();
         }
 

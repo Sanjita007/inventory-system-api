@@ -22,13 +22,13 @@ namespace inventory_system_api.Application.IRepository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public Task<int> AddEdit(Tax entity, CancellationToken cancellationToken, int userId);
+        public Task<int> AddEdit(Tax entity, int userId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete a product based on the ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<int> Delete(int id, CancellationToken cancellationToken, int userId);
+        public Task<int> Delete(int id, int userId, CancellationToken cancellationToken);
     }
 }

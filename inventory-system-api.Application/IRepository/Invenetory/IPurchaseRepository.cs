@@ -26,7 +26,7 @@ namespace inventory_system_api.Application.IRepository.Invenetory
         /// <param name="entity"></param>
         /// <param name="userId"></param>   
         /// <returns></returns>
-        public Task<int> AddEdit(PurchaseInvoiceMaster entity, CancellationToken cancellationToken, int userId);
+        public Task<int> AddEdit(PurchaseInvoiceMaster entity, int userId, CancellationToken cancellationToken);
 
         /// <summary>
         /// Delete a product based on the ID
@@ -34,7 +34,7 @@ namespace inventory_system_api.Application.IRepository.Invenetory
         /// <param name="id"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public Task<int> Delete(int id, CancellationToken cancellationToken, int userId);
+        public Task<int> Delete(int id, int userId, CancellationToken cancellationToken);
 
         public Task<Navigate> Navigate(int pageNo, int rowPerPage, CancellationToken cancellationToken);
 
