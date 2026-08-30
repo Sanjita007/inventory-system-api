@@ -6,7 +6,7 @@ namespace inventory_system_api.Application.Models.Inventory
     {
         
         public string? VoucherNo { get; set; }
-        public string EntityName { get; set; } // supplier name for purchase and customer name is for the sale invoice
+        public required string EntityName { get; set; } // supplier name for purchase and customer name is for the sale invoice
         public DateTime Date { get; set; }
         public decimal TotalQty { get; set; } = 0;
         public decimal GrossAmount { get; set; } = 0;
@@ -18,7 +18,7 @@ namespace inventory_system_api.Application.Models.Inventory
         public decimal ChangeAmount { get; set; } = 0;
         public decimal AdjustmentAmount { get; set; } = 0;
         public string Status { get; set; } = "PAID";
-        public List<InvoiceDetail> Details { get; set; }
+        public List<InvoiceDetail>? Details { get; set; }
        }
 
     public class SalesInvoiceMaster : InvoiceMaster

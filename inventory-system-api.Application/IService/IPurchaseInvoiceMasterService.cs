@@ -16,7 +16,7 @@ namespace inventory_system_api.Application.IService
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public Task<PurchaseInvoiceMaster> Get(int id, CancellationToken cancellationToken);
+        public Task<PurchaseInvoiceMaster?> Get(int id, CancellationToken cancellationToken);
 
 
         /// <summary>

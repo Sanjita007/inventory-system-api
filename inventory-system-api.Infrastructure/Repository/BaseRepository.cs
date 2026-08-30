@@ -46,7 +46,7 @@ namespace inventory_system_api.Infrastructure.Repository
             int res = -1;
             using (var conn = _dbConnection as SqlConnection)
             {
-                conn.Open();
+                conn?.Open();
                 using (var cmd = conn.CreateCommand())
                 {
                     cmd.CommandType = commandType;

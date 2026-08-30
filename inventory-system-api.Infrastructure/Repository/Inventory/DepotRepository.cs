@@ -95,7 +95,7 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
         public async Task<Depot> Get(int id, CancellationToken cancellationToken)
         {
 
-            Depot entity = new();
+            Depot entity = new() { Name = "" };
             using (_dbConnection as SqlConnection)
             {
                 SqlCommand cmd = (SqlCommand)_dbConnection.CreateCommand();

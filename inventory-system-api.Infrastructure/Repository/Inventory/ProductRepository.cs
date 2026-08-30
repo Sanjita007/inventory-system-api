@@ -51,7 +51,6 @@ namespace inventory_system_api.Infrastructure.Repository.Inventory
                     entity.Company,
                     entity.Website,
 
-                    Image = entity.ImageBase64,
                     
                     entity.TaxID,
                     userId

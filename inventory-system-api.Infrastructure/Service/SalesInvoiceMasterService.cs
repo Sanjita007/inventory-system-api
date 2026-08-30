@@ -37,7 +37,7 @@ namespace inventory_system_api.Infrastructure.Service
             SalesInvoiceMaster? entity = await _salesInvoiceRepo.Get(id, cancellationToken);
 
 
-            List<int> units = entity?.Details?.Select(r => r.DefaultUnitID).Distinct().ToList();
+            List<int>? units = entity?.Details?.Select(r => r.DefaultUnitID).Distinct().ToList();
 
             List<UnitDetails> details = await _unitRepo.GetMultipleRelatedUnit(String.Join(",", units!), cancellationToken);
 
@@ -46,7 +46,7 @@ namespace inventory_system_api.Infrastructure.Service
                 .GroupBy(d => d.DefaultUnitID)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            List<InvoiceDetail> productDetails = entity!.Details
+            List<InvoiceDetail>? productDetails = entity?.Details?
                 .Select(product =>
                 {
 

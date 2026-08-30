@@ -54,7 +54,7 @@ namespace inventory_system_api.Infrastructure.Service
                 .GroupBy(d => d.DefaultUnitID)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
-            List<ProductDetails> productDetails = products
+            List<ProductDetails> productDetails = [.. products
                 .Select(product =>
                 {
 
@@ -65,19 +65,14 @@ namespace inventory_system_api.Infrastructure.Service
                     // Create the final object, assigning the found units or an empty list.
                     return new ProductDetails(product)
                     {
-                        UnitDetails = relatedUnits ?? new List<UnitDetails>()
+                        // satisfy required members from the source Product
+                        EngName = product.EngName,
+                        Code = product.Code,
+
+                        UnitDetails = relatedUnits ?? []
                     };
-                })
-                .ToList();
-            //foreach (Product product in products) {
-
-            //    List<UnitDetails> u = [.. details.Where(r => r.DefaultUnitID == product.UnitID)];
-            //    productDetails.Add(new ProductDetails(product)
-            //    {
-            //        UnitDetails = u
-            //    });
-            //}
-
+                })];
+           
             return productDetails;
         }
 

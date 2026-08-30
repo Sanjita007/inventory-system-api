@@ -38,7 +38,7 @@ namespace accswift_api.Controllers
         public async Task<IActionResult> Get(int id, CancellationToken cancellationToken)
         {
             var entity = await _repo.Get(id, cancellationToken);   
-            return OkResponse(entity);
+            return OkResponse(entity!);
         }
 
         [HttpDelete("{id:int}")]
@@ -52,7 +52,7 @@ namespace accswift_api.Controllers
         public async Task<IActionResult> Convert(int defaultUnitID, int currentUnitID, decimal valueToConvert, CancellationToken cancellationToken)
         {
             var res = await _repo.ConvertUnit(defaultUnitID, currentUnitID, valueToConvert, cancellationToken);
-            return OkResponse(res);
+            return OkResponse(res!);
         }
 
         [HttpGet("Related")]
