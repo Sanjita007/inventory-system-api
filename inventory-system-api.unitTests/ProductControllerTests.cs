@@ -68,7 +68,6 @@ namespace inventory_system_api.unitTests
                 ParentProductID = null,
                 Size = "M",
                 TaxID = 5,
-                ConversionRate = 1.0m
             };
 
             // use mock to make a fake Product object for test

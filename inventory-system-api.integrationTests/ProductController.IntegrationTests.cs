@@ -109,18 +109,13 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
             CompanyID = 1,
             Size = "6",
             TaxID = 1,
-            ConversionRate = 2.0m,
-
             GroupID = 72,
             Code = "TP" + guid,
-            DepotID = 1,
             Remarks = "integration test",
             UnitID = 18,
             UnitName = "Piece",
             UnitSymbol = "pc",
-            PurchaseQuantity = 1.0m,
             PurchaseDiscount = 0.0m,
-            TotalValue = 90.0m,
             IsBuiltIn = false,
         };
 
@@ -147,7 +142,7 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
         Assert.Equal(updatedProduct.NepName, updateCheckPayload.Data.NepName);
         Assert.Equal(updatedProduct.SalesRate, updateCheckPayload.Data.SalesRate);
         Assert.Equal(updatedProduct.PurchaseRate, updateCheckPayload.Data.PurchaseRate);
-        Assert.Equal(updatedProduct.Quantity, updateCheckPayload.Data.Quantity);
+        Assert.Equal(updatedProduct.OpeningQuantity, updateCheckPayload.Data.OpeningQuantity);
         Assert.Equal(updatedProduct.IsActive, updateCheckPayload.Data.IsActive);
         Assert.Equal(updatedProduct.Email, updateCheckPayload.Data.Email);
     }
@@ -191,22 +186,18 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
             NepName = "परीक्षण 1 " + guid,
             GroupID = 72,
             Code = "TP" + guid,
-            DepotID = 1,
             Remarks = "integration test",
             UnitID = 18,
             UnitName = "Piece",
             UnitSymbol = "pc",
             SalesRate = 100.0m,
-            PurchaseQuantity = 1.0m,
             PurchaseRate = 90.0m,
             PurchaseDiscount = 0.0m,
-            TotalValue = 90.0m,
             IsBuiltIn = false,
             IsActive = true,
             CreatedBy = "integration",
             IsVatApplicable = true,
             IsInventoryApplicable = true,
-            Quantity = 10.0m,
             IsDecimalApplicable = false,
             ContactPerson = "John",
             Address1 = "Addr1",
@@ -219,7 +210,6 @@ public class ProductControllerIntegrationTests : IClassFixture<CustomWebApplicat
             CompanyID = 1,
             Size = "3",
             TaxID = 1,
-            ConversionRate = 1.0m,
             ID=0
         };
     }
